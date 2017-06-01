@@ -24,7 +24,7 @@ class FeatureExtractor():
                 outputs += [x]
         return outputs + [x]
 
-class FeatureExtractor():
+class ModelOutputs():
 	def __init__(self, model, target_layers):
 		self.model = model
 		self.feature_extractor = FeatureExtractor(self.model.features, target_layers)
@@ -63,7 +63,7 @@ def show_cam_on_image(img, mask):
 class GradCam:
 	def __init__(self, model, target_layer_names):
 		self.model = model
-		self.extractor = FeatureExtractor(self.model, target_layer_names)
+		self.extractor = ModelOutputs(self.model, target_layer_names)
 
 	def forward(self, input):
 		self.model.features.zero_grad()
