@@ -117,9 +117,9 @@ if __name__ == '__main__':
 	Makes the visualization. 
 	TBD: Add CUDA support, add guided backpropagation. """
 
-	# Can work with any model, buy GradCAM assumes that model has a 
+	# Can work with any model, but it assumes that the model has a 
 	# feature method, and a classifier method,
-	# as like in the VGG models in torchvision.
+	# as in the VGG models in torchvision.
 	grad_cam = GradCam(model = models.vgg19(pretrained=True), \
 					target_layer_names = ["35"])
 
