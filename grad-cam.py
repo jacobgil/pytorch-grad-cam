@@ -1,9 +1,9 @@
 import torch
-from torchvision import models, transforms
+from torch.autograd import Variable
+from torchvision import models
 import cv2
 import sys
 import numpy as np
-from torch.autograd import Variable
 
 class FeatureExtractor():
     """ Class for extracting activations and 
