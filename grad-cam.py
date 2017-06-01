@@ -111,10 +111,10 @@ class GradCam:
 if __name__ == '__main__':
 	""" python grad_cam.py <path_to_image>
 	1. Loads an image with opencv.
-    2. Preprocesses it for VGG19 and converts to a pytorch variable.
-    3. Makes a forward pass to find the category index with the highest score,
-       and computes intermediate activations.
-       Makes the visualization. 
+	2. Preprocesses it for VGG19 and converts to a pytorch variable.
+	3. Makes a forward pass to find the category index with the highest score,
+	and computes intermediate activations.
+	Makes the visualization. 
 	TBD: Add CUDA support, add guided backpropagation. """
 
 	# Can work with any model, buy GradCAM assumes that model has a 
