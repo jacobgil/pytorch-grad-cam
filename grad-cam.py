@@ -24,7 +24,7 @@ class FeatureExtractor():
             if name in self.target_layers:
             	x.register_hook(self.save_gradient)
                 outputs += [x]
-        return outputs + [x]
+        return outputs, x
 
 class ModelOutputs():
 	""" Class for making a forward pass, and getting:
@@ -39,11 +39,10 @@ class ModelOutputs():
 		return self.feature_extractor.gradients
 
 	def __call__(self, x):
-		features = self.feature_extractor(x)
-		last_layer_output = features[-1]
-		last_layer_output = last_layer_output.view(last_layer_output.size(0), -1)
-		result = self.model.classifier(last_layer_output)
-		return features, result
+		target_activations, output  = self.feature_extractor(x)
+		output = output.view(output.size(0), -1)
+		output = self.model.classifier(output)
+		return target_activations, output
 
 def preprocess_image(img):
 	means=[0.485, 0.456, 0.406]
@@ -53,8 +52,9 @@ def preprocess_image(img):
 	for i in range(3):
 		preprocessed_img[:, :, i] = preprocessed_img[:, :, i] - means[i]
 		preprocessed_img[:, :, i] = preprocessed_img[:, :, i] / stds[i]
-	preprocessed_img = np.transpose(preprocessed_img, (2, 0, 1))
-	preprocessed_img = torch.from_numpy(np.ascontiguousarray(preprocessed_img))
+	preprocessed_img = \
+		np.ascontiguousarray(np.transpose(preprocessed_img, (2, 0, 1)))
+	preprocessed_img = torch.from_numpy(preprocessed_img)
 	preprocessed_img.unsqueeze_(0)
 	input = Variable(preprocessed_img, requires_grad = True)
 	return input
@@ -69,14 +69,14 @@ def show_cam_on_image(img, mask):
 class GradCam:
 	def __init__(self, model, target_layer_names):
 		self.model = model
+		self.model.eval()
+
 		self.extractor = ModelOutputs(self.model, target_layer_names)
 
 	def forward(self, input):
-		self.model.features.zero_grad()
 		return self.model(input) 
 
 	def __call__(self, input, index = None):
-		
 		features, output = self.extractor(input)
 		if index == None:
 			index = np.argmax(output.data.numpy())
@@ -87,7 +87,9 @@ class GradCam:
 		one_hot = torch.sum(one_hot * output)
 
 		self.model.features.zero_grad()
-		one_hot.backward()
+		self.model.classifier.zero_grad()
+		one_hot.backward(retain_variables=True)
+		
 		grads_val = self.extractor.get_gradients()[-1].data.numpy()
 
 		target = features[-1]
@@ -108,19 +110,18 @@ class GradCam:
 
 if __name__ == '__main__':
 	""" python grad_cam.py <path_to_image>
-		1. Loads an image with opencv.
-	    2. Preprocesses it for VGG19 and converts to a pytorch variable.
-	    3. Makes a forward pass to find the category index with the highest score,
-	       and computes intermediate activations.
-	       Makes the visualization. 
-		TBD: Add CUDA support, add guided backpropagation.
-	       """
+	1. Loads an image with opencv.
+    2. Preprocesses it for VGG19 and converts to a pytorch variable.
+    3. Makes a forward pass to find the category index with the highest score,
+       and computes intermediate activations.
+       Makes the visualization. 
+	TBD: Add CUDA support, add guided backpropagation. """
 
 	# Can work with any model, buy GradCAM assumes that model has a 
 	# feature method, and a classifier method,
 	# as like in the VGG models in torchvision.
 	grad_cam = GradCam(model = models.vgg19(pretrained=True), \
-					target_layer_names = ["36"])
+					target_layer_names = ["35"])
 
 	img = cv2.imread(sys.argv[1], 1)
 	img = np.float32(cv2.resize(img, (224, 224))) / 255
