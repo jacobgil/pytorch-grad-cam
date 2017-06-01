@@ -27,10 +27,17 @@ Usage: `python grad-cam.py <path_to_image>`
 **TBD: Add guided back propagation.**
 
 
-### Examples
+# Examples
 
-Image classified as a dog:
+###What makes the network think it's a dog:
 
+Grad-CAM targeting the category index that gives the highest score (254 : 'pug, pug-dog'):
 
-![Example](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cam.jpg?raw=true)
+![Dog](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true)
+
+###What makes the network think it's a cat:
+Grad-CAM targeting the category index 281: 'tabby, tabby cat':
+
+![Cat](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true)
+
 

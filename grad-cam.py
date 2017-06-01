@@ -73,8 +73,12 @@ class GradCam:
 		output = self.forward(input).data.numpy()
 		return np.argmax(output)
 
-	def __call__(self, input):
-		index = self.get_highest_score_index(input)
+	def __call__(self, input, index = None):
+		
+		if index == None:
+			index = self.get_highest_score_index(input)
+		else:
+			self.forward(input)
 		features, output = self.extractor(input)
 		one_hot = np.zeros((1, 1000), dtype = np.float32)
 		one_hot[0][index] = 1
