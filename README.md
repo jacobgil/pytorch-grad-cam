@@ -29,13 +29,15 @@ Usage: `python grad-cam.py <path_to_image>`
 
 # Examples
 
-###What makes the network think it's a dog:
+## What makes the network think it's a dog:
 
-Grad-CAM targeting the category index that gives the highest score (254 : 'pug, pug-dog'):
+Grad-CAM targeting the category index (254 : 'pug, pug-dog') that gives the highest score :
+
 
 ![Dog](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true)
 
-###What makes the network think it's a cat:
+
+## What makes the network think it's a cat:
 Grad-CAM targeting the category index 281: 'tabby, tabby cat':
 
 ![Cat](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true)
