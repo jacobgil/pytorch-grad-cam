@@ -4,10 +4,24 @@ from torchvision import models
 import cv2
 import sys
 import numpy as np
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--use-cuda', action='store_true', default=False,
+                    help='use NVIDIA GPU acceleration')
+parser.add_argument('--image-path', type=str, default='./examples/both.png',
+                    help='input image path')
+args = parser.parse_args()
+args.use_cuda = args.use_cuda and torch.cuda.is_available()
+if args.use_cuda:
+    print("Using GPU for acceleration")
+else:
+    print("Using CPU for computation")
+
 
 class FeatureExtractor():
     """ Class for extracting activations and 
-    registering gradientsfrom targetted intermediate layers """
+    registering gradients from targetted intermediate layers """
     def __init__(self, model, target_layers):
         self.model = model
         self.target_layers = target_layers
@@ -67,9 +81,12 @@ def show_cam_on_image(img, mask):
 	cv2.imwrite("cam.jpg", np.uint8(255 * cam))
 
 class GradCam:
-	def __init__(self, model, target_layer_names):
+	def __init__(self, model, target_layer_names, use_cuda):
 		self.model = model
 		self.model.eval()
+		self.cuda = use_cuda
+		if self.cuda:
+			self.model = model.cuda()
 
 		self.extractor = ModelOutputs(self.model, target_layer_names)
 
@@ -77,23 +94,30 @@ class GradCam:
 		return self.model(input) 
 
 	def __call__(self, input, index = None):
-		features, output = self.extractor(input)
+		if self.cuda:
+			features, output = self.extractor(input.cuda())
+		else:
+			features, output = self.extractor(input)
+
 		if index == None:
-			index = np.argmax(output.data.numpy())
+			index = np.argmax(output.cpu().data.numpy())
 
 		one_hot = np.zeros((1, output.size()[-1]), dtype = np.float32)
 		one_hot[0][index] = 1
 		one_hot = Variable(torch.from_numpy(one_hot), requires_grad = True)
-		one_hot = torch.sum(one_hot * output)
+		if self.cuda:
+			one_hot = torch.sum(one_hot.cuda() * output)
+		else:
+			one_hot = torch.sum(one_hot * output)
 
 		self.model.features.zero_grad()
 		self.model.classifier.zero_grad()
 		one_hot.backward(retain_graph=True)
-		
-		grads_val = self.extractor.get_gradients()[-1].data.numpy()
+
+		grads_val = self.extractor.get_gradients()[-1].cpu().data.numpy()
 
 		target = features[-1]
-		target = target.data.numpy()[0, :]
+		target = target.cpu().data.numpy()[0, :]
 
 		weights = np.mean(grads_val, axis = (2, 3))[0, :]
 		cam = np.ones(target.shape[1 : ], dtype = np.float32)
@@ -121,9 +145,9 @@ if __name__ == '__main__':
 	# feature method, and a classifier method,
 	# as in the VGG models in torchvision.
 	grad_cam = GradCam(model = models.vgg19(pretrained=True), \
-					target_layer_names = ["35"])
+					target_layer_names = ["35"], use_cuda=args.use_cuda)
 
-	img = cv2.imread(sys.argv[1], 1)
+	img = cv2.imread(args.image_path, 1)
 	img = np.float32(cv2.resize(img, (224, 224))) / 255
 	input = preprocess_image(img)
 
