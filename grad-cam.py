@@ -6,19 +6,6 @@ import sys
 import numpy as np
 import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--use-cuda', action='store_true', default=False,
-                    help='use NVIDIA GPU acceleration')
-parser.add_argument('--image-path', type=str, default='./examples/both.png',
-                    help='input image path')
-args = parser.parse_args()
-args.use_cuda = args.use_cuda and torch.cuda.is_available()
-if args.use_cuda:
-    print("Using GPU for acceleration")
-else:
-    print("Using CPU for computation")
-
-
 class FeatureExtractor():
     """ Class for extracting activations and 
     registering gradients from targetted intermediate layers """
@@ -112,7 +99,7 @@ class GradCam:
 
 		self.model.features.zero_grad()
 		self.model.classifier.zero_grad()
-		one_hot.backward(retain_graph=True)
+		one_hot.backward(retain_variables=True)
 
 		grads_val = self.extractor.get_gradients()[-1].cpu().data.numpy()
 
@@ -131,6 +118,20 @@ class GradCam:
 		cam = cam / np.max(cam)
 		return cam
 
+def get_args():
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--use-cuda', action='store_true', default=False,
+	                    help='Use NVIDIA GPU acceleration')
+	parser.add_argument('--image-path', type=str, default='./examples/both.png',
+	                    help='Input image path')
+	args = parser.parse_args()
+	args.use_cuda = args.use_cuda and torch.cuda.is_available()
+	if args.use_cuda:
+	    print("Using GPU for acceleration")
+	else:
+	    print("Using CPU for computation")
+
+	return args
 
 if __name__ == '__main__':
 	""" python grad_cam.py <path_to_image>
@@ -139,7 +140,9 @@ if __name__ == '__main__':
 	3. Makes a forward pass to find the category index with the highest score,
 	and computes intermediate activations.
 	Makes the visualization. 
-	TBD: Add CUDA support, add guided backpropagation. """
+	TBD: Add guided backpropagation. """
+
+	args = get_args()
 
 	# Can work with any model, but it assumes that the model has a 
 	# feature method, and a classifier method,

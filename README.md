@@ -25,6 +25,9 @@ This code assumes that the model passed supports these two methods.
 ----------
 
 
-Usage: `python grad-cam.py <path_to_image>`
+Usage: `python grad-cam.py --image-path <path_to_image>`
 
-**TBD: Add guided back propagation, CUDA usage.**
+To use with CUDA:
+`python grad-cam.py --image-path <path_to_image> --use-cuda`
+
+**TBD: Add guided back propagation.**
