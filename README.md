@@ -29,5 +29,3 @@ Usage: `python grad-cam.py --image-path <path_to_image>`
 
 To use with CUDA:
 `python grad-cam.py --image-path <path_to_image> --use-cuda`
-
-**TBD: Add guided back propagation.**
