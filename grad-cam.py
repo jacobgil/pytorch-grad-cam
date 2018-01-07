@@ -109,7 +109,7 @@ class GradCam:
 		target = target.cpu().data.numpy()[0, :]
 
 		weights = np.mean(grads_val, axis = (2, 3))[0, :]
-		cam = np.ones(target.shape[1 : ], dtype = np.float32)
+		cam = np.zeros(target.shape[1 : ], dtype = np.float32)
 
 		for i, w in enumerate(weights):
 			cam += w * target[i, :, :]
