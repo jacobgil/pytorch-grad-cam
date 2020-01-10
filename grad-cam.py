@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 import torch
 from torch.autograd import Function
-from torch.autograd import Variable
 from torchvision import models
 from torchvision import utils
 
@@ -64,7 +63,7 @@ def preprocess_image(img):
         np.ascontiguousarray(np.transpose(preprocessed_img, (2, 0, 1)))
     preprocessed_img = torch.from_numpy(preprocessed_img)
     preprocessed_img.unsqueeze_(0)
-    input = Variable(preprocessed_img, requires_grad=True)
+    input = preprocessed_img.requires_grad_(True)
     return input
 
 
@@ -100,7 +99,7 @@ class GradCam:
 
         one_hot = np.zeros((1, output.size()[-1]), dtype=np.float32)
         one_hot[0][index] = 1
-        one_hot = Variable(torch.from_numpy(one_hot), requires_grad=True)
+        one_hot = torch.from_numpy(one_hot).requires_grad_(True)
         if self.cuda:
             one_hot = torch.sum(one_hot.cuda() * output)
         else:
@@ -176,7 +175,7 @@ class GuidedBackpropReLUModel:
 
         one_hot = np.zeros((1, output.size()[-1]), dtype=np.float32)
         one_hot[0][index] = 1
-        one_hot = Variable(torch.from_numpy(one_hot), requires_grad=True)
+        one_hot = torch.from_numpy(one_hot).requires_grad_(True)
         if self.cuda:
             one_hot = torch.sum(one_hot.cuda() * output)
         else:
