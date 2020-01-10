@@ -129,14 +129,16 @@ class GradCam:
 
 class GuidedBackpropReLU(Function):
 
-    def forward(self, input):
+    @staticmethod
+    def forward(ctx, input):
         positive_mask = (input > 0).type_as(input)
         output = torch.addcmul(torch.zeros(input.size()).type_as(input), input, positive_mask)
-        self.save_for_backward(input, output)
+        ctx.save_for_backward(input, output)
         return output
 
-    def backward(self, grad_output):
-        input, output = self.saved_tensors
+    @staticmethod
+    def backward(ctx, grad_output):
+        input, output = ctx.saved_tensors
         grad_input = None
 
         positive_mask_1 = (input > 0).type_as(grad_output)
@@ -159,7 +161,7 @@ class GuidedBackpropReLUModel:
         # replace ReLU with GuidedBackpropReLU
         for idx, module in self.model.features._modules.items():
             if module.__class__.__name__ == 'ReLU':
-                self.model.features._modules[idx] = GuidedBackpropReLU()
+                self.model.features._modules[idx] = GuidedBackpropReLU.apply
 
     def forward(self, input):
         return self.model(input)
