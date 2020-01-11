@@ -1,12 +1,10 @@
 import argparse
-
 import cv2
 import numpy as np
 import torch
 from torch.autograd import Function
 from torchvision import models
 from torchvision import utils
-
 
 class FeatureExtractor():
     """ Class for extracting activations and 
@@ -130,15 +128,15 @@ class GradCam:
 class GuidedBackpropReLU(Function):
 
     @staticmethod
-    def forward(ctx, input):
+    def forward(self, input):
         positive_mask = (input > 0).type_as(input)
         output = torch.addcmul(torch.zeros(input.size()).type_as(input), input, positive_mask)
-        ctx.save_for_backward(input, output)
+        self.save_for_backward(input, output)
         return output
 
     @staticmethod
-    def backward(ctx, grad_output):
-        input, output = ctx.saved_tensors
+    def backward(self, grad_output):
+        input, output = self.saved_tensors
         grad_input = None
 
         positive_mask_1 = (input > 0).type_as(grad_output)
@@ -208,6 +206,15 @@ def get_args():
 
     return args
 
+def deprocess_image(img):
+    """ see https://github.com/jacobgil/keras-grad-cam/blob/master/grad-cam.py#L65 """
+    img = img - np.mean(img)
+    img = img / (np.std(img) + 1e-5)
+    img = img * 0.1
+    img = img + 0.5
+    img = np.clip(img, 0, 1)
+    return np.uint8(img*255)
+
 
 if __name__ == '__main__':
     """ python grad_cam.py <path_to_image>
@@ -232,18 +239,16 @@ if __name__ == '__main__':
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested index.
     target_index = None
-
     mask = grad_cam(input, target_index)
 
     show_cam_on_image(img, mask)
 
     gb_model = GuidedBackpropReLUModel(model=models.vgg19(pretrained=True), use_cuda=args.use_cuda)
     gb = gb_model(input, index=target_index)
-    utils.save_image(torch.from_numpy(gb), 'gb.jpg')
+    gb = gb.transpose((1, 2, 0))
+    cam_mask = cv2.merge([mask, mask, mask])
+    cam_gb = deprocess_image(cam_mask*gb)
+    gb = deprocess_image(gb)
 
-    cam_mask = np.zeros(gb.shape)
-    for i in range(0, gb.shape[0]):
-        cam_mask[i, :, :] = mask
-
-    cam_gb = np.multiply(cam_mask, gb)
-    utils.save_image(torch.from_numpy(cam_gb), 'cam_gb.jpg')
+    cv2.imwrite('gb.jpg', gb)
+    cv2.imwrite('cam_gb.jpg', cam_gb)
