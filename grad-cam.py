@@ -4,7 +4,6 @@ import numpy as np
 import torch
 from torch.autograd import Function
 from torchvision import models
-from torchvision import utils
 
 class FeatureExtractor():
     """ Class for extracting activations and 
