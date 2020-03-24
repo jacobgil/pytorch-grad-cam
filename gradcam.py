@@ -164,10 +164,14 @@ class GuidedBackpropReLUModel:
         if self.cuda:
             self.model = model.cuda()
 
+        def recursive_relu_apply(module_top):
+            for idx, module in module_top._modules.items():
+                recursive_relu_apply(module)
+                if module.__class__.__name__ == 'ReLU':
+                    module_top._modules[idx] = GuidedBackpropReLU.apply
+                
         # replace ReLU with GuidedBackpropReLU
-        for idx, module in self.model.features._modules.items():
-            if module.__class__.__name__ == 'ReLU':
-                self.model.features._modules[idx] = GuidedBackpropReLU.apply
+        recursive_relu_apply(self.model)
 
     def forward(self, input):
         return self.model(input)
@@ -237,9 +241,9 @@ if __name__ == '__main__':
     # Can work with any model, but it assumes that the model has a
     # feature method, and a classifier method,
     # as in the VGG models in torchvision.
-    model = models.vgg19(pretrained=True)
-    grad_cam = GradCam(model=model, feature_module=model.features, \
-                       target_layer_names=["35"], use_cuda=args.use_cuda)
+    model = models.resnet50(pretrained=True)
+    grad_cam = GradCam(model=model, feature_module=model.layer4, \
+                       target_layer_names=["2"], use_cuda=args.use_cuda)
 
     img = cv2.imread(args.image_path, 1)
     img = np.float32(cv2.resize(img, (224, 224))) / 255
@@ -253,6 +257,7 @@ if __name__ == '__main__':
     show_cam_on_image(img, mask)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
+    print(model._modules.items())
     gb = gb_model(input, index=target_index)
     gb = gb.transpose((1, 2, 0))
     cam_mask = cv2.merge([mask, mask, mask])
