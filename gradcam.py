@@ -34,18 +34,26 @@ class ModelOutputs():
     2. Activations from intermeddiate targetted layers.
     3. Gradients from intermeddiate targetted layers. """
 
-    def __init__(self, model, target_layers):
+    def __init__(self, model, feature_module, target_layers):
         self.model = model
-        self.feature_extractor = FeatureExtractor(self.model.features, target_layers)
+        self.feature_module = feature_module
+        self.feature_extractor = FeatureExtractor(self.feature_module, target_layers)
 
     def get_gradients(self):
         return self.feature_extractor.gradients
 
     def __call__(self, x):
-        target_activations, output = self.feature_extractor(x)
-        output = output.view(output.size(0), -1)
-        output = self.model.classifier(output)
-        return target_activations, output
+        target_activations = []
+        for name, module in self.model._modules.items():
+            if module == self.feature_module:
+                target_activations, x = self.feature_extractor(x)
+            elif "avgpool" in name.lower():
+                x = module(x)
+                x = x.view(x.size(0),-1)
+            else:
+                x = module(x)
+        
+        return target_activations, x
 
 
 def preprocess_image(img):
@@ -73,14 +81,15 @@ def show_cam_on_image(img, mask):
 
 
 class GradCam:
-    def __init__(self, model, target_layer_names, use_cuda):
+    def __init__(self, model, feature_module, target_layer_names, use_cuda):
         self.model = model
+        self.feature_module = feature_module
         self.model.eval()
         self.cuda = use_cuda
         if self.cuda:
             self.model = model.cuda()
 
-        self.extractor = ModelOutputs(self.model, target_layer_names)
+        self.extractor = ModelOutputs(self.model, self.feature_module, target_layer_names)
 
     def forward(self, input):
         return self.model(input)
@@ -102,8 +111,8 @@ class GradCam:
         else:
             one_hot = torch.sum(one_hot * output)
 
-        self.model.features.zero_grad()
-        self.model.classifier.zero_grad()
+        self.feature_module.zero_grad()
+        self.model.zero_grad()
         one_hot.backward(retain_graph=True)
 
         grads_val = self.extractor.get_gradients()[-1].cpu().data.numpy()
@@ -118,7 +127,7 @@ class GradCam:
             cam += w * target[i, :, :]
 
         cam = np.maximum(cam, 0)
-        cam = cv2.resize(cam, (224, 224))
+        cam = cv2.resize(cam, input.shape[2:])
         cam = cam - np.min(cam)
         cam = cam / np.max(cam)
         return cam
@@ -155,10 +164,14 @@ class GuidedBackpropReLUModel:
         if self.cuda:
             self.model = model.cuda()
 
+        def recursive_relu_apply(module_top):
+            for idx, module in module_top._modules.items():
+                recursive_relu_apply(module)
+                if module.__class__.__name__ == 'ReLU':
+                    module_top._modules[idx] = GuidedBackpropReLU.apply
+                
         # replace ReLU with GuidedBackpropReLU
-        for idx, module in self.model.features._modules.items():
-            if module.__class__.__name__ == 'ReLU':
-                self.model.features._modules[idx] = GuidedBackpropReLU.apply
+        recursive_relu_apply(self.model)
 
     def forward(self, input):
         return self.model(input)
@@ -228,8 +241,9 @@ if __name__ == '__main__':
     # Can work with any model, but it assumes that the model has a
     # feature method, and a classifier method,
     # as in the VGG models in torchvision.
-    grad_cam = GradCam(model=models.vgg19(pretrained=True), \
-                       target_layer_names=["35"], use_cuda=args.use_cuda)
+    model = models.resnet50(pretrained=True)
+    grad_cam = GradCam(model=model, feature_module=model.layer4, \
+                       target_layer_names=["2"], use_cuda=args.use_cuda)
 
     img = cv2.imread(args.image_path, 1)
     img = np.float32(cv2.resize(img, (224, 224))) / 255
@@ -242,7 +256,8 @@ if __name__ == '__main__':
 
     show_cam_on_image(img, mask)
 
-    gb_model = GuidedBackpropReLUModel(model=models.vgg19(pretrained=True), use_cuda=args.use_cuda)
+    gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
+    print(model._modules.items())
     gb = gb_model(input, index=target_index)
     gb = gb.transpose((1, 2, 0))
     cam_mask = cv2.merge([mask, mask, mask])
