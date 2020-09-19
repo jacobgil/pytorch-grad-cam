@@ -6,7 +6,7 @@ from torch.autograd import Function
 from torchvision import models
 
 class FeatureExtractor():
-    """ Class for extracting activations and 
+    """ Class for extracting activations and
     registering gradients from targetted intermediate layers """
 
     def __init__(self, model, target_layers):
@@ -52,7 +52,7 @@ class ModelOutputs():
                 x = x.view(x.size(0),-1)
             else:
                 x = module(x)
-        
+
         return target_activations, x
 
 
@@ -68,8 +68,8 @@ def preprocess_image(img):
         np.ascontiguousarray(np.transpose(preprocessed_img, (2, 0, 1)))
     preprocessed_img = torch.from_numpy(preprocessed_img)
     preprocessed_img.unsqueeze_(0)
-    input = preprocessed_img.requires_grad_(True)
-    return input
+    input_img = preprocessed_img.requires_grad_(True)
+    return input_img
 
 
 def show_cam_on_image(img, mask):
@@ -91,14 +91,14 @@ class GradCam:
 
         self.extractor = ModelOutputs(self.model, self.feature_module, target_layer_names)
 
-    def forward(self, input):
-        return self.model(input)
+    def forward(self, input_img):
+        return self.model(input_img)
 
-    def __call__(self, input, index=None):
+    def __call__(self, input_img, index=None):
         if self.cuda:
-            features, output = self.extractor(input.cuda())
+            features, output = self.extractor(input_img.cuda())
         else:
-            features, output = self.extractor(input)
+            features, output = self.extractor(input_img)
 
         if index == None:
             index = np.argmax(output.cpu().data.numpy())
@@ -127,7 +127,7 @@ class GradCam:
             cam += w * target[i, :, :]
 
         cam = np.maximum(cam, 0)
-        cam = cv2.resize(cam, input.shape[2:])
+        cam = cv2.resize(cam, input_img.shape[2:])
         cam = cam - np.min(cam)
         cam = cam / np.max(cam)
         return cam
@@ -136,21 +136,21 @@ class GradCam:
 class GuidedBackpropReLU(Function):
 
     @staticmethod
-    def forward(self, input):
-        positive_mask = (input > 0).type_as(input)
-        output = torch.addcmul(torch.zeros(input.size()).type_as(input), input, positive_mask)
-        self.save_for_backward(input, output)
+    def forward(self, input_img):
+        positive_mask = (input_img > 0).type_as(input_img)
+        output = torch.addcmul(torch.zeros(input_img.size()).type_as(input_img), input_img, positive_mask)
+        self.save_for_backward(input_img, output)
         return output
 
     @staticmethod
     def backward(self, grad_output):
-        input, output = self.saved_tensors
+        input_img, output = self.saved_tensors
         grad_input = None
 
-        positive_mask_1 = (input > 0).type_as(grad_output)
+        positive_mask_1 = (input_img > 0).type_as(grad_output)
         positive_mask_2 = (grad_output > 0).type_as(grad_output)
-        grad_input = torch.addcmul(torch.zeros(input.size()).type_as(input),
-                                   torch.addcmul(torch.zeros(input.size()).type_as(input), grad_output,
+        grad_input = torch.addcmul(torch.zeros(input_img.size()).type_as(input_img),
+                                   torch.addcmul(torch.zeros(input_img.size()).type_as(input_img), grad_output,
                                                  positive_mask_1), positive_mask_2)
 
         return grad_input
@@ -169,18 +169,18 @@ class GuidedBackpropReLUModel:
                 recursive_relu_apply(module)
                 if module.__class__.__name__ == 'ReLU':
                     module_top._modules[idx] = GuidedBackpropReLU.apply
-                
+
         # replace ReLU with GuidedBackpropReLU
         recursive_relu_apply(self.model)
 
-    def forward(self, input):
-        return self.model(input)
+    def forward(self, input_img):
+        return self.model(input_img)
 
-    def __call__(self, input, index=None):
+    def __call__(self, input_img, index=None):
         if self.cuda:
-            output = self.forward(input.cuda())
+            output = self.forward(input_img.cuda())
         else:
-            output = self.forward(input)
+            output = self.forward(input_img)
 
         if index == None:
             index = np.argmax(output.cpu().data.numpy())
@@ -197,7 +197,7 @@ class GuidedBackpropReLUModel:
         # self.model.classifier.zero_grad()
         one_hot.backward(retain_graph=True)
 
-        output = input.grad.cpu().data.numpy()
+        output = input_img.grad.cpu().data.numpy()
         output = output[0, :, :, :]
 
         return output
@@ -247,18 +247,18 @@ if __name__ == '__main__':
 
     img = cv2.imread(args.image_path, 1)
     img = np.float32(cv2.resize(img, (224, 224))) / 255
-    input = preprocess_image(img)
+    input_img = preprocess_image(img)
 
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested index.
     target_index = None
-    mask = grad_cam(input, target_index)
+    mask = grad_cam(input_img, target_index)
 
     show_cam_on_image(img, mask)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
     print(model._modules.items())
-    gb = gb_model(input, index=target_index)
+    gb = gb_model(input_img, index=target_index)
     gb = gb.transpose((1, 2, 0))
     cam_mask = cv2.merge([mask, mask, mask])
     cam_gb = deprocess_image(cam_mask*gb)
