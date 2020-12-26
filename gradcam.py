@@ -1,3 +1,4 @@
+import torch
 import argparse
 import cv2
 import numpy as np
@@ -77,8 +78,7 @@ def show_cam_on_image(img, mask):
     heatmap = np.float32(heatmap) / 255
     cam = heatmap + np.float32(img)
     cam = cam / np.max(cam)
-    cv2.imwrite("cam.jpg", np.uint8(255 * cam))
-
+    return np.uint8(255 * cam)
 
 class GradCam:
     def __init__(self, model, feature_module, target_layer_names, use_cuda):
@@ -94,22 +94,21 @@ class GradCam:
     def forward(self, input):
         return self.model(input)
 
-    def __call__(self, input, index=None):
+    def __call__(self, input, target_category=None):
         if self.cuda:
-            features, output = self.extractor(input.cuda())
-        else:
-            features, output = self.extractor(input)
+            input = input.cuda()
+        features, output = self.extractor(input)
 
-        if index == None:
-            index = np.argmax(output.cpu().data.numpy())
+        if target_category == None:
+            target_category = np.argmax(output.cpu().data.numpy())
 
         one_hot = np.zeros((1, output.size()[-1]), dtype=np.float32)
-        one_hot[0][index] = 1
+        one_hot[0][target_category] = 1
         one_hot = torch.from_numpy(one_hot).requires_grad_(True)
         if self.cuda:
-            one_hot = torch.sum(one_hot.cuda() * output)
-        else:
-            one_hot = torch.sum(one_hot * output)
+            one_hot = one_hot.cuda()
+        
+        one_hot = torch.sum(one_hot * output)
 
         self.feature_module.zero_grad()
         self.model.zero_grad()
@@ -134,7 +133,6 @@ class GradCam:
 
 
 class GuidedBackpropReLU(Function):
-
     @staticmethod
     def forward(self, input):
         positive_mask = (input > 0).type_as(input)
@@ -152,7 +150,6 @@ class GuidedBackpropReLU(Function):
         grad_input = torch.addcmul(torch.zeros(input.size()).type_as(input),
                                    torch.addcmul(torch.zeros(input.size()).type_as(input), grad_output,
                                                  positive_mask_1), positive_mask_2)
-
         return grad_input
 
 
@@ -176,32 +173,27 @@ class GuidedBackpropReLUModel:
     def forward(self, input):
         return self.model(input)
 
-    def __call__(self, input, index=None):
+    def __call__(self, input, target_category=None):
         if self.cuda:
-            output = self.forward(input.cuda())
-        else:
-            output = self.forward(input)
+            input = input.cuda()
+        output = self.forward(input)
 
-        if index == None:
-            index = np.argmax(output.cpu().data.numpy())
+        if target_category == None:
+            target_category = np.argmax(output.cpu().data.numpy())
 
         one_hot = np.zeros((1, output.size()[-1]), dtype=np.float32)
-        one_hot[0][index] = 1
+        one_hot[0][target_category] = 1
         one_hot = torch.from_numpy(one_hot).requires_grad_(True)
         if self.cuda:
-            one_hot = torch.sum(one_hot.cuda() * output)
-        else:
-            one_hot = torch.sum(one_hot * output)
+            one_hot = one_hot.cuda()
 
-        # self.model.features.zero_grad()
-        # self.model.classifier.zero_grad()
+        one_hot = torch.sum(one_hot * output)
         one_hot.backward(retain_graph=True)
 
         output = input.grad.cpu().data.numpy()
         output = output[0, :, :, :]
 
         return output
-
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -238,29 +230,27 @@ if __name__ == '__main__':
 
     args = get_args()
 
-    # Can work with any model, but it assumes that the model has a
-    # feature method, and a classifier method,
-    # as in the VGG models in torchvision.
     model = models.resnet50(pretrained=True)
     grad_cam = GradCam(model=model, feature_module=model.layer4, \
                        target_layer_names=["2"], use_cuda=args.use_cuda)
 
     img = cv2.imread(args.image_path, 1)
-    img = np.float32(cv2.resize(img, (224, 224))) / 255
+    img = np.float32(img) / 255
     input = preprocess_image(img)
 
     # If None, returns the map for the highest scoring category.
-    # Otherwise, targets the requested index.
-    target_index = None
-    mask = grad_cam(input, target_index)
+    # Otherwise, targets the requested category.
+    target_category = None
+    grayscale_cam = grad_cam(input, target_category)
 
-    show_cam_on_image(img, mask)
+    cam = show_cam_on_image(img, grayscale_cam)
+    cv2.imwrite("cam.jpg", cam)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
-    print(model._modules.items())
-    gb = gb_model(input, index=target_index)
+    gb = gb_model(input, target_category=target_category)
     gb = gb.transpose((1, 2, 0))
-    cam_mask = cv2.merge([mask, mask, mask])
+
+    cam_mask = cv2.merge([grayscale_cam, grayscale_cam, grayscale_cam])
     cam_gb = deprocess_image(cam_mask*gb)
     gb = deprocess_image(gb)
 
