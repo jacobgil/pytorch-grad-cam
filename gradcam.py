@@ -239,6 +239,7 @@ if __name__ == '__main__':
     target_category = None
     grayscale_cam = grad_cam(input_img, target_category)
 
+    grayscale_cam = cv2.resize(grayscale_cam, (img.shape[1], img.shape[0]))
     cam = show_cam_on_image(img, grayscale_cam)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
