@@ -17,14 +17,13 @@ My Keras implementation: https://github.com/jacobgil/keras-grad-cam
 
 ----------
 
-
-This uses Resnet50 from torchvision. It will be downloaded when used for the first time.
+This uses Resnet50, Vgg16, Vgg19 from torchvision. It will be downloaded when used for the first time.
 The code can be modified to work with any model.
 
 ----------
 
 
-Usage: `python gradcam.py --image-path <path_to_image>`
+Usage: `python gradcam.py --image-path <path_to_image> --model {resnet50, vgg16, vgg19}`
 
 To use with CUDA:
-`python gradcam.py --image-path <path_to_image> --use-cuda`
+`python gradcam.py --image-path <path_to_image> --model {resnet50, vgg16, vgg19} --use-cuda`

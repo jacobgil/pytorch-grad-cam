@@ -196,6 +196,8 @@ def get_args():
                         help='Use NVIDIA GPU acceleration')
     parser.add_argument('--image-path', type=str, default='./examples/both.png',
                         help='Input image path')
+    parser.add_argument('--model', type=str, default='resnet50', choices=['resnet50', 'vgg16', 'vgg19'],
+                        help='Model name')                        
     args = parser.parse_args()
     args.use_cuda = args.use_cuda and torch.cuda.is_available()
     if args.use_cuda:
@@ -224,9 +226,21 @@ if __name__ == '__main__':
 
     args = get_args()
 
-    model = models.resnet50(pretrained=True)
-    grad_cam = GradCam(model=model, feature_module=model.layer4, \
-                       target_layer_names=["2"], use_cuda=args.use_cuda)
+    if args.model == 'resnet50':
+        model = models.resnet50(pretrained=True)
+        feature_module = model.layer4
+        target_layer_names = ["2"]
+    elif args.model == 'vgg16':
+        model = models.vgg16(pretrained=True)
+        feature_module = model.features
+        target_layer_names = ["30"]
+    elif args.model == 'vgg19':
+        model = models.vgg19(pretrained=True)
+        feature_module = model.features
+        target_layer_names = ["36"]
+
+    grad_cam = GradCam(model=model, feature_module=feature_module, \
+                    target_layer_names=target_layer_names, use_cuda=args.use_cuda)
 
     img = cv2.imread(args.image_path, 1)
     img = np.float32(img) / 255
@@ -239,6 +253,7 @@ if __name__ == '__main__':
     target_category = None
     grayscale_cam = grad_cam(input_img, target_category)
 
+    grayscale_cam = cv2.resize(grayscale_cam, (img.shape[1], img.shape[0]))
     cam = show_cam_on_image(img, grayscale_cam)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
