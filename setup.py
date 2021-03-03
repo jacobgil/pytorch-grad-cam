@@ -4,10 +4,10 @@ with open('README.md', mode='r', encoding='utf-8') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='pytorch-grad-cam-jacobgil',
+    name='pytorch-grad-cam',
     version='1.0.0',
-    author='Jacob Gildenblat',
-    author_email='jacob.gildenblat@gmail.com',
+    author='Josep de Cid',
+    author_email='josep.de.cid@gmail.com',
     description='Grad-CAM visualization tool for PyTorch models.',
     long_description=long_description,
     long_description_content_type='text/markdown',
