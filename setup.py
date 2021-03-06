@@ -6,8 +6,8 @@ with open('README.md', mode='r', encoding='utf-8') as fh:
 setuptools.setup(
     name='pytorch-grad-cam',
     version='1.0.0',
-    author='Josep de Cid',
-    author_email='josep.de.cid@gmail.com',
+    author='Jacob Gildenblat',
+    author_email='jacob.gildenblat@gmail.com',
     description='Grad-CAM visualization tool for PyTorch models.',
     long_description=long_description,
     long_description_content_type='text/markdown',
