@@ -43,7 +43,7 @@ if __name__ == '__main__':
     img = np.float32(img) / 255
     # Opencv loads as BGR:
     img = img[:, :, ::-1]
-    input_img = preprocess_image(img)
+    input_img = preprocess_image(img, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
