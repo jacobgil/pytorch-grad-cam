@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from torchvision import models
 
-from pytorch_grad_cam.gradcam import GradCam, GuidedBackpropReLUModel
+from pytorch_grad_cam import GradCam, GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, deprocess_image, preprocess_image
 
 

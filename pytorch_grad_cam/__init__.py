@@ -1,1 +1,2 @@
-from pytorch_grad_cam.gradcam import GradCam, GuidedBackpropReLUModel
+from pytorch_grad_cam.gradcam import GradCam
+from pytorch_grad_cam.guided_backprop import GuidedBackpropReLUModel
