@@ -17,9 +17,9 @@ def get_args():
     args = parser.parse_args()
     args.use_cuda = args.use_cuda and torch.cuda.is_available()
     if args.use_cuda:
-        print("Using GPU for acceleration")
+        print('Using GPU for acceleration')
     else:
-        print("Using CPU for computation")
+        print('Using CPU for computation')
 
     return args
 
@@ -52,9 +52,9 @@ if __name__ == '__main__':
 
     args = get_args()
 
-    model = models.resnet50(pretrained=False)
+    model = models.resnet50(pretrained=True)
     grad_cam = GradCam(model=model, feature_module=model.layer4,
-                       target_layer_names=["2"], use_cuda=args.use_cuda)
+                       target_layer_names=['2'], use_cuda=args.use_cuda)
 
     img = cv2.imread(args.image_path, 1)
     img = np.float32(img) / 255
@@ -78,6 +78,6 @@ if __name__ == '__main__':
     cam_gb = deprocess_image(cam_mask * gb)
     gb = deprocess_image(gb)
 
-    cv2.imwrite("cam.jpg", cam)
+    cv2.imwrite('cam.jpg', cam)
     cv2.imwrite('gb.jpg', gb)
     cv2.imwrite('cam_gb.jpg', cam_gb)
