@@ -71,3 +71,15 @@ Usage: `python gradcam.py --image-path <path_to_image>`
 
 To use with CUDA:
 `python gradcam.py --image-path <path_to_image> --use-cuda`
+
+----------
+
+# References
+
+https://arxiv.org/abs/1610.02391
+`Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization
+Ramprasaath R. Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam, Devi Parikh, Dhruv Batra`
+
+https://arxiv.org/abs/1710.11063
+`Grad-CAM++: Improved Visual Explanations for Deep Convolutional Networks
+Aditya Chattopadhyay, Anirban Sarkar, Prantik Howlader, Vineeth N Balasubramanian`
