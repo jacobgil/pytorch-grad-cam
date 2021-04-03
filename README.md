@@ -45,7 +45,16 @@ cam = show_cam_on_image(rgb_img, grayscale_cam)
 
 ----------
 
-# Using GradCAM++ or Score-CAM:
+# Running the example script:
+
+Usage: `python gradcam.py --image-path <path_to_image> --method <method>`
+
+To use with CUDA:
+`python gradcam.py --image-path <path_to_image> --use-cuda`
+
+----------
+
+# Using GradCAM++ or Score-CAM instead of GradCAM:
 
 You can choose between:
 - `method='gradcam'`
@@ -61,15 +70,6 @@ most networks except VGG where the advantage is larger.
 | VGG16    | ![](examples/dogs.png) | ![](examples/dogs_gradcam_vgg16.jpg)     |  ![](examples/dogs_gradcam++_vgg16.jpg)   |![](examples/dogs_scorecam_vgg16.jpg)   |
 | Resnet50 | ![](examples/dogs.png) | ![](examples/dogs_gradcam_resnet50.jpg)  |  ![](examples/dogs_gradcam++_resnet50.jpg)|  ![](examples/dogs_scorecam_resnet50.jpg)   |
 
-
-----------
-
-# Running the example script:
-
-Usage: `python gradcam.py --image-path <path_to_image> --method <method>`
-
-To use with CUDA:
-`python gradcam.py --image-path <path_to_image> --use-cuda`
 
 ----------
 
