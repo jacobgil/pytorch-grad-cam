@@ -1,0 +1,48 @@
+Metadata-Version: 2.1
+Name: pytorch-grad-cam
+Version: 1.0.0
+Summary: Grad-CAM visualization tool for PyTorch models.
+Home-page: https://github.com/jacobgil/pytorch-grad-cam
+Author: Jacob Gildenblat
+Author-email: jacob.gildenblat@gmail.com
+License: UNKNOWN
+Project-URL: Bug Tracker, https://github.com/jacobgil/pytorch-grad-cam/issues
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
+## Grad-CAM implementation in Pytorch ##
+
+### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
+![Dog](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true) ![Cat](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true)
+
+### Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class:
+![Combined](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cam_gb_dog.jpg?raw=true)
+
+Gradient class activation maps are a visualization technique for deep learning networks.
+
+See the paper: https://arxiv.org/pdf/1610.02391v1.pdf
+
+The paper authors' torch implementation: https://github.com/ramprs/grad-cam
+
+My Keras implementation: https://github.com/jacobgil/keras-grad-cam
+
+
+----------
+
+
+This uses Resnet50 from torchvision. It will be downloaded when used for the first time.
+The code can be modified to work with any model.
+
+----------
+
+
+Usage: `python gradcam.py --image-path <path_to_image>`
+
+To use with CUDA:
+`python gradcam.py --image-path <path_to_image> --use-cuda`
+
+
