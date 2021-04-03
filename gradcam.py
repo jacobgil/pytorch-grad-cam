@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from torchvision import models
 
-from pytorch_grad_cam import GradCam, GuidedBackpropReLUModel
+from pytorch_grad_cam import CAM, GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
                                          deprocess_image, \
                                          preprocess_image
@@ -15,6 +15,9 @@ def get_args():
                         help='Use NVIDIA GPU acceleration')
     parser.add_argument('--image-path', type=str, default='./examples/both.png',
                         help='Input image path')
+    parser.add_argument('--method', type=str, default='scorecam',
+                        help='Can be gradcam/gradcam++/scorecam')
+
     args = parser.parse_args()
     args.use_cuda = args.use_cuda and torch.cuda.is_available()
     if args.use_cuda:
@@ -43,12 +46,10 @@ if __name__ == '__main__':
     # mnasnet1_0: model.layers[-1]
     # You can print the model to help chose the layer
     target_layer = model.layer4[-1]
-    
 
-    grad_cam = GradCam(model=model, 
-                       target_layer=target_layer,
-                       use_cuda=args.use_cuda,
-                       plusplus=False)
+    cam = CAM(model=model, 
+              target_layer=target_layer,
+              use_cuda=args.use_cuda)
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = np.float32(rgb_img) / 255
@@ -58,9 +59,11 @@ if __name__ == '__main__':
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
     target_category = None
-    grayscale_cam = grad_cam(input_tensor=input_tensor, 
-                             target_category=target_category)
-    cam = show_cam_on_image(rgb_img, grayscale_cam)
+    grayscale_cam = cam(input_tensor=input_tensor, 
+                        method=args.method,
+                        target_category=target_category)
+
+    cam_image = show_cam_on_image(rgb_img, grayscale_cam)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
     gb = gb_model(input_tensor, target_category=target_category)
@@ -69,6 +72,6 @@ if __name__ == '__main__':
     cam_gb = deprocess_image(cam_mask * gb)
     gb = deprocess_image(gb)
 
-    cv2.imwrite('cam.jpg', cam)
-    cv2.imwrite('gb.jpg', gb)
-    cv2.imwrite('cam_gb.jpg', cam_gb)
+    cv2.imwrite(f'{args.method}_cam.jpg', cam_image)
+    cv2.imwrite(f'{args.method}_gb.jpg', gb)
+    cv2.imwrite(f'{args.method}_cam_gb.jpg', cam_gb)
