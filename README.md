@@ -59,7 +59,7 @@ To use with CUDA:
 You can choose between:
 - `method='gradcam'`
 - `method='gradcam++'`
-- `method='scorecam`
+- `method='scorecam'`
 
 
 It seems that GradCAM++ is almost the same as GradCAM, in
