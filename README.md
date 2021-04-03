@@ -49,7 +49,7 @@ cam = show_cam_on_image(rgb_img, grayscale_cam)
 
 You can choose between:
 - `method='gradcam'`
-- `method='gradcam++`
+- `method='gradcam++'`
 - `method='scorecam`
 
 
