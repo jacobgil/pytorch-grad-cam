@@ -55,9 +55,9 @@ To use GradCAM++, pass
 It seems that it's almost the same as GradCAM, in
 most networks except VGG where the advantage is larger.
 
-Network | Image | GradCAM  |  GradCAM++ |
-VGG16 | ![](examples/dogs.png) | ![](examples/dogs_gradcam_vgg16.png)  |  ![](examples/dogs_gradcam++_vgg16.png)|
-Resnet50 | ![](examples/dogs.png) | ![](examples/dogs_gradcam_resnet50.png)  |  ![](examples/dogs_gradcam++_resnet50.png)|
+| Network | Image | GradCAM  |  GradCAM++ |
+| VGG16 | ![](examples/dogs.png) | ![](examples/dogs_gradcam_vgg16.png)  |  ![](examples/dogs_gradcam++_vgg16.png)|
+| Resnet50 | ![](examples/dogs.png) | ![](examples/dogs_gradcam_resnet50.png)  |  ![](examples/dogs_gradcam++_resnet50.png)|
 
 
 ----------
