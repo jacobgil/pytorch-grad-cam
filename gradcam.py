@@ -15,7 +15,7 @@ def get_args():
                         help='Use NVIDIA GPU acceleration')
     parser.add_argument('--image-path', type=str, default='./examples/both.png',
                         help='Input image path')
-    parser.add_argument('--method', type=str, default='scorecam',
+    parser.add_argument('--method', type=str, default='gradcam',
                         help='Can be gradcam/gradcam++/scorecam')
 
     args = parser.parse_args()
