@@ -37,7 +37,7 @@ from torchvision.models import resnet50
 model = resnet50(pretrained=True)
 target_layer = model.layer4[-1]
 method = "gradcam" # Can be gradcam/gradcam++/scorecam
-input_tensor = # Create an input tensor image for you model..
+input_tensor = # Create an input tensor image for your model..
 cam = CAM(model=model,  target_layer=target_layer, use_cuda=args.use_cuda)
 grayscale_cam = cam(input_tensor=input_tensor, target_category=1, method=method)
 cam = show_cam_on_image(rgb_img, grayscale_cam)
