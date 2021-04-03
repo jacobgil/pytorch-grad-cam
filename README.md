@@ -21,7 +21,7 @@ Tested with most of the torchvision models.
 You need to choose the target layer to compute CAM for.
 Some common choices can be:
 - Resnet18 and 50: model.layer4[-1]
-- densenet161: model.features[-1]
+- VGG and densenet161: model.features[-1]
 - mnasnet1_0: model.layers[-1]
 
 ----------
