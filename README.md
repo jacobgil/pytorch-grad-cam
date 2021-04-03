@@ -51,7 +51,7 @@ cam = show_cam_on_image(rgb_img, grayscale_cam)
 # Using GradCAM++
 
 To use GradCAM++, pass 
-`plusplus=False` to GradCam.
+`plusplus=True` to GradCam.
 
 
 It seems that it's almost the same as GradCAM, in
