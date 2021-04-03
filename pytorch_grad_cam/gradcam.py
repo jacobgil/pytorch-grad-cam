@@ -4,10 +4,11 @@ import torch
 from pytorch_grad_cam.activations_and_gradients import ActivationsAndGradients
 
 class GradCam:
-    def __init__(self, model, target_layer, use_cuda):
+    def __init__(self, model, target_layer, plusplus=False, use_cuda=False):
         self.model = model
         self.model.eval()
         self.cuda = use_cuda
+        self.plusplus = plusplus
         if self.cuda:
             self.model = model.cuda()
 
@@ -37,15 +38,31 @@ class GradCam:
 
         activations = self.activations_and_grads.activations[-1].cpu().data.numpy()[0, :]
         grads = self.activations_and_grads.gradients[-1].cpu().data.numpy()[0, :]
-
-        weights = np.mean(grads, axis=(1, 2))
         cam = np.zeros(activations.shape[1:], dtype=np.float32)
+
+        if self.plusplus:
+            grads_power_2 = grads**2
+            grads_power_3 = grads_power_2*grads
+            # Equation 19 in https://arxiv.org/abs/1710.11063
+            sum_activations = np.sum(activations, axis=(1, 2))
+            eps = 0.00000001
+            aij = grads_power_2 / (2*grads_power_2 + sum_activations[:, None, None]*grads_power_3 + eps)
+
+            # Now bring back the ReLU from eq.7 in the paper,
+            # And zero out aijs where the activations are 0
+            aij = np.where(grads != 0, aij, 0)
+
+            weights = np.maximum(grads, 0)*aij
+            weights = np.sum(weights, axis=(1, 2))
+        else:
+            # Regular grad cam
+            weights = np.mean(grads, axis=(1, 2))
 
         for i, w in enumerate(weights):
             cam += w * activations[i, :, :]
 
         cam = np.maximum(cam, 0)
-        cam = cv2.resize(cam, input_tensor.shape[2:])
+        cam = cv2.resize(cam, input_tensor.shape[2:][::-1])
         cam = cam - np.min(cam)
         cam = cam / np.max(cam)
         return cam

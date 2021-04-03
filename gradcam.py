@@ -39,7 +39,7 @@ if __name__ == '__main__':
     # Usually this will be the last convolutional layer in the model.
     # Some common choices can be:
     # Resnet18 and 50: model.layer4[-1]
-    # densenet161: model.features[-1]
+    # VGG, densenet161: model.features[-1]
     # mnasnet1_0: model.layers[-1]
     # You can print the model to help chose the layer
     target_layer = model.layer4[-1]
@@ -47,7 +47,8 @@ if __name__ == '__main__':
 
     grad_cam = GradCam(model=model, 
                        target_layer=target_layer,
-                       use_cuda=args.use_cuda)
+                       use_cuda=args.use_cuda,
+                       plusplus=False)
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = np.float32(rgb_img) / 255
