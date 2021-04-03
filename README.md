@@ -52,6 +52,8 @@ cam = show_cam_on_image(rgb_img, grayscale_cam)
 
 To use GradCAM++, pass 
 `plusplus=False` to GradCam.
+
+
 It seems that it's almost the same as GradCAM, in
 most networks except VGG where the advantage is larger.
 
