@@ -1,4 +1,4 @@
-## Grad-CAM, Grad-CAM++ and ScoreCAM implementation in Pytorch ##
+## Grad-CAM, Grad-CAM++ and Score-CAM implementation in Pytorch ##
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
 ![Dog](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true) ![Cat](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true)
