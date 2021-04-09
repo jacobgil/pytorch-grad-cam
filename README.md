@@ -26,14 +26,15 @@ Some common choices can be:
 
 ----------
 
-# Using from code
+# Using from code as a library
 
-`pip install pytorch-grad-cam`
+`pip install grad-cam`
 
 ```python
 from pytorch_grad_cam import CAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
+
 model = resnet50(pretrained=True)
 target_layer = model.layer4[-1]
 
@@ -47,6 +48,12 @@ method = "gradcam" # Can be gradcam/gradcam++/scorecam
 image = # Load a numpy/PIL image
 cam = CAM(model=model, transform=normalize_transform, target_layer=target_layer, use_cuda=args.use_cuda)
 grayscale_cam = cam(image=image, target_category=1, method=method)
+method = 'gradcam' # Can be gradcam/gradcam++/scorecam
+
+input_tensor = # Create an input tensor image for your model..
+
+cam = CAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
+grayscale_cam = cam(input_tensor=input_tensor, target_category=1, method=method)
 visualization = show_cam_on_image(rgb_img, grayscale_cam)
 ```
 

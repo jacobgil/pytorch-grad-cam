@@ -4,7 +4,7 @@ with open('README.md', mode='r', encoding='utf-8') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='pytorch-grad-cam',
+    name='grad-cam',
     version='1.0.0',
     author='Jacob Gildenblat',
     author_email='jacob.gildenblat@gmail.com',
