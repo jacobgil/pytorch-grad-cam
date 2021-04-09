@@ -6,8 +6,10 @@ from torchvision import models
 
 from pytorch_grad_cam import CAM, GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
-                                         deprocess_image, \
-                                         preprocess_image
+                                         deprocess_image
+
+import torchvision.transforms
+
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -47,25 +49,33 @@ if __name__ == '__main__':
     # You can print the model to help chose the layer
     target_layer = model.layer4[-1]
 
-    cam = CAM(model=model, 
+    # Standard imagenet transform, replace with anything else.
+    # If you don't want any normalization, just use torchvision.transforms.ToTensor().
+    normalize_transform = torchvision.transforms.Compose([
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                         std=[0.229, 0.224, 0.225])])
+
+    cam = CAM(model=model,
+              transform=normalize_transform,
               target_layer=target_layer,
               use_cuda=args.use_cuda)
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = np.float32(rgb_img) / 255
-    input_tensor = preprocess_image(rgb_img, mean=[0.485, 0.456, 0.406], 
-                                             std=[0.229, 0.224, 0.225])
 
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
     target_category = None
-    grayscale_cam = cam(input_tensor=input_tensor, 
+
+    grayscale_cam = cam(image=rgb_img,
                         method=args.method,
                         target_category=target_category)
 
     cam_image = show_cam_on_image(rgb_img, grayscale_cam)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
+    input_tensor = normalize_transform(rgb_img).unsqueeze(0)
     gb = gb_model(input_tensor, target_category=target_category)
 
     cam_mask = cv2.merge([grayscale_cam, grayscale_cam, grayscale_cam])

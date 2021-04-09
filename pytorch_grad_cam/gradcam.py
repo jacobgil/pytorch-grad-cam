@@ -4,8 +4,14 @@ import torch
 from pytorch_grad_cam.activations_and_gradients import ActivationsAndGradients
 
 class CAM:
-    def __init__(self, model, target_layer, use_cuda=False):
+    def __init__(self, 
+                 model, 
+                 transform,
+                 target_layer,
+                 use_cuda=False):
+
         self.model = model.eval()
+        self.transform = transform
         self.cuda = use_cuda
         if self.cuda:
             self.model = model.cuda()
@@ -31,13 +37,13 @@ class CAM:
         weights = np.sum(weights, axis=(1, 2))
         return weights
 
-    def scorecam(self, 
-                 input_tensor, 
-                 activations, 
+    def scorecam(self,
+                 image,
+                 activations,
                  target_category,
                  original_score):
         with torch.no_grad():
-            upsample = torch.nn.UpsamplingBilinear2d(size=input_tensor.shape[2 : ])
+            upsample = torch.nn.UpsamplingBilinear2d(size=image.shape[0 : 2])
             activation_tensor = torch.from_numpy(activations).unsqueeze(0)
             if self.cuda:
                 activation_tensor = activation_tensor.cuda()
@@ -50,6 +56,10 @@ class CAM:
             maxs, mins = maxs[:, None, None], mins[:, None, None]
             upsampled = (upsampled - mins) / (maxs - mins)
 
+            input_tensor = self.transform(image).unsqueeze(0)
+            if self.cuda:
+                input_tensor = input_tensor.cuda()
+
             input_tensors = input_tensor*upsampled[:, None, :, :]
             batch_size = 16
             scores = []
@@ -61,9 +71,13 @@ class CAM:
             weights = torch.nn.Softmax(dim=-1)(scores - original_score).numpy()
             return weights
 
-    def __call__(self, input_tensor, method="gradcam", target_category=None):
+    def __call__(self, image, method="gradcam", target_category=None):
+        input_tensor = self.transform(image)
+
         if self.cuda:
             input_tensor = input_tensor.cuda()
+
+        input_tensor = input_tensor.unsqueeze(0)
 
         output = self.activations_and_grads(input_tensor)
 
@@ -90,8 +104,8 @@ class CAM:
             weights = np.mean(grads, axis=(1, 2))
         elif method == "scorecam":
             original_score = original_score=output[0, target_category].cpu()
-            weights = self.scorecam(input_tensor, 
-                                    activations, 
+            weights = self.scorecam(image,
+                                    activations,
                                     target_category,
                                     original_score=original_score)
         else:

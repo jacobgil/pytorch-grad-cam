@@ -36,10 +36,17 @@ from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
 model = resnet50(pretrained=True)
 target_layer = model.layer4[-1]
+
+normalize_transform = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])])
+
+
 method = "gradcam" # Can be gradcam/gradcam++/scorecam
-input_tensor = # Create an input tensor image for your model..
-cam = CAM(model=model,  target_layer=target_layer, use_cuda=args.use_cuda)
-grayscale_cam = cam(input_tensor=input_tensor, target_category=1, method=method)
+image = # Load a numpy/PIL image
+cam = CAM(model=model, transform=normalize_transform, target_layer=target_layer, use_cuda=args.use_cuda)
+grayscale_cam = cam(image=image, target_category=1, method=method)
 visualization = show_cam_on_image(rgb_img, grayscale_cam)
 ```
 
