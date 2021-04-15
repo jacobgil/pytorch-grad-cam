@@ -11,15 +11,6 @@
 ### Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class:
 ![Combined](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cam_gb_dog.jpg?raw=true)
 
-Gradient class activation maps are a visualization technique for deep learning networks.
-
-See the paper: https://arxiv.org/pdf/1610.02391v1.pdf
-
-The paper authors' torch implementation: https://github.com/ramprs/grad-cam
-
-My Keras implementation: https://github.com/jacobgil/keras-grad-cam
-
-
 ----------
 
 Tested with most of the torchvision models.
@@ -36,7 +27,7 @@ Some common choices can be:
 `pip install grad-cam`
 
 ```python
-from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus
+from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
 
@@ -44,7 +35,7 @@ model = resnet50(pretrained=True)
 target_layer = model.layer4[-1]
 input_tensor = # Create an input tensor image for your model..
 
-#Can be GradCAM, ScoreCAM, GradCAMPlusPlus
+#Can be GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM
 cam = GradCAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
 grayscale_cam = cam(input_tensor=input_tensor, target_category=1)
 visualization = show_cam_on_image(rgb_img, grayscale_cam)
