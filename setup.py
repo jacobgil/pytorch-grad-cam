@@ -5,10 +5,10 @@ with open('README.md', mode='r', encoding='utf-8') as fh:
 
 setuptools.setup(
     name='grad-cam',
-    version='1.0.0',
+    version='1.1.0',
     author='Jacob Gildenblat',
     author_email='jacob.gildenblat@gmail.com',
-    description='Grad-CAM visualization tool for PyTorch models.',
+    description='Many Class Activation Map methods implemented in Pytorch. Including Grad-CAM, Grad-CAM++, Score-CAM, Ablation-CAM and XGrad-CAM',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/jacobgil/pytorch-grad-cam',
