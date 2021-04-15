@@ -4,7 +4,8 @@ import numpy as np
 import torch
 from torchvision import models
 
-from pytorch_grad_cam import CAM, GuidedBackpropReLUModel
+from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus
+from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
                                          deprocess_image, \
                                          preprocess_image
@@ -47,9 +48,17 @@ if __name__ == '__main__':
     # You can print the model to help chose the layer
     target_layer = model.layer4[-1]
 
-    cam = CAM(model=model, 
-              target_layer=target_layer,
-              use_cuda=args.use_cuda)
+    methods = \
+        {"gradcam": GradCAM, 
+         "scorecam": ScoreCAM, 
+         "gradcam++": GradCAMPlusPlus}
+
+    if args.method not in methods:
+        raise Exception(f"Method {args.method} not implemented")
+
+    cam = methods[args.method](model=model, 
+                               target_layer=target_layer,
+                               use_cuda=args.use_cuda)
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = np.float32(rgb_img) / 255
@@ -59,8 +68,7 @@ if __name__ == '__main__':
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
     target_category = None
-    grayscale_cam = cam(input_tensor=input_tensor, 
-                        method=args.method,
+    grayscale_cam = cam(input_tensor=input_tensor,
                         target_category=target_category)
 
     cam_image = show_cam_on_image(rgb_img, grayscale_cam)

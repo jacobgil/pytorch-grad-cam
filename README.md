@@ -31,18 +31,17 @@ Some common choices can be:
 `pip install grad-cam`
 
 ```python
-from pytorch_grad_cam import CAM
+from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
 
 model = resnet50(pretrained=True)
 target_layer = model.layer4[-1]
-method = 'gradcam' # Can be gradcam/gradcam++/scorecam
-
 input_tensor = # Create an input tensor image for your model..
 
-cam = CAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
-grayscale_cam = cam(input_tensor=input_tensor, target_category=1, method=method)
+#Can be GradCAM, ScoreCAM, GradCAMPlusPlus
+cam = GradCAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
+grayscale_cam = cam(input_tensor=input_tensor, target_category=1)
 visualization = show_cam_on_image(rgb_img, grayscale_cam)
 ```
 
@@ -50,20 +49,17 @@ visualization = show_cam_on_image(rgb_img, grayscale_cam)
 
 # Running the example script:
 
-Usage: `python gradcam.py --image-path <path_to_image> --method <method>`
+Usage: `python cam.py --image-path <path_to_image> --method <method>`
 
 To use with CUDA:
-`python gradcam.py --image-path <path_to_image> --use-cuda`
+`python cam.py --image-path <path_to_image> --use-cuda`
 
 ----------
 
-# Using GradCAM++ or Score-CAM instead of GradCAM:
-
 You can choose between:
-- `method='gradcam'`
-- `method='gradcam++'`
-- `method='scorecam'`
-
+- `GradCAM`
+- `ScoreCAM`
+- `GradCAMPlusPlus`
 
 It seems that GradCAM++ is almost the same as GradCAM, in
 most networks except VGG where the advantage is larger.
