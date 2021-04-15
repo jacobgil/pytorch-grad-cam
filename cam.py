@@ -42,6 +42,16 @@ if __name__ == '__main__':
     """
 
     args = get_args()
+    methods = \
+        {"gradcam": GradCAM, 
+         "scorecam": ScoreCAM, 
+         "gradcam++": GradCAMPlusPlus,
+         "ablationcam": AblationCAM,
+         "xgradcam": XGradCAM}
+
+    if args.method not in list(methods.keys()):
+        raise Exception(f"method should be one of {list(methods.keys())}")
+
     model = models.resnet50(pretrained=True)
 
     # Choose the target layer you want to compute the visualization for.
@@ -53,12 +63,6 @@ if __name__ == '__main__':
     # You can print the model to help chose the layer
     target_layer = model.layer4[-1]
 
-    methods = \
-        {"gradcam": GradCAM, 
-         "scorecam": ScoreCAM, 
-         "gradcam++": GradCAMPlusPlus,
-         "ablationcam": AblationCAM,
-         "xgradcam": XGradCAM}
 
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
