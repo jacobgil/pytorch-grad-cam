@@ -1,4 +1,9 @@
-## Grad-CAM, Grad-CAM++ and Score-CAM implementation in Pytorch ##
+## Many Class Activation Map methods implemented in Pytorch! ##
+- GradCAM
+- GradCAM++
+- ScoreCAM
+- XGradCAM
+- AblationCAM (with a fast batched implementation)
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
 ![Dog](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true) ![Cat](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true)
@@ -60,6 +65,14 @@ You can choose between:
 - `GradCAM`
 - `ScoreCAM`
 - `GradCAMPlusPlus`
+- `AblationCAM`
+- `XGradCAM`
+
+Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
+and have a batched implementation.
+
+You can control the batch size with
+`cam.batch_size = `
 
 It seems that GradCAM++ is almost the same as GradCAM, in
 most networks except VGG where the advantage is larger.
@@ -85,3 +98,11 @@ Aditya Chattopadhyay, Anirban Sarkar, Prantik Howlader, Vineeth N Balasubramania
 https://arxiv.org/abs/1910.01279
 `Score-CAM: Score-Weighted Visual Explanations for Convolutional Neural Networks
 Haofan Wang, Zifan Wang, Mengnan Du, Fan Yang, Zijian Zhang, Sirui Ding, Piotr Mardziel, Xia Hu`
+
+https://ieeexplore.ieee.org/abstract/document/9093360/
+`Saurabh Desai and Harish G Ramaswamy. Ablation-cam: Visual explanations for deep
+convolutional network via gradient-free localization. In WACV, pages 972–980, 2020`
+
+https://arxiv.org/abs/2008.02312
+`Axiom-based Grad-CAM: Towards Accurate Visualization and Explanation of CNNs
+Ruigang Fu, Qingyong Hu, Xiaohu Dong, Yulan Guo, Yinghui Gao, Biao Li`

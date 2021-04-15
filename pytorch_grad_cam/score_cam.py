@@ -25,10 +25,15 @@ class ScoreCAM(BaseCAM):
             upsampled = (upsampled - mins) / (maxs - mins)
 
             input_tensors = input_tensor*upsampled[:, None, :, :]
-            batch_size = 16
+
+            if hasattr(self, "batch_size"):
+                BATCH_SIZE = self.batch_size
+            else: 
+                BATCH_SIZE = 16
+
             scores = []
-            for i in range(0, input_tensors.size(0), batch_size):
-                batch = input_tensors[i : i + batch_size, :]
+            for i in range(0, input_tensors.size(0), BATCH_SIZE):
+                batch = input_tensors[i : i + BATCH_SIZE, :]
                 outputs = self.model(batch).cpu().numpy()[:, target_category]
                 scores.append(outputs)
             scores = torch.from_numpy(np.concatenate(scores))

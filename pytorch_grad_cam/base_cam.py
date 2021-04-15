@@ -6,6 +6,7 @@ from pytorch_grad_cam.activations_and_gradients import ActivationsAndGradients
 class BaseCAM:
     def __init__(self, model, target_layer, use_cuda=False):
         self.model = model.eval()
+        self.target_layer = target_layer
         self.cuda = use_cuda
         if self.cuda:
             self.model = model.cuda()
@@ -15,9 +16,11 @@ class BaseCAM:
     def forward(self, input_img):
         return self.model(input_img)
 
-    def get_cam_weights(self, input_tensor, 
-                              target_category, 
-                              activations, grads):
+    def get_cam_weights(self,
+                        input_tensor,
+                        target_category,
+                        activations,
+                        grads):
         raise Exception("Not Implemented")
 
     def get_loss(self, output, target_category):

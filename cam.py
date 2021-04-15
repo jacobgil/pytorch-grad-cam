@@ -4,7 +4,12 @@ import numpy as np
 import torch
 from torchvision import models
 
-from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus
+from pytorch_grad_cam import GradCAM, \
+                             ScoreCAM, \
+                             GradCAMPlusPlus, \
+                             AblationCAM, \
+                             XGradCAM
+
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
                                          deprocess_image, \
@@ -17,7 +22,7 @@ def get_args():
     parser.add_argument('--image-path', type=str, default='./examples/both.png',
                         help='Input image path')
     parser.add_argument('--method', type=str, default='gradcam',
-                        help='Can be gradcam/gradcam++/scorecam')
+                        help='Can be gradcam/gradcam++/scorecam/xgradcam/ablationcam')
 
     args = parser.parse_args()
     args.use_cuda = args.use_cuda and torch.cuda.is_available()
@@ -51,7 +56,9 @@ if __name__ == '__main__':
     methods = \
         {"gradcam": GradCAM, 
          "scorecam": ScoreCAM, 
-         "gradcam++": GradCAMPlusPlus}
+         "gradcam++": GradCAMPlusPlus,
+         "ablationcam": AblationCAM,
+         "xgradcam": XGradCAM}
 
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
@@ -68,6 +75,11 @@ if __name__ == '__main__':
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
     target_category = None
+
+    # AblationCAM and ScoreCAM have batched implementations.
+    # You can override the internal batch size for faster computation.
+    cam.batch_size = 32
+
     grayscale_cam = cam(input_tensor=input_tensor,
                         target_category=target_category)
 
