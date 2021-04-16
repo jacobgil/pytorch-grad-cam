@@ -15,7 +15,7 @@ class ActivationsAndGradients:
 
     def save_gradient(self, module, grad_input, grad_output):
         # Gradients are computed in reverse order
-        self.gradients = [grad_input[0]] + self.gradients
+        self.gradients = [grad_output[0]] + self.gradients
 
     def __call__(self, x):
         self.gradients = []
