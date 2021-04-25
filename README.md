@@ -8,7 +8,8 @@ Tested on Common CNN Networks and Vision Transformers!
 | GradCAM  | Weight the 2D activations by the average gradient
 | GradCAM++  | Like GradCAM but uses second order gradients
 | XGradCAM  | Like GradCAM but scale the gradients by the normalized activations
-| AblationCAM  | Zero out activations and measure how the output drops
+| AblationCAM  | Zero out activations and measure how the output drops.
+*Includes a fast batched implementation*
 | ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops
 
 
@@ -36,14 +37,11 @@ Tested on Common CNN Networks and Vision Transformers!
 
 Tested with most of the torchvision models.
 You need to choose the target layer to compute CAM for.
-Some common choices can be:
+Some common choices are:
 - Resnet18 and 50: model.layer4[-1]
 - VGG and densenet161: model.features[-1]
 - mnasnet1_0: model.layers[-1]
-
-For ViT this can be:
-
-- model.blocks[-1].norm1
+- ViT: model.blocks[-1].norm1
 
 ----------
 
@@ -105,7 +103,7 @@ For Vision Transformers, XGradCAM and GradCAM++ seems to have very noisy outputs
 
 # How does it work with Vision Transformers
 
-* See vit_example.py *
+*See vit_example.py*
 
 In ViT the output of the layers are typically BATCH x 197 x 192.
 In the dimension with 197, the first element represents the class token, and the rest represent the 14x14 patches in the image.
@@ -118,9 +116,7 @@ This can also be a starting point for other architectures that will come in the 
 
 ```python
 
-GradCAM(model=model,
-		target_layer=target_layer,
-		reshape_transform=reshape_transform)
+GradCAM(model=model, target_layer=target_layer, reshape_transform=reshape_transform)
 
 def reshape_transform(tensor, height=14, width=14):
     result = tensor[:, 1 :  , :].reshape(tensor.size(0),
@@ -132,11 +128,11 @@ def reshape_transform(tensor, height=14, width=14):
     return result
 ```
 
-But which target_layer should we chose?
+### Which target_layer should we chose for Vision Transformers?
 
 Since the final classification is done on the class token computed in the last attention block,
 the output will not be affected by the 14x14 channels in the last layer.
-The gradient of the output vs respect to them, will be 0!
+The gradient of the output with respect to them, will be 0!
 
 We should chose any layer before the final attention block, for example:
 ```python
