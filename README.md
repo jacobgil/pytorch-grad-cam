@@ -8,7 +8,7 @@ Tested on Common CNN Networks and Vision Transformers!
 | GradCAM  | Weight the 2D activations by the average gradient |
 | GradCAM++  | Like GradCAM but uses second order gradients |
 | XGradCAM  | Like GradCAM but scale the gradients by the normalized activations |
-| AblationCAM  | Zero out activations and measure how the output drops. * Includes a fast batched implementation * |
+| AblationCAM  | Zero out activations and measure how the output drops (this repository includes a fast batched implementation) |
 | ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops |
 
 
