@@ -136,6 +136,18 @@ target_layer = model.blocks[-1].norm1
 
 ----------
 
+Citation
+If this helped your research, please cite. Here is an example BibTeX entry:
+
+@misc{jacobgil-pytorchcam,
+  title={pytorch-cam},
+  author={Jacob Gildenblat and contributors},
+  year={2021},
+  publisher={GitHub},
+  howpublished={\url{https://github.com/jacobgil/pytorch-grad-cam}},
+}
+
+----------
 
 # References
 
