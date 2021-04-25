@@ -5,12 +5,11 @@ Tested on Common CNN Networks and Vision Transformers!
 
 | Method   | What it does |
 |----------|--------------|
-| GradCAM  | Weight the 2D activations by the average gradient
-| GradCAM++  | Like GradCAM but uses second order gradients
-| XGradCAM  | Like GradCAM but scale the gradients by the normalized activations
-| AblationCAM  | Zero out activations and measure how the output drops.
-*Includes a fast batched implementation*
-| ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops
+| GradCAM  | Weight the 2D activations by the average gradient |
+| GradCAM++  | Like GradCAM but uses second order gradients |
+| XGradCAM  | Like GradCAM but scale the gradients by the normalized activations |
+| AblationCAM  | Zero out activations and measure how the output drops. * Includes a fast batched implementation * |
+| ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops |
 
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
@@ -19,7 +18,7 @@ Tested on Common CNN Networks and Vision Transformers!
 ### Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class:
 ![Combined](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cam_gb_dog.jpg?raw=true)
 
-### More Examples
+# More Visual Examples
 
 #### Resnet50:
 | Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
@@ -34,8 +33,7 @@ Tested on Common CNN Networks and Vision Transformers!
 | Cat    | ![](examples/dog_cat.jfif) | ![](examples/vit_cat_gradcam_cam.jpg)     |  ![](examples/vit_cat_ablationcam_cam.jpg)   |![](examples/vit_cat_scorecam_cam.jpg)   |
 
 ----------
-
-Tested with most of the torchvision models.
+# Chosing the Target Layer
 You need to choose the target layer to compute CAM for.
 Some common choices are:
 - Resnet18 and 50: model.layer4[-1]
@@ -76,11 +74,8 @@ To use with CUDA:
 ----------
 
 You can choose between:
-- `GradCAM`
-- `ScoreCAM`
-- `GradCAMPlusPlus`
-- `AblationCAM`
-- `XGradCAM`
+
+`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM` and `XGradCAM`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
