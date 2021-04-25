@@ -4,14 +4,19 @@ import torch
 from pytorch_grad_cam.activations_and_gradients import ActivationsAndGradients
 
 class BaseCAM:
-    def __init__(self, model, target_layer, use_cuda=False):
+    def __init__(self, 
+                 model, 
+                 target_layer,
+                 use_cuda=False,
+                 reshape_transform=None):
         self.model = model.eval()
         self.target_layer = target_layer
         self.cuda = use_cuda
         if self.cuda:
             self.model = model.cuda()
-
-        self.activations_and_grads = ActivationsAndGradients(self.model, target_layer)
+        self.reshape_transform = reshape_transform
+        self.activations_and_grads = ActivationsAndGradients(self.model, 
+            target_layer, reshape_transform)
 
     def forward(self, input_img):
         return self.model(input_img)

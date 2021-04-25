@@ -4,20 +4,28 @@ import torch
 from pytorch_grad_cam.base_cam import BaseCAM
 
 class AblationLayer(torch.nn.Module):
-    def __init__(self, layer, indices):
+    def __init__(self, layer, reshape_transform, indices):
         super(AblationLayer, self).__init__()
 
+        self.layer = layer
+        self.reshape_transform = reshape_transform
         # The channels to zero out:
         self.indices = indices
-        self.layer = layer
 
     def forward(self, x):
         self.__call__(x)
 
     def __call__(self, x):
         output = self.layer(x)
+        if self.reshape_transform is not None:
+            output = output.transpose(1, 2)
+
         for i in range(output.size(0)):
-            output[i, self.indices[i], :, :] = output[i, self.indices[i], :, :] * 0
+            output[i, self.indices[i], :] = output[i, self.indices[i], :] * 0
+
+        if self.reshape_transform is not None:
+           output = output.transpose(2, 1)
+
         return output
 
 def replace_layer_recursive(model, old_layer, new_layer):
@@ -30,18 +38,21 @@ def replace_layer_recursive(model, old_layer, new_layer):
     return False
 
 class AblationCAM(BaseCAM):
-    def __init__(self, model, target_layer, use_cuda=False):
-        super(AblationCAM, self).__init__(model, target_layer, use_cuda)
+    def __init__(self, model, target_layer, use_cuda=False, 
+        reshape_transform=None):
+        super(AblationCAM, self).__init__(model, target_layer, use_cuda, 
+            reshape_transform)
 
-    def get_cam_weights(self, input_tensor, 
-                              target_category, 
-                              activations,
-                              grads):
-        
+    def get_cam_weights(self,
+                        input_tensor,
+                        target_category,
+                        activations,
+                        grads):
         with torch.no_grad():
             original_score = self.model(input_tensor)[0, target_category].cpu().numpy()
 
-        ablation_layer = AblationLayer(self.target_layer, indices=[])
+        ablation_layer = AblationLayer(self.target_layer, 
+            self.reshape_transform, indices=[])
         replace_layer_recursive(self.model, self.target_layer, ablation_layer)
 
         weights = []
@@ -59,7 +70,7 @@ class AblationCAM(BaseCAM):
                 if i + BATCH_SIZE > activations.shape[0]:
                     keep = i + BATCH_SIZE - activations.shape[0] - 1
                     batch_tensor = batch_tensor[:keep]
-                    ablation_layer.indices = ablation_layer.indices[:keep]                    
+                    ablation_layer.indices = ablation_layer.indices[:keep]
                 weights.extend(self.model(batch_tensor)[:, target_category].cpu().numpy())
 
         weights = np.float32(weights)
