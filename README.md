@@ -1,14 +1,15 @@
-## Many Class Activation Map methods implemented in Pytorch ##
+# Class Activation Map methods implemented in Pytorch
+## Tested on Common CNN Networks and Vision Transformers!
+
 
 | Method   | What it does |
 |----------|--------------|
 | GradCAM  | Weight the 2D activations by the average gradient
 | GradCAM++  | Like GradCAM but use second order gradients
 | XGradCAM  | Like GradCAM but scale by the normalized activations
-| AblationCAM  | Zero out activations to measure how the output drops
-| ScoreCAM  | Perbutation the image by the scaled activations to measure how the output drops
+| AblationCAM  | Zero out activations and measure how the output drops
+| ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops
 
-Tested on Common CNN networks and Vision Transformers!
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
 ![Dog](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true) ![Cat](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true)
@@ -19,13 +20,13 @@ Tested on Common CNN networks and Vision Transformers!
 ### More Examples
 
 #### Resnet50:
-| Category  | Image | GradCAM-Dog  |  AblationCAM-Dog |  ScoreCAM-Dog |
+| Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
 | Dog    | ![](examples/dog_cat.jfif) | ![](examples/resnet50_dog_gradcam_cam.jpg)     |  ![](examples/resnet50_dog_ablationcam_cam.jpg)   |![](examples/resnet50_dog_scorecam_cam.jpg)   |
 | Cat    | ![](examples/dog_cat.jfif) | ![](examples/resnet50_cat_gradcam_cam.jpg)     |  ![](examples/resnet50_cat_ablationcam_cam.jpg)   |![](examples/resnet50_cat_scorecam_cam.jpg)   |
 
 #### Vision Transfomer (Deit Tiny)
-| Category  | Image | GradCAM-Dog  |  AblationCAM-Dog |  ScoreCAM-Dog |
+| Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
 | Dog    | ![](examples/dog_cat.jfif) | ![](examples/vit_dog_gradcam_cam.jpg)     |  ![](examples/vit_dog_ablationcam_cam.jpg)   |![](examples/vit_dog_scorecam_cam.jpg)   |
 | Cat    | ![](examples/dog_cat.jfif) | ![](examples/vit_cat_gradcam_cam.jpg)     |  ![](examples/vit_cat_ablationcam_cam.jpg)   |![](examples/vit_cat_scorecam_cam.jpg)   |
