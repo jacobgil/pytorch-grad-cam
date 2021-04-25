@@ -17,11 +17,25 @@ class AblationLayer(torch.nn.Module):
 
     def __call__(self, x):
         output = self.layer(x)
+
+        # Hack to work with ViT,
+        # Since the activation channels are last and not first like in CNNs
+        # Probably should remove it?
         if self.reshape_transform is not None:
             output = output.transpose(1, 2)
 
         for i in range(output.size(0)):
-            output[i, self.indices[i], :] = output[i, self.indices[i], :] * 0
+
+            # Commonly the minimum activation will be 0,
+            # And then it makes sense to zero it out.
+            # However depending on the architecture,
+            # If the values can be negative, we use very negative values
+            # to perform the ablation, deviating from the paper.
+            if torch.min(output) == 0:
+                output[i, self.indices[i], :] = 0
+            else:
+                ABLATION_VALUE = 1e5
+                output[i, self.indices[i], :] = torch.min(output) - ABLATION_VALUE
 
         if self.reshape_transform is not None:
            output = output.transpose(2, 1)
