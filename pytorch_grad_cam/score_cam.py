@@ -4,12 +4,15 @@ import torch
 from pytorch_grad_cam.base_cam import BaseCAM
 
 class ScoreCAM(BaseCAM):
-    def __init__(self, model, target_layer, use_cuda=False):
-        super(ScoreCAM, self).__init__(model, target_layer, use_cuda)
+    def __init__(self, model, target_layer, use_cuda=False, reshape_transform=None):
+        super(ScoreCAM, self).__init__(model, target_layer, use_cuda, 
+            reshape_transform=reshape_transform)
 
-    def get_cam_weights(self, input_tensor, 
-                              target_category, 
-                              activations, grads):
+    def get_cam_weights(self,
+                        input_tensor,
+                        target_category,
+                        activations,
+                        grads):
         with torch.no_grad():
             upsample = torch.nn.UpsamplingBilinear2d(size=input_tensor.shape[2 : ])
             activation_tensor = torch.from_numpy(activations).unsqueeze(0)
