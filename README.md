@@ -1,12 +1,13 @@
 # Class Activation Map methods implemented in Pytorch
-## Tested on Common CNN Networks and Vision Transformers!
+
+Tested on Common CNN Networks and Vision Transformers!
 
 
 | Method   | What it does |
 |----------|--------------|
 | GradCAM  | Weight the 2D activations by the average gradient
-| GradCAM++  | Like GradCAM but use second order gradients
-| XGradCAM  | Like GradCAM but scale by the normalized activations
+| GradCAM++  | Like GradCAM but uses second order gradients
+| XGradCAM  | Like GradCAM but scale the gradients by the normalized activations
 | AblationCAM  | Zero out activations and measure how the output drops
 | ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops
 
