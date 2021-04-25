@@ -23,14 +23,14 @@ Tested on Common CNN Networks and Vision Transformers!
 #### Resnet50:
 | Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
-| Dog    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_dog_gradcam_cam.jpg)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_dog_ablationcam_cam.jpg)   |![](examples/resnet50_dog_scorecam_cam.jpg)   |
-| Cat    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_cat_gradcam_cam.jpg)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_cat_ablationcam_cam.jpg)   |![](examples/resnet50_cat_scorecam_cam.jpg)   |
+| Dog    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_dog_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_dog_ablationcam_cam.jpg?raw=true)   |![](examples/resnet50_dog_scorecam_cam.jpg?raw=true)   |
+| Cat    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_cat_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_cat_ablationcam_cam.jpg?raw=true)   |![](examples/resnet50_cat_scorecam_cam.jpg?raw=true)   |
 
 #### Vision Transfomer (Deit Tiny):
 | Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
-| Dog    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_gradcam_cam.jpg)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_ablationcam_cam.jpg)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_scorecam_cam.jpg)   |
-| Cat    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_gradcam_cam.jpg)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_ablationcam_cam.jpg)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_scorecam_cam.jpg)   |
+| Dog    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_ablationcam_cam.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_scorecam_cam.jpg?raw=true)   |
+| Cat    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_ablationcam_cam.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_scorecam_cam.jpg?raw=true)   |
 
 ----------
 # Chosing the Target Layer
@@ -88,8 +88,8 @@ most networks except VGG where the advantage is larger.
 
 | Network  | Image | GradCAM  |  GradCAM++ |  Score-CAM |
 | ---------|-------|----------|------------|------------|
-| VGG16    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs.png) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam_vgg16.jpg)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam++_vgg16.jpg)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_scorecam_vgg16.jpg)   |
-| Resnet50 | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs.png) | ![](examples/dogs_gradcam_resnet50.jpg)  |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam++_resnet50.jpg)|  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_scorecam_resnet50.jpg)   |
+| VGG16    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs.png?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam_vgg16.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam++_vgg16.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_scorecam_vgg16.jpg?raw=true)   |
+| Resnet50 | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs.png?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam_resnet50.jpg?raw=true)  |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam++_resnet50.jpg?raw=true)|  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_scorecam_resnet50.jpg?raw=true)   |
 
 For Vision Transformers, XGradCAM and GradCAM++ seems to have very noisy outputs, and may require more tuning.
 
