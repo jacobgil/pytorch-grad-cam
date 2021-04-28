@@ -33,6 +33,15 @@ Tested on Common CNN Networks and Vision Transformers!
 | Dog    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_ablationcam_cam.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_scorecam_cam.jpg?raw=true)   |
 | Cat    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_ablationcam_cam.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_scorecam_cam.jpg?raw=true)   |
 
+It seems that GradCAM++ is almost the same as GradCAM, in
+most networks except VGG where the advantage is larger.
+
+| Network  | Image | GradCAM  |  GradCAM++ |  Score-CAM |  Ablation-CAM |  Eigen-CAM |
+| ---------|-------|----------|------------|------------|---------------|------------|
+| VGG16    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/horses.jpg?raw=true) |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_gradcam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_gradcam++_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_scorecam_cam.jpg?raw=true) |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_ablationcam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_eigencam_cam.jpg?raw=true) |
+| Resnet50    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/horses.jpg?raw=true) |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_gradcam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_gradcam++_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_scorecam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_ablationcam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_horses_eigencam_cam.jpg?raw=true)   |
+
+
 ----------
 # Chosing the Target Layer
 You need to choose the target layer to compute CAM for.
@@ -85,10 +94,6 @@ and have a batched implementation.
 
 You can control the batch size with
 `cam.batch_size = `
-
-It seems that GradCAM++ is almost the same as GradCAM, in
-most networks except VGG where the advantage is larger.
-
 
 ----------
 
