@@ -10,7 +10,7 @@ Tested on Common CNN Networks and Vision Transformers!
 | XGradCAM  | Like GradCAM but scale the gradients by the normalized activations |
 | AblationCAM  | Zero out activations and measure how the output drops (this repository includes a fast batched implementation) |
 | ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops |
-| EigenCAM  | Takes the first principle component of the Activations (no class discrimination, but seems to give great results)|
+| EigenCAM  | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)|
 
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
@@ -89,13 +89,20 @@ You can control the batch size with
 It seems that GradCAM++ is almost the same as GradCAM, in
 most networks except VGG where the advantage is larger.
 
-| Network  | Image | GradCAM  |  GradCAM++ |  Score-CAM |
+| Network  | Image | GradCAM  |  GradCAM++ |  Score-CAM |  Ablation-CAM |  Eigen-CAM |
 | ---------|-------|----------|------------|------------|
-| VGG16    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs.png?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam_vgg16.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam++_vgg16.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_scorecam_vgg16.jpg?raw=true)   |
-| Resnet50 | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs.png?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam_resnet50.jpg?raw=true)  |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_gradcam++_resnet50.jpg?raw=true)|  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dogs_scorecam_resnet50.jpg?raw=true)   |
+| VGG16    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/horses.jpg?raw=true) |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_gradcam_cam.png?raw=true) |
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_gradcam++_cam.png?raw=true) |  
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_scorecam_cam.png?raw=true) |  
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_ablationcam_cam.png?raw=true) |  
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_eigencam_cam.png?raw=true) |
 
-For Vision Transformers, XGradCAM and GradCAM++ seems to have very noisy outputs, and may require more tuning.
 
+| Resnet50    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/horses.jpg?raw=true) |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_gradcam_cam.png?raw=true) |
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_gradcam++_cam.png?raw=true) |  
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_scorecam_cam.png?raw=true) |  
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_ablationcam_cam.png?raw=true) |  
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_eigencam_cam.png?raw=true)
 
 ----------
 
