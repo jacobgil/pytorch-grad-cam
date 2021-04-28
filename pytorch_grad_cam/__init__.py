@@ -3,4 +3,5 @@ from pytorch_grad_cam.ablation_cam import AblationCAM
 from pytorch_grad_cam.xgrad_cam import XGradCAM
 from pytorch_grad_cam.grad_cam_plusplus import GradCAMPlusPlus
 from pytorch_grad_cam.score_cam import ScoreCAM
+from pytorch_grad_cam.eigen_cam import EigenCAM
 from pytorch_grad_cam.guided_backprop import GuidedBackpropReLUModel

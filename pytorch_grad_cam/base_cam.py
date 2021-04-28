@@ -31,6 +31,13 @@ class BaseCAM:
     def get_loss(self, output, target_category):
         return output[:, target_category]
 
+    def get_cam_image(self, input_tensor, target_category, activations, grads):
+        weights = self.get_cam_weights(input_tensor, target_category, activations, grads)
+        cam = np.zeros(activations.shape[1:], dtype=np.float32)
+        for i, w in enumerate(weights):
+            cam += w * activations[i, :, :]
+        return cam
+
     def __call__(self, input_tensor, target_category=None):
         if self.cuda:
             input_tensor = input_tensor.cuda()
@@ -46,12 +53,7 @@ class BaseCAM:
 
         activations = self.activations_and_grads.activations[-1].cpu().data.numpy()[0, :]
         grads = self.activations_and_grads.gradients[-1].cpu().data.numpy()[0, :]
-        
-        weights = self.get_cam_weights(input_tensor, target_category, activations, grads)
-        cam = np.zeros(activations.shape[1:], dtype=np.float32)
-
-        for i, w in enumerate(weights):
-            cam += w * activations[i, :, :]
+        cam = self.get_cam_image(input_tensor, target_category, activations, grads)
 
         cam = np.maximum(cam, 0)
         cam = cv2.resize(cam, input_tensor.shape[2:][::-1])

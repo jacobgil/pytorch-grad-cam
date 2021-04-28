@@ -8,7 +8,8 @@ from pytorch_grad_cam import GradCAM, \
                              ScoreCAM, \
                              GradCAMPlusPlus, \
                              AblationCAM, \
-                             XGradCAM
+                             XGradCAM, \
+                             EigenCAM
 
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
@@ -47,7 +48,8 @@ if __name__ == '__main__':
          "scorecam": ScoreCAM, 
          "gradcam++": GradCAMPlusPlus,
          "ablationcam": AblationCAM,
-         "xgradcam": XGradCAM}
+         "xgradcam": XGradCAM,
+         "eigencam": EigenCAM}
 
     if args.method not in list(methods.keys()):
         raise Exception(f"method should be one of {list(methods.keys())}")

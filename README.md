@@ -10,6 +10,7 @@ Tested on Common CNN Networks and Vision Transformers!
 | XGradCAM  | Like GradCAM but scale the gradients by the normalized activations |
 | AblationCAM  | Zero out activations and measure how the output drops (this repository includes a fast batched implementation) |
 | ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops |
+| EigenCAM  | Takes the first principle component of the Activations (no class discrimination, but seems to give great results)|
 
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
@@ -48,7 +49,7 @@ Some common choices are:
 `pip install grad-cam`
 
 ```python
-from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM
+from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
 
@@ -56,8 +57,10 @@ model = resnet50(pretrained=True)
 target_layer = model.layer4[-1]
 input_tensor = # Create an input tensor image for your model..
 
-#Can be GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM
+# This should be constructed once:
 cam = GradCAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
+
+# And then cam be used on many images:
 grayscale_cam = cam(input_tensor=input_tensor, target_category=1)
 visualization = show_cam_on_image(rgb_img, grayscale_cam)
 ```
@@ -75,7 +78,7 @@ To use with CUDA:
 
 You can choose between:
 
-`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM` and `XGradCAM`.
+`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` and `EigenCAM`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
@@ -172,3 +175,7 @@ convolutional network via gradient-free localization. In WACV, pages 972–980, 
 https://arxiv.org/abs/2008.02312
 `Axiom-based Grad-CAM: Towards Accurate Visualization and Explanation of CNNs
 Ruigang Fu, Qingyong Hu, Xiaohu Dong, Yulan Guo, Yinghui Gao, Biao Li`
+
+https://arxiv.org/abs/2008.00299
+`Eigen-CAM: Class Activation Map using Principal Components
+Mohammed Bany Muhammad, Mohammed Yeasin`
