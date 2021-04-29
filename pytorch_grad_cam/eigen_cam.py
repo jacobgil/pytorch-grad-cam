@@ -15,8 +15,7 @@ class EigenCAM(BaseCAM):
                       target_category,
                       activations,
                       grads):
-        reshaped_activations = activations.reshape(activations.shape[0], -1).transpose()
-
+        reshaped_activations = (activations).reshape(activations.shape[0], -1).transpose()
         # Centering before the SVD seems to be important here,
         # Otherwise the image returned is negative
         reshaped_activations = reshaped_activations - reshaped_activations.mean(axis=0)

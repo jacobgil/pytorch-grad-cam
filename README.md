@@ -11,6 +11,7 @@ Tested on Common CNN Networks and Vision Transformers!
 | AblationCAM  | Zero out activations and measure how the output drops (this repository includes a fast batched implementation) |
 | ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops |
 | EigenCAM  | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)|
+| EigenGradCAM  | Like EigenCAM but with class discrimination: First principle component of Activations*Grad --> Looks like GradCAM, but cleaner|
 
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
