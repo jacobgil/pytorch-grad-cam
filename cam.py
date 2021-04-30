@@ -23,8 +23,14 @@ def get_args():
                         help='Use NVIDIA GPU acceleration')
     parser.add_argument('--image-path', type=str, default='./examples/both.png',
                         help='Input image path')
+    parser.add_argument('--aug_smooth', action='store_true',
+                        help='Apply test time augmentation to smooth the CAM')
+    parser.add_argument('--eigen_smooth', action='store_true',
+                        help='Reduce noise by taking the first principle componenet'
+                        'of cam_weights*activations')
     parser.add_argument('--method', type=str, default='gradcam',
-                        help='Can be gradcam/gradcam++/scorecam/xgradcam/ablationcam')
+                        help='Can be gradcam/gradcam++/scorecam/xgradcam'
+                             '/ablationcam/eigencam/eigengradcam')
 
     args = parser.parse_args()
     args.use_cuda = args.use_cuda and torch.cuda.is_available()
@@ -89,7 +95,9 @@ if __name__ == '__main__':
     cam.batch_size = 32
 
     grayscale_cam = cam(input_tensor=input_tensor,
-                        target_category=target_category)
+                        target_category=target_category,
+                        aug_smooth=args.aug_smooth,
+                        eigen_smooth=args.eigen_smooth)
 
     cam_image = show_cam_on_image(rgb_img, grayscale_cam)
 

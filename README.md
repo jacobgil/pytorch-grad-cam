@@ -1,5 +1,7 @@
 # Class Activation Map methods implemented in Pytorch
 
+`pip install grad-cam`
+
 Tested on Common CNN Networks and Vision Transformers!
 
 
@@ -56,8 +58,6 @@ Some common choices are:
 
 # Using from code as a library
 
-`pip install grad-cam`
-
 ```python
 from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
@@ -71,9 +71,35 @@ input_tensor = # Create an input tensor image for your model..
 cam = GradCAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
 
 # And then cam be used on many images:
+# You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
 grayscale_cam = cam(input_tensor=input_tensor, target_category=1)
 visualization = show_cam_on_image(rgb_img, grayscale_cam)
 ```
+
+----------
+
+# Smoothing
+
+To reduce noise in the CAMs, and make it fit better on the objects,
+two smoothing methods are supported:
+
+- `aug_smooth=True`
+  Test time augmentation.
+  Applies a combination of horizontal flips, and mutiplying the image
+  by [1.0, 1.1, 0.9]
+
+  This has the effect of better centering the CAM around the objects.
+
+
+- `eigen_smooth=True`
+  First principle component of `activations*weights`
+
+  This has the effect of removing a lot of noise.
+
+
+|AblationCAM | aug_smooth | eigen_smooth | aug+eigen smoothing|
+|------|------------|--------------|-----|
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/nosmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/aug_smooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigen_smooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigen_aug.jpg?raw=true) | 
 
 ----------
 
