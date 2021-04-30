@@ -3,7 +3,7 @@
 `pip install grad-cam`
 
 Tested on Common CNN Networks and Vision Transformers!
-
+With smoothing methods supported to make the CAMs look nice.
 
 | Method   | What it does |
 |----------|--------------|
@@ -84,20 +84,23 @@ To reduce noise in the CAMs, and make it fit better on the objects,
 two smoothing methods are supported:
 
 - `aug_smooth=True`
+
   Test time augmentation.
+
   Applies a combination of horizontal flips, and mutiplying the image
-  by [1.0, 1.1, 0.9]
+  by [1.0, 1.1, 0.9]. Increases the run time by x6.
 
   This has the effect of better centering the CAM around the objects.
 
 
 - `eigen_smooth=True`
+
   First principle component of `activations*weights`
 
   This has the effect of removing a lot of noise.
 
 
-|AblationCAM | aug_smooth | eigen_smooth | aug+eigen smoothing|
+|AblationCAM | aug smooth | eigen smooth | aug+eigen smooth|
 |------------|------------|--------------|--------------------|
 ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/nosmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/augsmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigensmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigenaug.jpg?raw=true) | 
 
