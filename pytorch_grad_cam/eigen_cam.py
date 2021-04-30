@@ -15,5 +15,6 @@ class EigenCAM(BaseCAM):
                       input_tensor,
                       target_category,
                       activations,
-                      grads):
+                      grads,
+                      eigen_smooth):
         return get_2d_projection(activations)

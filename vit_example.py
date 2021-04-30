@@ -8,7 +8,9 @@ from pytorch_grad_cam import GradCAM, \
                              ScoreCAM, \
                              GradCAMPlusPlus, \
                              AblationCAM, \
-                             XGradCAM
+                             XGradCAM, \
+                             EigenCAM, \
+                             EigenGradCAM
 
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
@@ -21,6 +23,12 @@ def get_args():
                         help='Use NVIDIA GPU acceleration')
     parser.add_argument('--image-path', type=str, default='./examples/both.png',
                         help='Input image path')
+    parser.add_argument('--aug_smooth', action='store_true',
+                        help='Apply test time augmentation to smooth the CAM')
+    parser.add_argument('--eigen_smooth', action='store_true',
+                        help='Reduce noise by taking the first principle componenet'
+                        'of cam_weights*activations')
+
     parser.add_argument('--method', type=str, default='gradcam',
                         help='Can be gradcam/gradcam++/scorecam/xgradcam/ablationcam')
 
@@ -54,7 +62,9 @@ if __name__ == '__main__':
          "scorecam": ScoreCAM, 
          "gradcam++": GradCAMPlusPlus,
          "ablationcam": AblationCAM,
-         "xgradcam": XGradCAM}
+         "xgradcam": XGradCAM,
+         "eigencam": EigenCAM,
+         "eigengradcam": EigenGradCAM}
 
     if args.method not in list(methods.keys()):
         raise Exception(f"method should be one of {list(methods.keys())}")
@@ -66,7 +76,7 @@ if __name__ == '__main__':
     if args.use_cuda:
         model = model.cuda()
 
-    target_layer = model.blocks[-1].norm1
+    target_layer = model.blocks[-2].norm1
 
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
@@ -91,7 +101,9 @@ if __name__ == '__main__':
     cam.batch_size = 32
 
     grayscale_cam = cam(input_tensor=input_tensor,
-                        target_category=target_category)
+                        target_category=target_category,
+                        eigen_smooth=args.eigen_smooth,
+                        aug_smooth=args.aug_smooth)
 
     cam_image = show_cam_on_image(rgb_img, grayscale_cam)
     cv2.imwrite(f'{args.method}_cam.jpg', cam_image)
