@@ -78,17 +78,17 @@ visualization = show_cam_on_image(rgb_img, grayscale_cam)
 
 ----------
 
-# Smoothing
+# Smoothing to get nice looking CAMs
 
 To reduce noise in the CAMs, and make it fit better on the objects,
 two smoothing methods are supported:
 
 - `aug_smooth=True`
 
-  Test time augmentation.
+  Test time augmentation: increases the run time by x6.
 
   Applies a combination of horizontal flips, and mutiplying the image
-  by [1.0, 1.1, 0.9]. Increases the run time by x6.
+  by [1.0, 1.1, 0.9].
 
   This has the effect of better centering the CAM around the objects.
 
