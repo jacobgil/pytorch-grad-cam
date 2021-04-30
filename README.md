@@ -98,8 +98,8 @@ two smoothing methods are supported:
 
 
 |AblationCAM | aug_smooth | eigen_smooth | aug+eigen smoothing|
-|------|------------|--------------|-----|
-![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/nosmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/aug_smooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigen_smooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigen_aug.jpg?raw=true) | 
+|------------|------------|--------------|--------------------|
+![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/nosmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/augsmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigensmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigenaug.jpg?raw=true) | 
 
 ----------
 
