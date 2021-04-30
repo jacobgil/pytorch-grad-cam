@@ -172,7 +172,7 @@ If you use this for research, please cite. Here is an example BibTeX entry:
 
 ```
 @misc{jacobgilpytorchcam,
-  title={pytorch-cam},
+  title={PyTorch library for CAM methods},
   author={Jacob Gildenblat and contributors},
   year={2021},
   publisher={GitHub},
