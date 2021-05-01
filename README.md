@@ -2,9 +2,9 @@
 
 `pip install grad-cam`
 
-Tested on Common CNN Networks and Vision Transformers!
-
-Includes smoothing methods to make the CAMs look nice.
+⭐ Tested on Common CNN Networks and Vision Transformers.
+⭐ Includes smoothing methods to make the CAMs look nice.
+⭐ Full support for batches of images, and fast implementations.
 
 | Method   | What it does |
 |----------|--------------|
