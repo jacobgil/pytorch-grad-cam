@@ -6,7 +6,7 @@
 
 ⭐ Includes smoothing methods to make the CAMs look nice.
 
-⭐ Full support for batches of images, and fast implementations.
+⭐ Full support for batches of images in all methods.
 
 
 | Method   | What it does |
