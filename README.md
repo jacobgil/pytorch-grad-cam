@@ -2,7 +2,7 @@
 
 `pip install grad-cam`
 
-⭐ Tested on Common CNN Networks and Vision Transformers.
+⭐ Tested on many Common CNN Networks and Vision Transformers.
 
 ⭐ Includes smoothing methods to make the CAMs look nice.
 
@@ -75,10 +75,10 @@ input_tensor = # Create an input tensor image for your model..
 # Construct the CAM object once, and then re-use it on many images:
 cam = GradCAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
 
-# If target_category is None, the highest scoring category (for every image in the batch)
-# will be used.
+# If target_category is None, the highest scoring category
+# will be used for every image in the batch.
 # target_category can also be an integer, or a list of different integers
-# for every batch image.
+# for every image in the batch.
 target_category = 281
 
 # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
