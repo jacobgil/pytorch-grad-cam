@@ -22,8 +22,10 @@ class ScoreCAM(BaseCAM):
 
             upsampled = upsample(activation_tensor)
 
-            maxs = upsampled.view(upsampled.size(0), upsampled.size(1), -1).max(dim=-1)[0]
-            mins = upsampled.view(upsampled.size(0), upsampled.size(1), -1).min(dim=-1)[0]
+            maxs = upsampled.view(upsampled.size(0),
+                upsampled.size(1), -1).max(dim=-1)[0]
+            mins = upsampled.view(upsampled.size(0),
+                upsampled.size(1), -1).min(dim=-1)[0]
             maxs, mins = maxs[:, :, None, None], mins[:, :, None, None]
             upsampled = (upsampled - mins) / (maxs - mins)
 

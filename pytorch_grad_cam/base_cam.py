@@ -57,6 +57,9 @@ class BaseCAM:
 
         output = self.activations_and_grads(input_tensor)
 
+        if type(target_category) is int:
+            target_category = [target_category] * input_tensor.size(0)
+
         if target_category is None:
             target_category = np.argmax(output.cpu().data.numpy(), axis=-1)
 

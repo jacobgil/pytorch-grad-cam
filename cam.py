@@ -99,6 +99,9 @@ if __name__ == '__main__':
                         aug_smooth=args.aug_smooth,
                         eigen_smooth=args.eigen_smooth)
 
+    # Here grayscale_cam has only one image in the batch
+    grayscale_cam = grayscale_cam[0, :]
+
     cam_image = show_cam_on_image(rgb_img, grayscale_cam)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
