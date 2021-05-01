@@ -105,5 +105,8 @@ if __name__ == '__main__':
                         eigen_smooth=args.eigen_smooth,
                         aug_smooth=args.aug_smooth)
 
+    # Here grayscale_cam has only one image in the batch
+    grayscale_cam = grayscale_cam[0, :]
+    
     cam_image = show_cam_on_image(rgb_img, grayscale_cam)
     cv2.imwrite(f'{args.method}_cam.jpg', cam_image)
