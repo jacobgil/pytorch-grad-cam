@@ -81,10 +81,20 @@ if __name__ == '__main__':
                                target_layer=target_layer,
                                use_cuda=args.use_cuda)
 
-    rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
-    rgb_img = np.float32(rgb_img) / 255
-    input_tensor = preprocess_image(rgb_img, mean=[0.485, 0.456, 0.406], 
-                                             std=[0.229, 0.224, 0.225])
+
+    paths = ["examples/both.png", "examples/dog_cat.jfif"]
+    rgb_images = []
+    input_tensors = []
+    for path in paths:
+        rgb_img = cv2.imread(path, 1)[:, :, ::-1]
+        rgb_img = cv2.resize(rgb_img, (224, 224))
+        rgb_img = np.float32(rgb_img) / 255
+        rgb_images.append(rgb_img.copy())
+        input_tensor = preprocess_image(rgb_img, mean=[0.485, 0.456, 0.406], 
+                                                 std=[0.229, 0.224, 0.225])
+        input_tensors.append(input_tensor)
+
+    input_tensor = torch.cat(input_tensors)
 
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
@@ -99,18 +109,6 @@ if __name__ == '__main__':
                         aug_smooth=args.aug_smooth,
                         eigen_smooth=args.eigen_smooth)
 
-    # Here grayscale_cam has only one image in the batch
-    grayscale_cam = grayscale_cam[0, :]
-
-    cam_image = show_cam_on_image(rgb_img, grayscale_cam)
-
-    gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
-    gb = gb_model(input_tensor, target_category=target_category)
-
-    cam_mask = cv2.merge([grayscale_cam, grayscale_cam, grayscale_cam])
-    cam_gb = deprocess_image(cam_mask * gb)
-    gb = deprocess_image(gb)
-
-    cv2.imwrite(f'{args.method}_cam.jpg', cam_image)
-    cv2.imwrite(f'{args.method}_gb.jpg', gb)
-    cv2.imwrite(f'{args.method}_cam_gb.jpg', cam_gb)
+    for index, (cam, rgb_img) in enumerate(zip(grayscale_cam, rgb_images)):
+        cam_image = show_cam_on_image(rgb_img, cam)
+        cv2.imwrite(f"{index}.png", cam_image)
