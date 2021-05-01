@@ -52,6 +52,7 @@ class BaseCAM:
         return cam
 
     def forward(self, input_tensor, target_category=None, eigen_smooth=False):
+
         if self.cuda:
             input_tensor = input_tensor.cuda()
 
@@ -62,6 +63,8 @@ class BaseCAM:
 
         if target_category is None:
             target_category = np.argmax(output.cpu().data.numpy(), axis=-1)
+        else:
+            assert(len(target_category) == input_tensor.size(0))
 
         self.model.zero_grad()
         loss = self.get_loss(output, target_category)

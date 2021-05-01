@@ -67,13 +67,22 @@ from torchvision.models import resnet50
 model = resnet50(pretrained=True)
 target_layer = model.layer4[-1]
 input_tensor = # Create an input tensor image for your model..
+# Note: input_tensor can be a batch tensor with several images!
 
-# This should be constructed once:
+# Construct the CAM object once, and then re-use it on many images:
 cam = GradCAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
 
-# And then cam be used on many images:
+# If target_category is None, the highest scoring category (for every image in the batch)
+# will be used.
+# target_category can also be an integer, or a list of different integers
+# for every batch image.
+target_category = 281
+
 # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
-grayscale_cam = cam(input_tensor=input_tensor, target_category=1)
+grayscale_cam = cam(input_tensor=input_tensor, target_category=target_category)
+
+# In this example grayscale_cam has only one image in the batch:
+grayscale_cam = grayscale_cam[0, :]
 visualization = show_cam_on_image(rgb_img, grayscale_cam)
 ```
 
