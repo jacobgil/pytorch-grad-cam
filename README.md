@@ -9,6 +9,11 @@
 ⭐ Full support for batches of images in all methods.
 
 
+![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
+)
+
+
+
 | Method   | What it does |
 |----------|--------------|
 | GradCAM  | Weight the 2D activations by the average gradient |
