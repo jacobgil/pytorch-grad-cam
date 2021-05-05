@@ -36,14 +36,20 @@
 #### Resnet50:
 | Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
-| Dog    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_dog_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_dog_ablationcam_cam.jpg?raw=true)   |![](examples/resnet50_dog_scorecam_cam.jpg?raw=true)   |
-| Cat    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_cat_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_cat_ablationcam_cam.jpg?raw=true)   |![](examples/resnet50_cat_scorecam_cam.jpg?raw=true)   |
+| Dog    | ![](./examples/dog_cat.jfif) | ![](./examples/resnet50_dog_gradcam_cam.jpg)     |  ![](./examples/resnet50_dog_ablationcam_cam.jpg)   |![](./examples/resnet50_dog_scorecam_cam.jpg)   |
+| Cat    | ![](./examples/dog_cat.jfif?raw=true) | ![](./examples/resnet50_cat_gradcam_cam.jpg?raw=true)     |  ![](./examples/resnet50_cat_ablationcam_cam.jpg?raw=true)   |![](./examples/resnet50_cat_scorecam_cam.jpg)   |
 
 #### Vision Transfomer (Deit Tiny):
 | Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
-| Dog    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_ablationcam_cam.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_scorecam_cam.jpg?raw=true)   |
-| Cat    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_ablationcam_cam.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_scorecam_cam.jpg?raw=true)   |
+| Dog    | ![](./examples/dog_cat.jfif) | ![](./examples/vit_dog_gradcam_cam.jpg)     |  ![](./examples/vit_dog_ablationcam_cam.jpg)   |![](./examples/vit_dog_scorecam_cam.jpg)   |
+| Cat    | ![](./examples/dog_cat.jfif) | ![](./examples/vit_cat_gradcam_cam.jpg)     |  ![](./examples/vit_cat_ablationcam_cam.jpg)   |![](./examples/vit_cat_scorecam_cam.jpg)   |
+
+#### Swin Transfomer (Deit Tiny):
+| Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
+| ---------|-------|----------|------------|------------|
+| Dog    | ![](./examples/dog_cat.jfif) | ![](./examples/swinT_dog_gradcam_cam.jpg)     |  ![](./examples/swinT_dog_ablationcam_cam.jpg)   |![](./examples/swinT_dog_scorecam_cam.jpg)   |
+| Cat    | ![](./examples/dog_cat.jfif) | ![](./examples/swinT_cat_gradcam_cam.jpg)     |  ![](./examples/swinT_cat_ablationcam_cam.jpg)   |![](./examples/vit_cat_scorecam_cam.jpg)   |
 
 It seems that GradCAM++ is almost the same as GradCAM, in
 most networks except VGG where the advantage is larger.
@@ -62,6 +68,7 @@ Some common choices are:
 - VGG and densenet161: model.features[-1]
 - mnasnet1_0: model.layers[-1]
 - ViT: model.blocks[-1].norm1
+- SwinT: model.layers[-1].blocks[-1].norm1
 
 ----------
 
@@ -120,7 +127,7 @@ two smoothing methods are supported:
 
 |AblationCAM | aug smooth | eigen smooth | aug+eigen smooth|
 |------------|------------|--------------|--------------------|
-![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/nosmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/augsmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigensmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigenaug.jpg?raw=true) | 
+![](./examples/nosmooth.jpg) | ![](./examples/augsmooth.jpg) | ![](./examples/eigensmooth.jpg) | ![](./examples/eigenaug.jpg) | 
 
 ----------
 
