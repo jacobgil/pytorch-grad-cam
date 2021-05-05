@@ -45,7 +45,7 @@
 | Dog    | ![](./examples/dog_cat.jfif) | ![](./examples/vit_dog_gradcam_cam.jpg)     |  ![](./examples/vit_dog_ablationcam_cam.jpg)   |![](./examples/vit_dog_scorecam_cam.jpg)   |
 | Cat    | ![](./examples/dog_cat.jfif) | ![](./examples/vit_cat_gradcam_cam.jpg)     |  ![](./examples/vit_cat_ablationcam_cam.jpg)   |![](./examples/vit_cat_scorecam_cam.jpg)   |
 
-#### Swin Transfomer (Base windows:7 patch:4 input-size:224):
+#### Swin Transfomer (Tiny window:7 patch:4 input-size:224):
 | Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
 | Dog    | ![](./examples/dog_cat.jfif) | ![](./examples/swinT_dog_gradcam_cam.jpg)     |  ![](./examples/swinT_dog_ablationcam_cam.jpg)   |![](./examples/swinT_dog_scorecam_cam.jpg)   |
@@ -246,21 +246,26 @@ If you use this for research, please cite. Here is an example BibTeX entry:
 ----------
 
 # References
+https://arxiv.org/abs/1610.02391
+`Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization
+Ramprasaath R. Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam, Devi Parikh, Dhruv Batra`
 
-[Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization
-Ramprasaath R. Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam, Devi Parikh, Dhruv Batra](https://arxiv.org/abs/1610.02391)
+https://arxiv.org/abs/1710.11063
+`Grad-CAM++: Improved Visual Explanations for Deep Convolutional Networks
+Aditya Chattopadhyay, Anirban Sarkar, Prantik Howlader, Vineeth N Balasubramanian`
 
-[Grad-CAM++: Improved Visual Explanations for Deep Convolutional Networks
-Aditya Chattopadhyay, Anirban Sarkar, Prantik Howlader, Vineeth N Balasubramanian](https://arxiv.org/abs/1710.11063)
+https://arxiv.org/abs/1910.01279
+`Score-CAM: Score-Weighted Visual Explanations for Convolutional Neural Networks
+Haofan Wang, Zifan Wang, Mengnan Du, Fan Yang, Zijian Zhang, Sirui Ding, Piotr Mardziel, Xia Hu`
 
-[Score-CAM: Score-Weighted Visual Explanations for Convolutional Neural Networks
-Haofan Wang, Zifan Wang, Mengnan Du, Fan Yang, Zijian Zhang, Sirui Ding, Piotr Mardziel, Xia Hu](https://arxiv.org/abs/1910.01279)
+https://ieeexplore.ieee.org/abstract/document/9093360/
+`Ablation-cam: Visual explanations for deep convolutional network via gradient-free localization.
+Saurabh Desai and Harish G Ramaswamy. In WACV, pages 972–980, 2020`
 
-[Ablation-cam: Visual explanations for deep convolutional network via gradient-free localization.
-Saurabh Desai and Harish G Ramaswamy. In WACV, pages 972–980, 2020](https://ieeexplore.ieee.org/abstract/document/9093360/)
+https://arxiv.org/abs/2008.02312
+`Axiom-based Grad-CAM: Towards Accurate Visualization and Explanation of CNNs
+Ruigang Fu, Qingyong Hu, Xiaohu Dong, Yulan Guo, Yinghui Gao, Biao Li`
 
-[Axiom-based Grad-CAM: Towards Accurate Visualization and Explanation of CNNs
-Ruigang Fu, Qingyong Hu, Xiaohu Dong, Yulan Guo, Yinghui Gao, Biao Li](https://arxiv.org/abs/2008.02312)
-
-[Eigen-CAM: Class Activation Map using Principal Components
-Mohammed Bany Muhammad, Mohammed Yeasin](https://arxiv.org/abs/2008.00299)
+https://arxiv.org/abs/2008.00299
+`Eigen-CAM: Class Activation Map using Principal Components
+Mohammed Bany Muhammad, Mohammed Yeasin`
