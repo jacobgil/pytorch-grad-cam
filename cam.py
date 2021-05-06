@@ -17,6 +17,7 @@ from pytorch_grad_cam.utils.image import show_cam_on_image, \
                                          deprocess_image, \
                                          preprocess_image
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--use-cuda', action='store_true', default=False,
@@ -29,6 +30,8 @@ def get_args():
                         help='Reduce noise by taking the first principle componenet'
                         'of cam_weights*activations')
     parser.add_argument('--method', type=str, default='gradcam',
+                        choices=['gradcam', 'gradcam++', 'scorecam', 'xgradcam',
+                                 'ablationcam', 'eigencam', 'eigengradcam'],
                         help='Can be gradcam/gradcam++/scorecam/xgradcam'
                              '/ablationcam/eigencam/eigengradcam')
 
@@ -41,6 +44,7 @@ def get_args():
 
     return args
 
+
 if __name__ == '__main__':
     """ python cam.py -image-path <path_to_image>
     Example usage of loading an image, and computing:
@@ -51,16 +55,13 @@ if __name__ == '__main__':
 
     args = get_args()
     methods = \
-        {"gradcam": GradCAM, 
-         "scorecam": ScoreCAM, 
+        {"gradcam": GradCAM,
+         "scorecam": ScoreCAM,
          "gradcam++": GradCAMPlusPlus,
          "ablationcam": AblationCAM,
          "xgradcam": XGradCAM,
          "eigencam": EigenCAM,
          "eigengradcam": EigenGradCAM}
-
-    if args.method not in list(methods.keys()):
-        raise Exception(f"method should be one of {list(methods.keys())}")
 
     model = models.resnet50(pretrained=True)
 
@@ -73,11 +74,7 @@ if __name__ == '__main__':
     # You can print the model to help chose the layer
     target_layer = model.layer4[-1]
 
-
-    if args.method not in methods:
-        raise Exception(f"Method {args.method} not implemented")
-
-    cam = methods[args.method](model=model, 
+    cam = methods[args.method](model=model,
                                target_layer=target_layer,
                                use_cuda=args.use_cuda)
 
