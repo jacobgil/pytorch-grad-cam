@@ -76,7 +76,7 @@ if __name__ == '__main__':
     if args.use_cuda:
         model = model.cuda()
 
-    target_layer = model.blocks[-2].norm1
+    target_layer = model.blocks[-1].norm1
 
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")

@@ -36,14 +36,20 @@
 #### Resnet50:
 | Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
-| Dog    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_dog_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_dog_ablationcam_cam.jpg?raw=true)   |![](examples/resnet50_dog_scorecam_cam.jpg?raw=true)   |
-| Cat    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_cat_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet50_cat_ablationcam_cam.jpg?raw=true)   |![](examples/resnet50_cat_scorecam_cam.jpg?raw=true)   |
+| Dog    | ![](./examples/dog_cat.jfif) | ![](./examples/resnet50_dog_gradcam_cam.jpg)     |  ![](./examples/resnet50_dog_ablationcam_cam.jpg)   |![](./examples/resnet50_dog_scorecam_cam.jpg)   |
+| Cat    | ![](./examples/dog_cat.jfif?raw=true) | ![](./examples/resnet50_cat_gradcam_cam.jpg?raw=true)     |  ![](./examples/resnet50_cat_ablationcam_cam.jpg?raw=true)   |![](./examples/resnet50_cat_scorecam_cam.jpg)   |
 
 #### Vision Transfomer (Deit Tiny):
 | Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
-| Dog    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_ablationcam_cam.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_dog_scorecam_cam.jpg?raw=true)   |
-| Cat    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog_cat.jfif?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_gradcam_cam.jpg?raw=true)     |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_ablationcam_cam.jpg?raw=true)   |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vit_cat_scorecam_cam.jpg?raw=true)   |
+| Dog    | ![](./examples/dog_cat.jfif) | ![](./examples/vit_dog_gradcam_cam.jpg)     |  ![](./examples/vit_dog_ablationcam_cam.jpg)   |![](./examples/vit_dog_scorecam_cam.jpg)   |
+| Cat    | ![](./examples/dog_cat.jfif) | ![](./examples/vit_cat_gradcam_cam.jpg)     |  ![](./examples/vit_cat_ablationcam_cam.jpg)   |![](./examples/vit_cat_scorecam_cam.jpg)   |
+
+#### Swin Transfomer (Tiny window:7 patch:4 input-size:224):
+| Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
+| ---------|-------|----------|------------|------------|
+| Dog    | ![](./examples/dog_cat.jfif) | ![](./examples/swinT_dog_gradcam_cam.jpg)     |  ![](./examples/swinT_dog_ablationcam_cam.jpg)   |![](./examples/swinT_dog_scorecam_cam.jpg)   |
+| Cat    | ![](./examples/dog_cat.jfif) | ![](./examples/swinT_cat_gradcam_cam.jpg)     |  ![](./examples/swinT_cat_ablationcam_cam.jpg)   |![](./examples/swinT_cat_scorecam_cam.jpg)   |
 
 It seems that GradCAM++ is almost the same as GradCAM, in
 most networks except VGG where the advantage is larger.
@@ -62,6 +68,7 @@ Some common choices are:
 - VGG and densenet161: model.features[-1]
 - mnasnet1_0: model.layers[-1]
 - ViT: model.blocks[-1].norm1
+- SwinT: model.layers[-1].blocks[-1].norm1
 
 ----------
 
@@ -120,7 +127,7 @@ two smoothing methods are supported:
 
 |AblationCAM | aug smooth | eigen smooth | aug+eigen smooth|
 |------------|------------|--------------|--------------------|
-![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/nosmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/augsmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigensmooth.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/eigenaug.jpg?raw=true) | 
+![](./examples/nosmooth.jpg) | ![](./examples/augsmooth.jpg) | ![](./examples/eigensmooth.jpg) | ![](./examples/eigenaug.jpg) | 
 
 ----------
 
@@ -147,7 +154,7 @@ You can control the batch size with
 
 # How does it work with Vision Transformers
 
-*See vit_example.py*
+*See [usage_examples/vit_example.py](./usage_examples/vit_example.py)*
 
 In ViT the output of the layers are typically BATCH x 197 x 192.
 In the dimension with 197, the first element represents the class token, and the rest represent the 14x14 patches in the image.
@@ -185,6 +192,44 @@ target_layer = model.blocks[-1].norm1
 
 ----------
 
+# How does it work with Swin Transformers
+
+*See [usage_examples/swinT_example.py](./usage_examples/swinT_example.py)*
+
+In Swin transformer base the output of the layers are typically BATCH x 49 x 1024.
+We can treat the last 49 elements as a 7x7 spatial image, with 1024 channels.
+
+To reshape the activations and gradients to 2D spatial images,
+we can pass the CAM constructor a reshape_transform function.
+
+This can also be a starting point for other architectures that will come in the future.
+
+```python
+
+GradCAM(model=model, target_layer=target_layer, reshape_transform=reshape_transform)
+
+def reshape_transform(tensor, height=7, width=7):
+    result = tensor.reshape(tensor.size(0),
+        height, width, tensor.size(2))
+
+    # Bring the channels to the first dimension,
+    # like in CNNs.
+    result = result.transpose(2, 3).transpose(1, 2)
+    return result
+```
+
+### Which target_layer should we chose for Swin Transformers?
+
+Since the swin transformer is different from ViT, it does not contains `cls_token` as present in ViT,
+therefore we will use all the 7x7 images we get from the last block of the last layer.
+
+We should chose any layer before the final attention block, for example:
+```python
+target_layer = model.layers[-1].blocks[-1].norm1
+```
+
+----------
+
 ## Citation
 If you use this for research, please cite. Here is an example BibTeX entry:
 
@@ -201,27 +246,26 @@ If you use this for research, please cite. Here is an example BibTeX entry:
 ----------
 
 # References
-
-https://arxiv.org/abs/1610.02391
+https://arxiv.org/abs/1610.02391 <br>
 `Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization
 Ramprasaath R. Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam, Devi Parikh, Dhruv Batra`
 
-https://arxiv.org/abs/1710.11063
+https://arxiv.org/abs/1710.11063 <br>
 `Grad-CAM++: Improved Visual Explanations for Deep Convolutional Networks
 Aditya Chattopadhyay, Anirban Sarkar, Prantik Howlader, Vineeth N Balasubramanian`
 
-https://arxiv.org/abs/1910.01279
+https://arxiv.org/abs/1910.01279 <br>
 `Score-CAM: Score-Weighted Visual Explanations for Convolutional Neural Networks
 Haofan Wang, Zifan Wang, Mengnan Du, Fan Yang, Zijian Zhang, Sirui Ding, Piotr Mardziel, Xia Hu`
 
-https://ieeexplore.ieee.org/abstract/document/9093360/
-`Saurabh Desai and Harish G Ramaswamy. Ablation-cam: Visual explanations for deep
-convolutional network via gradient-free localization. In WACV, pages 972–980, 2020`
+https://ieeexplore.ieee.org/abstract/document/9093360/ <br>
+`Ablation-cam: Visual explanations for deep convolutional network via gradient-free localization.
+Saurabh Desai and Harish G Ramaswamy. In WACV, pages 972–980, 2020`
 
-https://arxiv.org/abs/2008.02312
+https://arxiv.org/abs/2008.02312 <br>
 `Axiom-based Grad-CAM: Towards Accurate Visualization and Explanation of CNNs
 Ruigang Fu, Qingyong Hu, Xiaohu Dong, Yulan Guo, Yinghui Gao, Biao Li`
 
-https://arxiv.org/abs/2008.00299
+https://arxiv.org/abs/2008.00299 <br>
 `Eigen-CAM: Class Activation Map using Principal Components
 Mohammed Bany Muhammad, Mohammed Yeasin`
