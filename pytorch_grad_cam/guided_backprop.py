@@ -30,21 +30,31 @@ class GuidedBackpropReLUModel:
         self.model.eval()
         self.cuda = use_cuda
         if self.cuda:
-            self.model = model.cuda()
-
-        def recursive_relu_apply(module_top):
-            for idx, module in module_top._modules.items():
-                recursive_relu_apply(module)
-                if module.__class__.__name__ == 'ReLU':
-                    module_top._modules[idx] = GuidedBackpropReLU.apply
-
-        # replace ReLU with GuidedBackpropReLU
-        recursive_relu_apply(self.model)
+            self.model = self.model.cuda()
 
     def forward(self, input_img):
         return self.model(input_img)
 
+    def recursive_replace_relu_with_guidedrelu(self, module_top):
+        for idx, module in module_top._modules.items():
+            self.recursive_replace_relu_with_guidedrelu(module)
+            if module.__class__.__name__ == 'ReLU':
+                module_top._modules[idx] = GuidedBackpropReLU.apply
+
+    def recursive_replace_guidedrelu_with_relu(self, module_top):
+        try:
+            for idx, module in module_top._modules.items():
+                self.recursive_replace_guidedrelu_with_relu(module)
+                if module == GuidedBackpropReLU.apply:
+                    module_top._modules[idx] = torch.nn.ReLU()
+        except:
+            pass
+
+
     def __call__(self, input_img, target_category=None):
+        # replace ReLU with GuidedBackpropReLU
+        self.recursive_replace_relu_with_guidedrelu(self.model)
+
         if self.cuda:
             input_img = input_img.cuda()
 
@@ -55,16 +65,14 @@ class GuidedBackpropReLUModel:
         if target_category is None:
             target_category = np.argmax(output.cpu().data.numpy())
 
-        one_hot = np.zeros((1, output.size()[-1]), dtype=np.float32)
-        one_hot[0][target_category] = 1
-        one_hot = torch.from_numpy(one_hot).requires_grad_(True)
-        if self.cuda:
-            one_hot = one_hot.cuda()
-
-        one_hot = torch.sum(one_hot * output)
-        one_hot.backward(retain_graph=True)
+        loss = output[0, target_category]
+        loss.backward(retain_graph=True)
 
         output = input_img.grad.cpu().data.numpy()
         output = output[0, :, :, :]
         output = output.transpose((1, 2, 0))
+
+        # replace GuidedBackpropReLU back with ReLU
+        self.recursive_replace_guidedrelu_with_relu(self.model)
+
         return output
