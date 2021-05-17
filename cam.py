@@ -99,7 +99,10 @@ if __name__ == '__main__':
     # Here grayscale_cam has only one image in the batch
     grayscale_cam = grayscale_cam[0, :]
 
-    cam_image = show_cam_on_image(rgb_img, grayscale_cam)
+    cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+
+    # cam_image is RGB encoded whereas "cv2.imwrite" requires BGR encoding.
+    cam_image = cv2.cvtColor(cam_image, cv2.COLOR_BGR2RGB)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
     gb = gb_model(input_tensor, target_category=target_category)
