@@ -1,4 +1,4 @@
-dataclasses==0.8
+dataclasses
 dicom-factory==0.0.3
 numpy==1.19.5
 Pillow==8.1.1
@@ -7,3 +7,4 @@ torchvision==0.8.2
 typing-extensions==3.7.4.3
 ttach
 tqdm
+opencv-python
