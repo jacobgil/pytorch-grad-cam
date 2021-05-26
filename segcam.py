@@ -16,6 +16,10 @@ from pytorch_grad_cam import GradCAM, \
                              EigenCAM, \
                              EigenGradCAM
 
+from pytorch_grad_cam.utils.roi import BaseROI, \
+                                    PixelROI, \
+                                    ClassROI
+
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
                                          deprocess_image, \
@@ -38,7 +42,7 @@ def get_args():
                                  'ablationcam', 'eigencam', 'eigengradcam'],
                         help='Can be gradcam/gradcam++/scorecam/xgradcam'
                              '/ablationcam/eigencam/eigengradcam')
-
+    parser.add_argument('--roimode', type=int, default='0')
     args = parser.parse_args()
     args.use_cuda = args.use_cuda and torch.cuda.is_available()
     if args.use_cuda:
@@ -48,70 +52,8 @@ def get_args():
 
     return args
 
-
-class BaseROI:
-    def __init__(self, image = None):
-        self.image = image
-        self.roi = 1
-        self.fullroi = None
-        self.i = None
-        self.j = None
-
-    def setROIij(self):
-        print(f'Shape of ROI:{self.roi.shape}')
-        self.i = np.where(self.roi == 1)[0]
-        self.j = np.where(self.roi == 1)[1]
-        print(f'Lengths of i and j index lists: {len(self.i)}, {len(self.j)}')
-
-    def meshgrid(self):
-        ylist = np.linspace(0, self.image.shape[0], self.image.shape[0])
-        xlist = np.linspace(0, self.image.shape[1], self.image.shape[1])
-        return np.meshgrid(xlist, ylist)
-
-class PixelROI(BaseROI):
-    def __init__(self, i, j, image):
-        self.image = image
-        self.roi = torch.zeros((image.shape[-3], image.shape[-2]))
-        self.roi[i, j] = 1
-        self.i = i
-        self.j = j
-#
-# class ClassROI(BaseROI):
-#     def __init__(self, model, image, cls):
-#         preds = model.predict(np.expand_dims(image, 0))[0]
-#         max_preds = preds.argmax(axis=-1)
-#         self.image = image
-#         self.roi = np.round(preds[..., cls] * (max_preds == cls)).reshape(image.shape[-3], image.shape[-2])
-#         self.fullroi = self.roi
-#         self.setROIij()
-#
-#     def connectedComponents(self, ignore=None):
-#         _, all_labels = cv2.connectedComponents(self.fullroi)
-#         # all_labels = measure.label(self.fullroi, background=0)
-#
-#
-#         (values, counts) = np.unique(all_labels * (all_labels != 0), return_counts=True)
-#         print("connectedComponents values, counts: ", values, counts)
-#         return all_labels, values, counts
-#
-#     def largestComponent(self):
-#         all_labels, values, counts = self.connectedComponents()
-#         # find the largest component
-#         ind = np.argmax(counts[values != 0]) + 1  # +1 because indexing starts from 0 for the background
-#         print("argmax: ", ind)
-#         # define RoI
-#         self.roi = (all_labels == ind).astype(int)
-#         self.setRoIij()
-#
-#     def smallestComponent(self):
-#         all_labels, values, counts = self.connectedComponents()
-#         ind = np.argmin(counts[values != 0]) + 1
-#         print("argmin: ", ind)  #
-#         self.roi = (all_labels == ind).astype(int)
-#         self.setRoIij()
-
-
-def get_output_tensor(output, verbose=True):
+# Get tensor from output of network. Some segmentation network returns more than 1 tensor.
+def get_output_tensor(output, verbose=False):
     if isinstance(output, torch.Tensor):
         return output
     elif isinstance(output, collections.OrderedDict):
@@ -131,11 +73,16 @@ class SegModel(torch.nn.Module):
         self.roi = roi
 
     def forward(self, x):
-        output = self.model(x)
-        output = get_output_tensor(output)
+        output = self.model(x) # might be multiple tensors
+        output = get_output_tensor(output) # Ensure only one tensor
+
+        N = output.shape[-3]
+        if N == 1: # if the original problem is binary using sigmoid, change to one-hot style.
+            output = torch.log_softmax([-output, output], dim=-3)
+
         if self.roi is not None:
-            output = output * self.roi.roi
-        output = torch.sum(output, dim=(2, 3))
+            output = self.roi.apply_roi(output)
+        output = torch.sum(output, dim=(-2, -1))
         return output
 
 if __name__ == '__main__':
@@ -157,7 +104,7 @@ if __name__ == '__main__':
          "eigengradcam": EigenGradCAM}
 
     model = models.segmentation.fcn_resnet50(pretrained=True)
-
+    model.eval()
     # Choose the target layer you want to compute the visualization for.
     # Usually this will be the last convolutional layer in the model.
     # Some common choices can be:
@@ -172,21 +119,39 @@ if __name__ == '__main__':
     input_tensor = preprocess_image(rgb_img, mean=[0.485, 0.456, 0.406], 
                                              std=[0.229, 0.224, 0.225])
 
-    segmodel = SegModel(model, roi=PixelROI(0, 130, rgb_img))
+    ROIMode = args.roimode
+    if ROIMode == 0:
+        ## All pixels
+        segmodel = SegModel(model, roi=BaseROI(rgb_img))
+    elif ROIMode == 1:
+        ## Single code assigned roi
+        roi = PixelROI(50, 130, rgb_img)
+        segmodel = SegModel(model, roi=roi)
+    elif ROIMode == 2:
+        ## User pick a pixel
+        roi = PixelROI(50, 130, rgb_img)
+        ## Before or after pass to model, both work
+        # roi.pickPoint()
+        segmodel = SegModel(model, roi=roi)
+        roi.pickROI()
+    elif ROIMode == 3:
+        ## Of specific class (GT or predict, depending on what user passes)
+        pred = torch.argmax(get_output_tensor(model(input_tensor)), -3).squeeze(0)
+        roi = ClassROI(rgb_img, pred, 12)
+        # roi.largestComponent()
+        # roi.smallestComponent()
+        # roi.pickClass()
+        roi.pickComponentClass()
+        segmodel = SegModel(model, roi=roi)
+
 
     cam = methods[args.method](model=segmodel,
                                target_layer=target_layer,
                                use_cuda=args.use_cuda)
 
-
-    modeloutput = torch.argmax(get_output_tensor(model(input_tensor)), dim=1).squeeze(0)
-
-    plt.matshow(modeloutput.cpu().numpy())
-    plt.show()
-
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
-    target_category = 8
+    target_category = None
 
     # AblationCAM and ScoreCAM have batched implementations.
     # You can override the internal batch size for faster computation.
@@ -209,14 +174,15 @@ if __name__ == '__main__':
     cam_gb = deprocess_image(cam_mask * gb)
     gb = deprocess_image(gb)
 
-    plt.figure()
-    plt.imshow(cam_image)
-    plt.figure()
-    plt.imshow(gb)
-    plt.figure()
-    plt.imshow(cam_gb)
-    plt.show()
-
-    # cv2.imwrite(f'{args.method}_cam.jpg', cam_image)
-    # cv2.imwrite(f'{args.method}_gb.jpg', gb)
-    # cv2.imwrite(f'{args.method}_cam_gb.jpg', cam_gb)
+    if True:
+        plt.figure()
+        plt.imshow(cam_image)
+        # plt.figure()
+        # plt.imshow(gb)
+        plt.figure()
+        plt.imshow(cam_gb)
+        plt.show()
+    else:
+        cv2.imwrite(f'{args.method}_cam.jpg', cam_image)
+        cv2.imwrite(f'{args.method}_gb.jpg', gb)
+        cv2.imwrite(f'{args.method}_cam_gb.jpg', cam_gb)

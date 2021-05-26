@@ -5,6 +5,7 @@ Pillow==8.1.1
 torch==1.7.1
 torchvision==0.8.2
 typing-extensions==3.7.4.3
+scikit-image
 ttach
 tqdm
 opencv-python
