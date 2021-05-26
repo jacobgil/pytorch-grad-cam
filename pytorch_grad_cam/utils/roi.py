@@ -2,6 +2,27 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 from skimage import measure
+import collections
+
+def gui_get_point(image, i=None, j=None):
+    fig = plt.figure('Input Pick An Point')
+    scale = np.mean(image.shape[:2])
+    if len(image.shape)==3:
+        pImg = plt.imshow(image)
+    else:
+        pImg = plt.matshow(image)
+
+    pMarker = plt.scatter(j, i, c='r', s=scale, marker='x')
+    ret = plt.ginput(1)
+    if ret == None or ret == []:
+        pass
+    else:
+        j, i = ret[0]
+        j, i= int(j), int(i)
+    pMarker.remove()
+    pMarker = plt.scatter(j, i, c='r', s=scale, marker='x')
+    plt.close(fig)
+    return i, j
 
 class BaseROI:
     def __init__(self, image = None):
@@ -25,25 +46,6 @@ class BaseROI:
     def apply_roi(self, output):
         return self.roi * output
 
-def gui_get_point(image, i=None, j=None):
-    fig = plt.figure('Input Pick An Point')
-    scale = np.mean(image.shape[:2])
-    if len(image.shape)==3:
-        pImg = plt.imshow(image)
-    else:
-        pImg = plt.matshow(image)
-
-    pMarker = plt.scatter(j, i, c='r', s=scale, marker='x')
-    ret = plt.ginput(1)
-    if ret == None or ret == []:
-        pass
-    else:
-        j, i = ret[0]
-        j, i= int(j), int(i)
-    pMarker.remove()
-    pMarker = plt.scatter(j, i, c='r', s=scale, marker='x')
-    plt.close(fig)
-    return i, j
 
 class PixelROI(BaseROI):
     def __init__(self, i, j, image):
@@ -120,4 +122,36 @@ class ClassROI(BaseROI):
         self.roi = torch.Tensor(all_labels == ind).reshape(self.image.shape[-3], self.image.shape[-2])
         print(f'Valid ROI pixels: {torch.sum(self.roi).numpy()} of class {self.cls}')
 
+# Get tensor from output of network. Some segmentation network returns more than 1 tensor.
+def get_output_tensor(output, verbose=False):
+    if isinstance(output, torch.Tensor):
+        return output
+    elif isinstance(output, collections.OrderedDict):
+        k = next(iter(output.keys()))
+        if verbose: print(f'Select "{k}" from dict {output.keys()}')
+        return output[k]
+    elif isinstance(output, list):
+        if verbose: print(f'Select "[0]" from list(n={len(output)})')
+        return output[0]
+    else:
+        raise RuntimeError(f'Unknown type {type(output)}')
+
+class SegModel(torch.nn.Module):
+    def __init__(self, model, roi=None):
+        super(SegModel, self).__init__()
+        self.model = model
+        self.roi = roi
+
+    def forward(self, x):
+        output = self.model(x) # might be multiple tensors
+        output = get_output_tensor(output) # Ensure only one tensor
+
+        N = output.shape[-3]
+        if N == 1: # if the original problem is binary using sigmoid, change to one-hot style.
+            output = torch.log_softmax([-output, output], dim=-3)
+
+        if self.roi is not None:
+            output = self.roi.apply_roi(output)
+        output = torch.sum(output, dim=(-2, -1))
+        return output
 

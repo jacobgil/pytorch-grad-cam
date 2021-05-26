@@ -1,6 +1,4 @@
 import argparse
-import collections
-
 import cv2
 import numpy as np
 import torch
@@ -18,7 +16,9 @@ from pytorch_grad_cam import GradCAM, \
 
 from pytorch_grad_cam.utils.roi import BaseROI, \
                                     PixelROI, \
-                                    ClassROI
+                                    ClassROI, \
+                                    get_output_tensor, \
+                                    SegModel
 
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
@@ -52,38 +52,6 @@ def get_args():
 
     return args
 
-# Get tensor from output of network. Some segmentation network returns more than 1 tensor.
-def get_output_tensor(output, verbose=False):
-    if isinstance(output, torch.Tensor):
-        return output
-    elif isinstance(output, collections.OrderedDict):
-        k = next(iter(output.keys()))
-        if verbose: print(f'Select "{k}" from dict {output.keys()}')
-        return output[k]
-    elif isinstance(output, list):
-        if verbose: print(f'Select "[0]" from list(n={len(output)})')
-        return output[0]
-    else:
-        raise RuntimeError(f'Unknown type {type(output)}')
-
-class SegModel(torch.nn.Module):
-    def __init__(self, model, roi=None):
-        super(SegModel, self).__init__()
-        self.model = model
-        self.roi = roi
-
-    def forward(self, x):
-        output = self.model(x) # might be multiple tensors
-        output = get_output_tensor(output) # Ensure only one tensor
-
-        N = output.shape[-3]
-        if N == 1: # if the original problem is binary using sigmoid, change to one-hot style.
-            output = torch.log_softmax([-output, output], dim=-3)
-
-        if self.roi is not None:
-            output = self.roi.apply_roi(output)
-        output = torch.sum(output, dim=(-2, -1))
-        return output
 
 if __name__ == '__main__':
     """ python cam.py -image-path <path_to_image>
