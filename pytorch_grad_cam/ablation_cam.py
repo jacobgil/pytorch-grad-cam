@@ -92,7 +92,7 @@ class AblationCAM(BaseCAM):
                     ablation_layer.indices = list(range(i, i + BATCH_SIZE))
 
                     if i + BATCH_SIZE > number_of_channels:
-                        keep = i + BATCH_SIZE - number_of_channels - 1
+                        keep = number_of_channels - i 
                         batch_tensor = batch_tensor[:keep]
                         ablation_layer.indices = ablation_layer.indices[:keep]
                     score = self.model(batch_tensor)[:, category].cpu().numpy()
