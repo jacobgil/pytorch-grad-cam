@@ -101,7 +101,7 @@ if __name__ == '__main__':
         ## Before or after pass to model, both work
         # roi.pickPoint()
         segmodel = SegModel(model, roi=roi)
-        roi.pickROI()
+        roi.pickPixel()
     elif ROIMode == 3:
         ## Of specific class (GT or predict, depending on what user passes)
         pred = torch.argmax(get_output_tensor(model(input_tensor)), -3).squeeze(0)

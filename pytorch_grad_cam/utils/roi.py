@@ -27,7 +27,7 @@ def gui_get_point(image, i=None, j=None):
 class BaseROI:
     def __init__(self, image = None):
         self.image = image
-        self.roi = 1
+        self.roi = torch.Tensor([1])
         self.fullroi = None
         self.i = None
         self.j = None
@@ -44,7 +44,7 @@ class BaseROI:
         return np.meshgrid(xlist, ylist)
 
     def apply_roi(self, output):
-        return self.roi * output
+        return self.roi.to(output.device) * output
 
 
 class PixelROI(BaseROI):
