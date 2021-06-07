@@ -7,18 +7,18 @@ from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
 
 
 class BaseCAM:
-    def __init__(self, 
-                 model, 
+    def __init__(self,
+                 model,
                  target_layer,
-                 use_cuda=False,
+                 cuda=False,
                  reshape_transform=None):
         self.model = model.eval()
         self.target_layer = target_layer
-        self.cuda = use_cuda
+        self.cuda = cuda
         if self.cuda:
-            self.model = model.cuda()
+            self.model = model.to(self.cuda)
         self.reshape_transform = reshape_transform
-        self.activations_and_grads = ActivationsAndGradients(self.model, 
+        self.activations_and_grads = ActivationsAndGradients(self.model,
             target_layer, reshape_transform)
 
     def forward(self, input_img):
@@ -54,7 +54,7 @@ class BaseCAM:
     def forward(self, input_tensor, target_category=None, eigen_smooth=False):
 
         if self.cuda:
-            input_tensor = input_tensor.cuda()
+            input_tensor = input_tensor.to(self.cuda)
 
         output = self.activations_and_grads(input_tensor)
 
@@ -73,7 +73,7 @@ class BaseCAM:
         activations = self.activations_and_grads.activations[-1].cpu().data.numpy()
         grads = self.activations_and_grads.gradients[-1].cpu().data.numpy()
 
-        cam = self.get_cam_image(input_tensor, target_category, 
+        cam = self.get_cam_image(input_tensor, target_category,
             activations, grads, eigen_smooth)
 
         cam = np.maximum(cam, 0)
