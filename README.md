@@ -23,6 +23,7 @@
 | ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops |
 | EigenCAM  | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)|
 | EigenGradCAM  | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner|
+| LayerCAM  | Spatially weight the activations by positive gradients. Works better especially in lower layers |
 
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
@@ -142,7 +143,7 @@ To use with CUDA:
 
 You can choose between:
 
-`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` and `EigenCAM`.
+`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM` and `EigenCAM`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
@@ -269,3 +270,7 @@ Ruigang Fu, Qingyong Hu, Xiaohu Dong, Yulan Guo, Yinghui Gao, Biao Li`
 https://arxiv.org/abs/2008.00299 <br>
 `Eigen-CAM: Class Activation Map using Principal Components
 Mohammed Bany Muhammad, Mohammed Yeasin`
+
+https://arxiv.org/abs/2008.00299 <br>
+`LayerCAM: Exploring Hierarchical Class Activation Maps for Localization
+Peng-Tao Jiang; Chang-Bin Zhang; Qibin Hou; Ming-Ming Cheng; Yunchao Wei`

@@ -10,7 +10,8 @@ from pytorch_grad_cam import GradCAM, \
                              AblationCAM, \
                              XGradCAM, \
                              EigenCAM, \
-                             EigenGradCAM
+                             EigenGradCAM, \
+                             LayerCAM    
 
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
@@ -30,10 +31,12 @@ def get_args():
                         help='Reduce noise by taking the first principle componenet'
                         'of cam_weights*activations')
     parser.add_argument('--method', type=str, default='gradcam',
-                        choices=['gradcam', 'gradcam++', 'scorecam', 'xgradcam',
-                                 'ablationcam', 'eigencam', 'eigengradcam'],
+                        choices=['gradcam', 'gradcam++', 
+                                 'scorecam', 'xgradcam',
+                                 'ablationcam', 'eigencam', 
+                                 'eigengradcam', 'layercam'],
                         help='Can be gradcam/gradcam++/scorecam/xgradcam'
-                             '/ablationcam/eigencam/eigengradcam')
+                             '/ablationcam/eigencam/eigengradcam/layercam')
 
     args = parser.parse_args()
     args.use_cuda = args.use_cuda and torch.cuda.is_available()
@@ -61,7 +64,8 @@ if __name__ == '__main__':
          "ablationcam": AblationCAM,
          "xgradcam": XGradCAM,
          "eigencam": EigenCAM,
-         "eigengradcam": EigenGradCAM}
+         "eigengradcam": EigenGradCAM,
+         "layercam": LayerCAM}
 
     model = models.resnet50(pretrained=True)
 
