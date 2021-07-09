@@ -271,6 +271,6 @@ https://arxiv.org/abs/2008.00299 <br>
 `Eigen-CAM: Class Activation Map using Principal Components
 Mohammed Bany Muhammad, Mohammed Yeasin`
 
-https://arxiv.org/abs/2008.00299 <br>
+http://mftp.mmcheng.net/Papers/21TIP_LayerCAM.pdf <br>
 `LayerCAM: Exploring Hierarchical Class Activation Maps for Localization
 Peng-Tao Jiang; Chang-Bin Zhang; Qibin Hou; Ming-Ming Cheng; Yunchao Wei`
