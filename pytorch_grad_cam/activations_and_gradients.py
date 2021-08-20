@@ -9,7 +9,12 @@ class ActivationsAndGradients:
         self.reshape_transform = reshape_transform
 
         target_layer.register_forward_hook(self.save_activation)
-        target_layer.register_backward_hook(self.save_gradient)
+
+        #Backward compitability with older pytorch versions:
+        if hasattr(target_layer, 'register_full_backward_hook'):
+            target_layer.register_full_backward_hook(self.save_gradient)
+        else:
+            target_layer.register_backward_hook(self.save_gradient)
 
     def save_activation(self, module, input, output):
         activation = output
@@ -26,5 +31,5 @@ class ActivationsAndGradients:
 
     def __call__(self, x):
         self.gradients = []
-        self.activations = []        
+        self.activations = []
         return self.model(x)
