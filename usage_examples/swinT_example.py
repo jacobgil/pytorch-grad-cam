@@ -29,7 +29,7 @@ def get_args():
                         help='Reduce noise by taking the first principle componenet'
                         'of cam_weights*activations')
 
-    parser.add_argument('--method', type=str, default='gradcam',
+    parser.add_argument('--method', type=str, default='scorecam',
                         help='Can be gradcam/gradcam++/scorecam/xgradcam/ablationcam')
 
     args = parser.parse_args()
@@ -69,13 +69,13 @@ if __name__ == '__main__':
     if args.method not in list(methods.keys()):
         raise Exception(f"method should be one of {list(methods.keys())}")
 
-    model = timm.create_model(''swin_base_patch4_window7_224'', pretrained=True)
+    model = timm.create_model('swin_base_patch4_window7_224', pretrained=True)
     model.eval()
 
     if args.use_cuda:
         model = model.cuda()
 
-    target_layer = model.layers[-1].blocks[-2].norm1
+    target_layer = model.layers[-1].blocks[-1].norm2
 
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
