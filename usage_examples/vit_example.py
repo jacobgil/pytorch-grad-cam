@@ -2,7 +2,6 @@ import argparse
 import cv2
 import numpy as np
 import torch
-from torchvision import models
 
 from pytorch_grad_cam import GradCAM, \
     ScoreCAM, \
@@ -76,7 +75,9 @@ if __name__ == '__main__':
          "ablationcam": AblationCAM,
          "xgradcam": XGradCAM,
          "eigencam": EigenCAM,
-         "eigengradcam": EigenGradCAM}
+         "eigengradcam": EigenGradCAM,
+         "layercam": LayerCAM,
+         "fullgrad": FullGrad}
 
     if args.method not in list(methods.keys()):
         raise Exception(f"method should be one of {list(methods.keys())}")

@@ -2,7 +2,15 @@ import pytest
 import torchvision
 import torch
 import cv2
-from pytorch_grad_cam import *
+from pytorch_grad_cam import GradCAM, \
+    ScoreCAM, \
+    GradCAMPlusPlus, \
+    AblationCAM, \
+    XGradCAM, \
+    EigenCAM, \
+    EigenGradCAM, \
+    LayerCAM, \
+    FullGrad
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
     deprocess_image, \
     preprocess_image
@@ -60,6 +68,7 @@ def test_all_cam_models_can_run(numpy_image, batch_size, width, height,
     cam = cam_method(model=model,
                      target_layers=target_layers,
                      use_cuda=False)
+    cam.batch_size = 4
     grayscale_cam = cam(input_tensor=input_tensor,
                         target_category=target_category,
                         aug_smooth=aug_smooth,
