@@ -1,6 +1,5 @@
 import pytest
 import torchvision
-import numpy as np
 import torch
 import cv2
 from pytorch_grad_cam import *

@@ -25,9 +25,6 @@ class BaseCAM:
         self.activations_and_grads = ActivationsAndGradients(
             self.model, target_layers, reshape_transform)
 
-    def forward(self, input_img):
-        return self.model(input_img)
-
     """ Get a vector of weights for every channel in the target layer.
         Methods that return weights channels,
         will typically need to only implement this function. """

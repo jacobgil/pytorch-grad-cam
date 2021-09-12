@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 import torch
 from pytorch_grad_cam.base_cam import BaseCAM
@@ -61,8 +60,6 @@ class FullGrad(BaseCAM):
             target_category,
             eigen_smooth):
         input_grad = input_tensor.grad.data.cpu().numpy()
-        activations_list = [a.cpu().data.numpy() for a in
-                            self.activations_and_grads.activations]
         grads_list = [g.cpu().data.numpy() for g in
                       self.activations_and_grads.gradients]
         cam_per_target_layer = []

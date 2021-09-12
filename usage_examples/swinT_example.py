@@ -10,11 +10,11 @@ from pytorch_grad_cam import GradCAM, \
     AblationCAM, \
     XGradCAM, \
     EigenCAM, \
-    EigenGradCAM
+    EigenGradCAM, \
+    LayerCAM, \
+    FullGrad
 
-from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
-    deprocess_image, \
     preprocess_image
 
 

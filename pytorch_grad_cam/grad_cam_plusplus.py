@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import torch
 from pytorch_grad_cam.base_cam import BaseCAM
 
 # https://arxiv.org/abs/1710.11063
