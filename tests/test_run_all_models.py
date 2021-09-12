@@ -16,9 +16,11 @@ from pytorch_grad_cam.utils.image import show_cam_on_image, \
 
 torch.manual_seed(0)
 
+
 @pytest.fixture
 def numpy_image():
     return cv2.imread("examples/both.png")
+
 
 @pytest.mark.parametrize("cnn_model,target_layer_names", [
     (torchvision.models.resnet18, ["layer4[-1]", "layer4[-2]"]),
