@@ -75,7 +75,9 @@ if __name__ == '__main__':
          "ablationcam": AblationCAM,
          "xgradcam": XGradCAM,
          "eigencam": EigenCAM,
-         "eigengradcam": EigenGradCAM}
+         "eigengradcam": EigenGradCAM,
+         "layercam": LayerCAM,
+         "fullgrad": FullGrad}
 
     if args.method not in list(methods.keys()):
         raise Exception(f"method should be one of {list(methods.keys())}")
