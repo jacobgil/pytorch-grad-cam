@@ -2,6 +2,8 @@
 
 `pip install grad-cam`
 
+⭐ Comprehensive and full featured collection of Pixel Attribution methods for Computer Vision.
+
 ⭐ Tested on many Common CNN Networks and Vision Transformers.
 
 ⭐ Includes smoothing methods to make the CAMs look nice.
@@ -24,6 +26,7 @@
 | EigenCAM  | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)|
 | EigenGradCAM  | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner|
 | LayerCAM  | Spatially weight the activations by positive gradients. Works better especially in lower layers |
+| FullGrad  | Computes the gradients from the biases from all over the network, and then aggregates. |
 
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
@@ -81,12 +84,12 @@ from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
 
 model = resnet50(pretrained=True)
-target_layer = model.layer4[-1]
+target_layers = [model.layer4[-1]]
 input_tensor = # Create an input tensor image for your model..
 # Note: input_tensor can be a batch tensor with several images!
 
 # Construct the CAM object once, and then re-use it on many images:
-cam = GradCAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
+cam = GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda)
 
 # If target_category is None, the highest scoring category
 # will be used for every image in the batch.
@@ -274,3 +277,7 @@ Mohammed Bany Muhammad, Mohammed Yeasin`
 http://mftp.mmcheng.net/Papers/21TIP_LayerCAM.pdf <br>
 `LayerCAM: Exploring Hierarchical Class Activation Maps for Localization
 Peng-Tao Jiang; Chang-Bin Zhang; Qibin Hou; Ming-Ming Cheng; Yunchao Wei`
+
+https://arxiv.org/abs/1905.00780 <br>
+`Full-Gradient Representation for Neural Network Visualization
+Suraj Srinivas, Francois Fleuret`

@@ -2,8 +2,8 @@ import argparse
 import cv2
 import numpy as np
 import torch
+import torchvision
 from torchvision import models
-
 from pytorch_grad_cam import GradCAM, \
                              ScoreCAM, \
                              GradCAMPlusPlus, \
@@ -11,13 +11,12 @@ from pytorch_grad_cam import GradCAM, \
                              XGradCAM, \
                              EigenCAM, \
                              EigenGradCAM, \
-                             LayerCAM    
-
+                             LayerCAM, \
+                             FullGrad
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
                                          deprocess_image, \
                                          preprocess_image
-
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -34,7 +33,7 @@ def get_args():
                         choices=['gradcam', 'gradcam++', 
                                  'scorecam', 'xgradcam',
                                  'ablationcam', 'eigencam', 
-                                 'eigengradcam', 'layercam'],
+                                 'eigengradcam', 'layercam', 'fullgrad'],
                         help='Can be gradcam/gradcam++/scorecam/xgradcam'
                              '/ablationcam/eigencam/eigengradcam/layercam')
 
@@ -46,7 +45,6 @@ def get_args():
         print('Using CPU for computation')
 
     return args
-
 
 if __name__ == '__main__':
     """ python cam.py -image-path <path_to_image>
@@ -65,7 +63,8 @@ if __name__ == '__main__':
          "xgradcam": XGradCAM,
          "eigencam": EigenCAM,
          "eigengradcam": EigenGradCAM,
-         "layercam": LayerCAM}
+         "layercam": LayerCAM,
+         "fullgrad": FullGrad}
 
     model = models.resnet50(pretrained=True)
 
@@ -76,17 +75,22 @@ if __name__ == '__main__':
     # VGG, densenet161: model.features[-1]
     # mnasnet1_0: model.layers[-1]
     # You can print the model to help chose the layer
-    target_layer = model.layer4[-1]
+    # You can pass a list with several target layers,
+    # in that case the CAMs will be computed per layer and then aggregated.
+    # You can also try selecting all layers of a certain type, with e.g:
+    # from pytorch_grad_cam.utils.find_layers import find_layer_types_recursive
+    # find_layer_types_recursive(model, [torch.nn.ReLU])
+    target_layers = [model.layer4[-1]]
 
     cam = methods[args.method](model=model,
-                               target_layer=target_layer,
+                               target_layers=target_layers,
                                use_cuda=args.use_cuda)
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = np.float32(rgb_img) / 255
     input_tensor = preprocess_image(rgb_img, mean=[0.485, 0.456, 0.406], 
                                              std=[0.229, 0.224, 0.225])
-
+    
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
     target_category = None

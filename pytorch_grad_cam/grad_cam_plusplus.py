@@ -3,16 +3,19 @@ import numpy as np
 import torch
 from pytorch_grad_cam.base_cam import BaseCAM
 
+#https://arxiv.org/abs/1710.11063
 class GradCAMPlusPlus(BaseCAM):
-    def __init__(self, model, target_layer, use_cuda=False,
+    def __init__(self, model, target_layers, use_cuda=False,
         reshape_transform=None):
-        super(GradCAMPlusPlus, self).__init__(model, target_layer, use_cuda, 
+        super(GradCAMPlusPlus, self).__init__(model, target_layers, use_cuda, 
             reshape_transform)
 
-    def get_cam_weights(self, input_tensor, 
-                              target_category, 
-                              activations, 
-                              grads):
+    def get_cam_weights(self, 
+                        input_tensor,
+                        target_layers,
+                        target_category,
+                        activations,
+                        grads):
         grads_power_2 = grads**2
         grads_power_3 = grads_power_2*grads
         # Equation 19 in https://arxiv.org/abs/1710.11063

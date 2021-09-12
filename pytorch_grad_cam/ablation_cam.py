@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import tqdm
 from pytorch_grad_cam.base_cam import BaseCAM
+from pytorch_grad_cam.utils.find_layers import replace_layer_recursive
 
 class AblationLayer(torch.nn.Module):
     def __init__(self, layer, reshape_transform, indices):
@@ -43,23 +44,15 @@ class AblationLayer(torch.nn.Module):
 
         return output
 
-def replace_layer_recursive(model, old_layer, new_layer):
-    for name, layer in model._modules.items():
-        if layer == old_layer:
-            model._modules[name] = new_layer
-            return True
-        elif replace_layer_recursive(layer, old_layer, new_layer):
-            return True
-    return False
-
 class AblationCAM(BaseCAM):
-    def __init__(self, model, target_layer, use_cuda=False, 
+    def __init__(self, model, target_layers, use_cuda=False, 
         reshape_transform=None):
-        super(AblationCAM, self).__init__(model, target_layer, use_cuda, 
+        super(AblationCAM, self).__init__(model, target_layers, use_cuda, 
             reshape_transform)
 
     def get_cam_weights(self,
                         input_tensor,
+                        target_layer,
                         target_category,
                         activations,
                         grads):
@@ -70,10 +63,9 @@ class AblationCAM(BaseCAM):
                 original_scores.append(outputs[i, target_category[i]])
         original_scores = np.float32(original_scores)
 
-        ablation_layer = AblationLayer(self.target_layer, 
+        ablation_layer = AblationLayer(target_layer, 
             self.reshape_transform, indices=[])
-        replace_layer_recursive(self.model, self.target_layer, ablation_layer)
-
+        replace_layer_recursive(self.model, target_layer, ablation_layer)
 
         if hasattr(self, "batch_size"):
             BATCH_SIZE = self.batch_size
@@ -84,7 +76,6 @@ class AblationCAM(BaseCAM):
         weights = []
 
         with torch.no_grad():
-
             # Iterate over the input batch
             for tensor, category in zip(input_tensor, target_category):
                 batch_tensor = tensor.repeat(BATCH_SIZE, 1, 1, 1)
@@ -104,5 +95,6 @@ class AblationCAM(BaseCAM):
         weights = (original_scores - weights) / original_scores
 
         #replace the model back to the original state
-        replace_layer_recursive(self.model, ablation_layer, self.target_layer)
+        replace_layer_recursive(self.model, ablation_layer, target_layer)
         return weights
+

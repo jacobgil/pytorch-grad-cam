@@ -2,6 +2,7 @@ import numpy as np
 
 def get_2d_projection(activation_batch):
     # TBD: use pytorch batch svd implementation
+    activation_batch[np.isnan(activation_batch)] = 0
     projections = []
     for activations in activation_batch:
         reshaped_activations = (activations).reshape(activations.shape[0], -1).transpose()
