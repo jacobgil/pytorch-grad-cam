@@ -58,4 +58,5 @@ class ScoreCAM(BaseCAM):
             scores = scores.view(activations.shape[0], activations.shape[1])
 
             weights = torch.nn.Softmax(dim=-1)(scores).numpy()
+            print("weights", weights.shape)
             return weights

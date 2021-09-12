@@ -12,8 +12,10 @@ def get_2d_projection(activation_batch):
         # Otherwise the image returned is negative
         reshaped_activations = reshaped_activations - \
             reshaped_activations.mean(axis=0)
+        print("calling svd..")
         U, S, VT = np.linalg.svd(reshaped_activations, full_matrices=True)
         projection = reshaped_activations @ VT[0, :]
         projection = projection.reshape(activations.shape[1:])
+        print("projection", projection.shape)
         projections.append(projection)
     return np.float32(projections)
