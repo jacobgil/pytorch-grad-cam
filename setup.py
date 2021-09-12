@@ -5,7 +5,7 @@ with open('README.md', mode='r', encoding='utf-8') as fh:
 
 setuptools.setup(
     name='grad-cam',
-    version='1.3.1',
+    version='1.3.2',
     author='Jacob Gildenblat',
     author_email='jacob.gildenblat@gmail.com',
     description='Many Class Activation Map methods implemented in Pytorch. '
