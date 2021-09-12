@@ -21,6 +21,8 @@ class FullGrad(BaseCAM):
         self.bias_data = [self.get_bias_data(layer).cpu().numpy() for layer in target_layers]
         
     def get_bias_data(self, layer):
+        # Borrowed from official paper impl: 
+        # https://github.com/idiap/fullgrad-saliency/blob/master/saliency/tensor_extractor.py#L47
         if type(layer) is torch.nn.BatchNorm2d:
             bias = - (layer.running_mean * layer.weight 
                     / torch.sqrt(layer.running_var + layer.eps)) + layer.bias
@@ -55,7 +57,8 @@ class FullGrad(BaseCAM):
         assert(len(self.bias_data) == len(grads_list))
         for bias, grads in zip(self.bias_data, grads_list):
             bias = bias[None, :, None, None]
-            # In the paper they take the absolute value, but 
+            # In the paper they take the absolute value, 
+            # but possibily taking only the positive gradients will work better.
             bias_grad = np.abs(bias * grads)
             result = self.scale_accross_batch_and_channels(bias_grad, target_size)
             result = np.sum(result, axis=1)

@@ -2,7 +2,7 @@
 
 `pip install grad-cam`
 
-⭐ Comprehensive and full featured collection of Pixel Attribution methods for Computer Vision.
+⭐ Comprehensive collection of Pixel Attribution methods for Computer Vision.
 
 ⭐ Tested on many Common CNN Networks and Vision Transformers.
 
@@ -26,7 +26,7 @@
 | EigenCAM  | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)|
 | EigenGradCAM  | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner|
 | LayerCAM  | Spatially weight the activations by positive gradients. Works better especially in lower layers |
-| FullGrad  | Computes the gradients from the biases from all over the network, and then aggregates. |
+| FullGrad  | Computes the gradients of the biases from all over the network, and then sums them |
 
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
