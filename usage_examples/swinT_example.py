@@ -5,32 +5,41 @@ import torch
 import timm
 
 from pytorch_grad_cam import GradCAM, \
-                             ScoreCAM, \
-                             GradCAMPlusPlus, \
-                             AblationCAM, \
-                             XGradCAM, \
-                             EigenCAM, \
-                             EigenGradCAM
+    ScoreCAM, \
+    GradCAMPlusPlus, \
+    AblationCAM, \
+    XGradCAM, \
+    EigenCAM, \
+    EigenGradCAM
 
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
-                                         deprocess_image, \
-                                         preprocess_image
+    deprocess_image, \
+    preprocess_image
+
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--use-cuda', action='store_true', default=False,
                         help='Use NVIDIA GPU acceleration')
-    parser.add_argument('--image-path', type=str, default='./examples/both.png',
-                        help='Input image path')
+    parser.add_argument(
+        '--image-path',
+        type=str,
+        default='./examples/both.png',
+        help='Input image path')
     parser.add_argument('--aug_smooth', action='store_true',
                         help='Apply test time augmentation to smooth the CAM')
-    parser.add_argument('--eigen_smooth', action='store_true',
-                        help='Reduce noise by taking the first principle componenet'
-                        'of cam_weights*activations')
+    parser.add_argument(
+        '--eigen_smooth',
+        action='store_true',
+        help='Reduce noise by taking the first principle componenet'
+        'of cam_weights*activations')
 
-    parser.add_argument('--method', type=str, default='scorecam',
-                        help='Can be gradcam/gradcam++/scorecam/xgradcam/ablationcam')
+    parser.add_argument(
+        '--method',
+        type=str,
+        default='scorecam',
+        help='Can be gradcam/gradcam++/scorecam/xgradcam/ablationcam')
 
     args = parser.parse_args()
     args.use_cuda = args.use_cuda and torch.cuda.is_available()
@@ -41,25 +50,27 @@ def get_args():
 
     return args
 
+
 def reshape_transform(tensor, height=7, width=7):
-    result = tensor.reshape(tensor.size(0), 
-        height, width, tensor.size(2))
+    result = tensor.reshape(tensor.size(0),
+                            height, width, tensor.size(2))
 
     # Bring the channels to the first dimension,
     # like in CNNs.
     result = result.transpose(2, 3).transpose(1, 2)
     return result
 
+
 if __name__ == '__main__':
     """ python swinT_example.py -image-path <path_to_image>
     Example usage of using cam-methods on a SwinTransformers network.
-        
+
     """
 
     args = get_args()
     methods = \
-        {"gradcam": GradCAM, 
-         "scorecam": ScoreCAM, 
+        {"gradcam": GradCAM,
+         "scorecam": ScoreCAM,
          "gradcam++": GradCAMPlusPlus,
          "ablationcam": AblationCAM,
          "xgradcam": XGradCAM,
@@ -80,7 +91,7 @@ if __name__ == '__main__':
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
 
-    cam = methods[args.method](model=model, 
+    cam = methods[args.method](model=model,
                                target_layer=target_layer,
                                use_cuda=args.use_cuda,
                                reshape_transform=reshape_transform)
@@ -88,8 +99,8 @@ if __name__ == '__main__':
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = cv2.resize(rgb_img, (224, 224))
     rgb_img = np.float32(rgb_img) / 255
-    input_tensor = preprocess_image(rgb_img, mean=[0.5, 0.5, 0.5], 
-                                             std=[0.5, 0.5, 0.5])
+    input_tensor = preprocess_image(rgb_img, mean=[0.5, 0.5, 0.5],
+                                    std=[0.5, 0.5, 0.5])
 
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
@@ -106,6 +117,6 @@ if __name__ == '__main__':
 
     # Here grayscale_cam has only one image in the batch
     grayscale_cam = grayscale_cam[0, :]
-    
+
     cam_image = show_cam_on_image(rgb_img, grayscale_cam)
     cv2.imwrite(f'{args.method}_cam.jpg', cam_image)

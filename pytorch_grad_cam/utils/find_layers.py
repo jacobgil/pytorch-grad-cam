@@ -7,10 +7,12 @@ def replace_layer_recursive(model, old_layer, new_layer):
             return True
     return False
 
+
 def find_layer_types_recursive(model, layer_types):
     def predicate(layer):
         return type(layer) in layer_types
     return find_layer_predicate_recursive(model, predicate)
+
 
 def find_layer_predicate_recursive(model, predicate):
     result = []

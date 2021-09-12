@@ -7,10 +7,10 @@ class ActivationsAndGradients:
         self.gradients = []
         self.activations = []
         self.reshape_transform = reshape_transform
-        
+
         for target_layer in target_layers:
             target_layer.register_forward_hook(self.save_activation)
-            #Backward compitability with older pytorch versions:
+            # Backward compitability with older pytorch versions:
             if hasattr(target_layer, 'register_full_backward_hook'):
                 target_layer.register_full_backward_hook(self.save_gradient)
             else:

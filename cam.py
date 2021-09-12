@@ -2,37 +2,42 @@ import argparse
 import cv2
 import numpy as np
 import torch
-import torchvision
 from torchvision import models
 from pytorch_grad_cam import GradCAM, \
-                             ScoreCAM, \
-                             GradCAMPlusPlus, \
-                             AblationCAM, \
-                             XGradCAM, \
-                             EigenCAM, \
-                             EigenGradCAM, \
-                             LayerCAM, \
-                             FullGrad
+    ScoreCAM, \
+    GradCAMPlusPlus, \
+    AblationCAM, \
+    XGradCAM, \
+    EigenCAM, \
+    EigenGradCAM, \
+    LayerCAM, \
+    FullGrad
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
-                                         deprocess_image, \
-                                         preprocess_image
+    deprocess_image, \
+    preprocess_image
+
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--use-cuda', action='store_true', default=False,
                         help='Use NVIDIA GPU acceleration')
-    parser.add_argument('--image-path', type=str, default='./examples/both.png',
-                        help='Input image path')
+    parser.add_argument(
+        '--image-path',
+        type=str,
+        default='./examples/both.png',
+        help='Input image path')
     parser.add_argument('--aug_smooth', action='store_true',
                         help='Apply test time augmentation to smooth the CAM')
-    parser.add_argument('--eigen_smooth', action='store_true',
-                        help='Reduce noise by taking the first principle componenet'
-                        'of cam_weights*activations')
+    parser.add_argument(
+        '--eigen_smooth',
+        action='store_true',
+        help='Reduce noise by taking the first principle componenet'
+        'of cam_weights*activations')
     parser.add_argument('--method', type=str, default='gradcam',
-                        choices=['gradcam', 'gradcam++', 
+                        choices=['gradcam', 'gradcam++',
                                  'scorecam', 'xgradcam',
-                                 'ablationcam', 'eigencam', 
+                                 'ablationcam', 'eigencam',
                                  'eigengradcam', 'layercam', 'fullgrad'],
                         help='Can be gradcam/gradcam++/scorecam/xgradcam'
                              '/ablationcam/eigencam/eigengradcam/layercam')
@@ -45,6 +50,7 @@ def get_args():
         print('Using CPU for computation')
 
     return args
+
 
 if __name__ == '__main__':
     """ python cam.py -image-path <path_to_image>
@@ -88,9 +94,10 @@ if __name__ == '__main__':
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = np.float32(rgb_img) / 255
-    input_tensor = preprocess_image(rgb_img, mean=[0.485, 0.456, 0.406], 
-                                             std=[0.229, 0.224, 0.225])
-    
+    input_tensor = preprocess_image(rgb_img,
+                                    mean=[0.485, 0.456, 0.406],
+                                    std=[0.229, 0.224, 0.225])
+
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
     target_category = None

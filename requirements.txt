@@ -7,4 +7,3 @@ torchvision==0.8.2
 typing-extensions==3.7.4.3
 ttach
 tqdm
-pytest

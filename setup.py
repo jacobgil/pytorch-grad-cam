@@ -8,7 +8,8 @@ setuptools.setup(
     version='1.3.1',
     author='Jacob Gildenblat',
     author_email='jacob.gildenblat@gmail.com',
-    description='Many Class Activation Map methods implemented in Pytorch. Including Grad-CAM, Grad-CAM++, Score-CAM, Ablation-CAM and XGrad-CAM',
+    description='Many Class Activation Map methods implemented in Pytorch. '
+                'Including Grad-CAM, Grad-CAM++, Score-CAM, Ablation-CAM and XGrad-CAM',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/jacobgil/pytorch-grad-cam',
