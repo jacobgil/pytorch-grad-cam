@@ -186,3 +186,17 @@ class BaseCAM:
 
         return self.forward(input_tensor,
                             target_category, eigen_smooth)
+
+    def __del__(self):
+        self.activations_and_grads.release()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        self.activations_and_grads.release()
+        if isinstance(exc_value, IndexError):
+            # Handle IndexError here...
+            print(
+                f"An exception occurred in CAM with block: {exc_type}. Message: {exc_value}")
+            return True

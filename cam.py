@@ -88,10 +88,6 @@ if __name__ == '__main__':
     # find_layer_types_recursive(model, [torch.nn.ReLU])
     target_layers = [model.layer4[-1]]
 
-    cam = methods[args.method](model=model,
-                               target_layers=target_layers,
-                               use_cuda=args.use_cuda)
-
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = np.float32(rgb_img) / 255
     input_tensor = preprocess_image(rgb_img,
@@ -102,22 +98,29 @@ if __name__ == '__main__':
     # Otherwise, targets the requested category.
     target_category = None
 
-    # AblationCAM and ScoreCAM have batched implementations.
-    # You can override the internal batch size for faster computation.
-    cam.batch_size = 32
+    # Using the with statement ensures the context is freed, and you can
+    # recreate different CAM objects in a loop.
+    cam_algorithm = methods[args.method]
+    with cam_algorithm(model=model,
+                       target_layers=target_layers,
+                       use_cuda=args.use_cuda) as cam:
 
-    grayscale_cam = cam(input_tensor=input_tensor,
-                        target_category=target_category,
-                        aug_smooth=args.aug_smooth,
-                        eigen_smooth=args.eigen_smooth)
+        # AblationCAM and ScoreCAM have batched implementations.
+        # You can override the internal batch size for faster computation.
+        cam.batch_size = 32
 
-    # Here grayscale_cam has only one image in the batch
-    grayscale_cam = grayscale_cam[0, :]
+        grayscale_cam = cam(input_tensor=input_tensor,
+                            target_category=target_category,
+                            aug_smooth=args.aug_smooth,
+                            eigen_smooth=args.eigen_smooth)
 
-    cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+        # Here grayscale_cam has only one image in the batch
+        grayscale_cam = grayscale_cam[0, :]
 
-    # cam_image is RGB encoded whereas "cv2.imwrite" requires BGR encoding.
-    cam_image = cv2.cvtColor(cam_image, cv2.COLOR_RGB2BGR)
+        cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+
+        # cam_image is RGB encoded whereas "cv2.imwrite" requires BGR encoding.
+        cam_image = cv2.cvtColor(cam_image, cv2.COLOR_RGB2BGR)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
     gb = gb_model(input_tensor, target_category=target_category)
