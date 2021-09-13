@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch.autograd import Function
+from pytorch_grad_cam.utils.find_layers import replace_all_layer_type_recursive
 
 
 class GuidedBackpropReLU(Function):
@@ -34,6 +35,14 @@ class GuidedBackpropReLU(Function):
         return grad_input
 
 
+class GuidedBackpropReLUasModule(torch.nn.Module):
+    def __init__(self):
+        super(GuidedBackpropReLUasModule, self).__init__()
+
+    def forward(self, input_img):
+        return GuidedBackpropReLU.apply(input_img)
+
+
 class GuidedBackpropReLUModel:
     def __init__(self, model, use_cuda):
         self.model = model
@@ -46,10 +55,12 @@ class GuidedBackpropReLUModel:
         return self.model(input_img)
 
     def recursive_replace_relu_with_guidedrelu(self, module_top):
+
         for idx, module in module_top._modules.items():
             self.recursive_replace_relu_with_guidedrelu(module)
             if module.__class__.__name__ == 'ReLU':
                 module_top._modules[idx] = GuidedBackpropReLU.apply
+        print("b")
 
     def recursive_replace_guidedrelu_with_relu(self, module_top):
         try:
@@ -61,8 +72,9 @@ class GuidedBackpropReLUModel:
             pass
 
     def __call__(self, input_img, target_category=None):
-        # replace ReLU with GuidedBackpropReLU
-        self.recursive_replace_relu_with_guidedrelu(self.model)
+        replace_all_layer_type_recursive(self.model,
+                                         torch.nn.ReLU,
+                                         GuidedBackpropReLUasModule())
 
         if self.cuda:
             input_img = input_img.cuda()
@@ -81,7 +93,8 @@ class GuidedBackpropReLUModel:
         output = output[0, :, :, :]
         output = output.transpose((1, 2, 0))
 
-        # replace GuidedBackpropReLU back with ReLU
-        self.recursive_replace_guidedrelu_with_relu(self.model)
+        replace_all_layer_type_recursive(self.model,
+                                         GuidedBackpropReLUasModule,
+                                         torch.nn.ReLU())
 
         return output
