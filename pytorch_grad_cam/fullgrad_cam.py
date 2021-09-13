@@ -3,6 +3,7 @@ import torch
 from pytorch_grad_cam.base_cam import BaseCAM
 from pytorch_grad_cam.utils.find_layers import find_layer_predicate_recursive
 from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
+from pytorch_grad_cam.utils.image import scale_cam_image
 
 # https://arxiv.org/abs/1905.00780
 
@@ -46,7 +47,7 @@ class FullGrad(BaseCAM):
         batch_size, channel_size = tensor.shape[:2]
         reshaped_tensor = tensor.reshape(
             batch_size * channel_size, *tensor.shape[2:])
-        result = self.scale_cam_image(reshaped_tensor, target_size)
+        result = scale_cam_image(reshaped_tensor, target_size)
         result = result.reshape(
             batch_size,
             channel_size,
@@ -103,4 +104,4 @@ class FullGrad(BaseCAM):
 
     def aggregate_multi_layers(self, cam_per_target_layer):
         result = np.sum(cam_per_target_layer, axis=1)
-        return self.scale_cam_image(result)
+        return scale_cam_image(result)

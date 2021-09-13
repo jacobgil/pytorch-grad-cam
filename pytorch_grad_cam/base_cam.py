@@ -4,7 +4,7 @@ import torch
 import ttach as tta
 from pytorch_grad_cam.activations_and_gradients import ActivationsAndGradients
 from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
-
+from pytorch_grad_cam.utils.image import scale_cam_image
 
 class BaseCAM:
     def __init__(self,
@@ -121,7 +121,7 @@ class BaseCAM:
                                      layer_activations,
                                      layer_grads,
                                      eigen_smooth)
-            scaled = self.scale_cam_image(cam, target_size)
+            scaled = scale_cam_image(cam, target_size)
             cam_per_target_layer.append(scaled[:, None, :])
 
         return cam_per_target_layer
@@ -130,19 +130,9 @@ class BaseCAM:
         cam_per_target_layer = np.concatenate(cam_per_target_layer, axis=1)
         cam_per_target_layer = np.maximum(cam_per_target_layer, 0)
         result = np.mean(cam_per_target_layer, axis=1)
-        return self.scale_cam_image(result)
+        return scale_cam_image(result)
 
-    def scale_cam_image(self, cam, target_size=None):
-        result = []
-        for img in cam:
-            img = img - np.min(img)
-            img = img / (1e-7 + np.max(img))
-            if target_size is not None:
-                img = cv2.resize(img, target_size)
-            result.append(img)
-        result = np.float32(result)
 
-        return result
 
     def forward_augmentation_smoothing(self,
                                        input_tensor,

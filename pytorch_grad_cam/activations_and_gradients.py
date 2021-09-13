@@ -24,6 +24,7 @@ class ActivationsAndGradients:
 
     def save_activation(self, module, input, output):
         activation = output
+        
         if self.reshape_transform is not None:
             activation = self.reshape_transform(activation)
         self.activations.append(activation.cpu().detach())
