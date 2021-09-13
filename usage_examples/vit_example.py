@@ -89,13 +89,13 @@ if __name__ == '__main__':
     if args.use_cuda:
         model = model.cuda()
 
-    target_layer = model.blocks[-1].norm1
+    target_layers = [model.blocks[-1].norm1]
 
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
 
     cam = methods[args.method](model=model,
-                               target_layer=target_layer,
+                               target_layers=target_layers,
                                use_cuda=args.use_cuda,
                                reshape_transform=reshape_transform)
 
