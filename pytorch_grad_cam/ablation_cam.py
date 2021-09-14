@@ -4,7 +4,6 @@ import tqdm
 from pytorch_grad_cam.base_cam import BaseCAM
 from pytorch_grad_cam.utils.find_layers import replace_layer_recursive
 
-
 class AblationLayer(torch.nn.Module):
     def __init__(self, layer, reshape_transform, indices):
         super(AblationLayer, self).__init__()
@@ -53,19 +52,17 @@ class AblationCAM(BaseCAM):
                  use_cuda=False,
                  reshape_transform=None):
         super(AblationCAM, self).__init__(model, target_layers, use_cuda,
-                                          reshape_transform)
+                                          reshape_transform, uses_gradients=False)
 
     def get_cam_weights(self,
                         input_tensor,
                         target_layer,
-                        target_category,
+                        targets,
                         activations,
                         grads):
         with torch.no_grad():
             outputs = self.model(input_tensor).cpu().numpy()
-            original_scores = []
-            for i in range(input_tensor.size(0)):
-                original_scores.append(outputs[i, target_category[i]])
+        original_scores = [target(output) for target, output in zip(targets, outputs)]
         original_scores = np.float32(original_scores)
 
         ablation_layer = AblationLayer(target_layer,
@@ -83,7 +80,7 @@ class AblationCAM(BaseCAM):
 
         with torch.no_grad():
             # Iterate over the input batch
-            for tensor, category in zip(input_tensor, target_category):
+            for tensor, target in zip(input_tensor, targets):
                 batch_tensor = tensor.repeat(BATCH_SIZE, 1, 1, 1)
                 for i in tqdm.tqdm(range(0, number_of_channels, BATCH_SIZE)):
                     ablation_layer.indices = list(range(i, i + BATCH_SIZE))
@@ -92,7 +89,7 @@ class AblationCAM(BaseCAM):
                         keep = number_of_channels - i
                         batch_tensor = batch_tensor[:keep]
                         ablation_layer.indices = ablation_layer.indices[:keep]
-                    score = self.model(batch_tensor)[:, category].cpu().numpy()
+                    score = target(self.model(batch_tensor))
                     weights.extend(score)
 
         weights = np.float32(weights)
@@ -103,3 +100,5 @@ class AblationCAM(BaseCAM):
         # Replace the model back to the original state
         replace_layer_recursive(self.model, ablation_layer, target_layer)
         return weights
+
+

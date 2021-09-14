@@ -12,7 +12,7 @@ from pytorch_grad_cam import GradCAM, \
     EigenGradCAM, \
     ActivationsAndGradients
 
-from pytorch_grad_cam.utils.image import show_cam_on_image, scale_cam_image
+from pytorch_grad_cam.utils.image import show_cam_on_image, scale_accross_batch_and_channels
 import sys
 
 coco_names = [
@@ -128,66 +128,62 @@ def draw_boxes(boxes, classes, labels, image):
                     lineType=cv2.LINE_AA)
     return image
 
+class FasterRCNNBoxScoreTarget:
+    def __init__(self, box_index):
+        self.box_index = box_index
+    def __call__(self, model_outputs):
+        return model_outputs['scores'][self.box_index]
 
-def predict(image, model, device, detection_threshold):
+def reshape_transform(x):
+    print(x.keys())
+    print("In reshaoe", x.shape)
+    return x
 
-    # define the torchvision image transforms
-    transform = torchvision.transforms.Compose([
-        torchvision.transforms.ToTensor(),
-    ])
-
-    # transform the image to tensor
-    image = transform(image).to(device)
-    image = image.unsqueeze(0)  # add a batch dimension
-    outputs = model(image)  # get the predictions on the image
-    # print the results individually
-    # print(f"BOXES: {outputs[0]['boxes']}")
-    # print(f"LABELS: {outputs[0]['labels']}")
-    # print(f"SCORES: {outputs[0]['scores']}")
-    # get all the predicited class names
+def predict(input_tensor, model, device, detection_threshold):
+    outputs = model(input_tensor)
     pred_classes = [coco_names[i] for i in outputs[0]['labels'].cpu().numpy()]
     # get score for all the predicted objects
     pred_scores = outputs[0]['scores'].detach().cpu().numpy()
     # get all the predicted bounding boxes
     pred_bboxes = outputs[0]['boxes'].detach().cpu().numpy()
-    print(pred_bboxes)
     # get boxes above the threshold score
     boxes = pred_bboxes[pred_scores >= detection_threshold].astype(np.int32)
     return boxes, pred_classes, outputs[0]['labels']
 
-def fasterrcnn_reshape_transform(x, target_size):
-    result = []
-    for pyramid_level in x[0]:
-        pyramid_level = pyramid_level[0].detach().cpu().numpy()
-        img = scale_cam_image(pyramid_level, target_size=target_size)
-        result.extend(img)    
-    result = np.concatenate(result, axis = 0)
-    result = torch.from_numpy(result)
-    return result
-
 path = sys.argv[1]
 image = cv2.imread(path)[:, :, ::-1].copy()
 image = np.float32(image) / 255
-print("image shape", image.shape)
+# define the torchvision image transforms
+transform = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+])
+# transform the image to tensor
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+input_tensor = transform(image).to(device)
+input_tensor = input_tensor.unsqueeze(0)  # add a batch dimension
 
 # download or load the model from disk
 model = torchvision.models.detection.fasterrcnn_resnet50_fpn(
     pretrained=True, min_size=1000)
 
-target_layers = [model.backbone.fpn.extra_blocks]
+target_layers = [model.backbone.fpn]
+targets = [FasterRCNNBoxScoreTarget(box_index=0)]
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.eval().to(device)
-print(model)
-activations_and_grads = ActivationsAndGradients(
-    model, target_layers, reshape_transform = 
-        lambda x: fasterrcnn_reshape_transform(x, (image.shape[:2]))
-        )
 
-boxes, classes, labels = predict(image, model, device, 0.9)
-image = draw_boxes(boxes, classes, labels, image)
-cv2.imshow('Image', image)
-cv2.waitKey(-1)
+input_tensor = input_tensor.repeat(3, 1, 1, 1)
 
-for a, g in zip(activations_and_grads.activations, activations_and_grads.gradients):
-    print(a.shape, g.shape)
+cam = AblationCAM(model, target_layers, use_cuda=True, reshape_transform=reshape_transform)
+grayscale_cam = cam(input_tensor, targets=targets)
+cam_image = show_cam_on_image(image, grayscale_cam, use_rgb=True)
+# cam_image is RGB encoded whereas "cv2.imwrite" requires BGR encoding.
+cam_image = cv2.cvtColor(cam_image, cv2.COLOR_RGB2BGR)
+
+# cv2.imshow("cam_image", cam_image)
+# cv2.waitKey(-1)
+
+
+# boxes, classes, labels = predict(image, model, device, 0.9)
+# image = draw_boxes(boxes, classes, labels, image)
+# cv2.imshow('Image', image)
+# cv2.waitKey(-1)

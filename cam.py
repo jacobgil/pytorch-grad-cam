@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
-    target_category = None
+    targets = None
 
     # Using the with statement ensures the context is freed, and you can
     # recreate different CAM objects in a loop.
@@ -110,7 +110,7 @@ if __name__ == '__main__':
         cam.batch_size = 32
 
         grayscale_cam = cam(input_tensor=input_tensor,
-                            target_category=target_category,
+                            targets=targets,
                             aug_smooth=args.aug_smooth,
                             eigen_smooth=args.eigen_smooth)
 
@@ -123,7 +123,7 @@ if __name__ == '__main__':
         cam_image = cv2.cvtColor(cam_image, cv2.COLOR_RGB2BGR)
 
     gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
-    gb = gb_model(input_tensor, target_category=target_category)
+    gb = gb_model(input_tensor, target_category=None)
 
     cam_mask = cv2.merge([grayscale_cam, grayscale_cam, grayscale_cam])
     cam_gb = deprocess_image(cam_mask * gb)

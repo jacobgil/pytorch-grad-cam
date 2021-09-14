@@ -65,3 +65,15 @@ def scale_cam_image(cam, target_size=None):
     result = np.float32(result)
 
     return result
+
+def scale_accross_batch_and_channels(tensor, target_size):
+    batch_size, channel_size = tensor.shape[:2]
+    reshaped_tensor = tensor.reshape(
+        batch_size * channel_size, *tensor.shape[2:])
+    result = scale_cam_image(reshaped_tensor, target_size)
+    result = result.reshape(
+        batch_size,
+        channel_size,
+        target_size[1],
+        target_size[0])
+    return result
