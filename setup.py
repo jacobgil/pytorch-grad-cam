@@ -23,4 +23,11 @@ setuptools.setup(
     ],
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
+    install_requires=[
+        'opencv-python>=4.5'
+        'torch>=1.4',
+        'torchvision>=0.5',
+        'ttach>=0.0.3',
+        'tqdm>=4.42'
+    ]
 )
