@@ -109,7 +109,7 @@ grayscale_cam = cam(input_tensor=input_tensor, target_category=target_category)
 
 # In this example grayscale_cam has only one image in the batch:
 grayscale_cam = grayscale_cam[0, :]
-visualization = show_cam_on_image(rgb_img, grayscale_cam)
+visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
 ```
 
 ----------
