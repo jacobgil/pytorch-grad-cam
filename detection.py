@@ -173,7 +173,10 @@ model.eval().to(device)
 
 input_tensor = input_tensor.repeat(3, 1, 1, 1)
 
-cam = AblationCAM(model, target_layers, use_cuda=True, reshape_transform=reshape_transform)
+cam = AblationCAM(model, 
+                  target_layers, 
+                  use_cuda=True, 
+                  reshape_transform=reshape_transform)
 grayscale_cam = cam(input_tensor, targets=targets)
 cam_image = show_cam_on_image(image, grayscale_cam, use_rgb=True)
 # cam_image is RGB encoded whereas "cv2.imwrite" requires BGR encoding.

@@ -76,7 +76,7 @@ class BaseCAM:
         if targets is None:
             target_categories = np.argmax(output.cpu().data.numpy(), axis=-1)
             targets = [ClassifierOutputTarget(category) for category in target_categories]
-        
+
         # if isinstance(target_category, int):
         #     target_category = [target_category] * input_tensor.size(0)
 
@@ -121,9 +121,15 @@ class BaseCAM:
 
         cam_per_target_layer = []
         # Loop over the saliency image from every layer
+        for i in range(len(self.target_layers)):
+            target_layer = self.target_layers[i]
+            layer_activations = None
+            layer_grads = None
+            if i < len(activations_list):
+                layer_activations = activations_list[i]
+            if i < len(grads_list):
+                layer_grads = grads_list[i]
 
-        for target_layer, layer_activations, layer_grads in \
-                zip(self.target_layers, activations_list, grads_list):
             cam = self.get_cam_image(input_tensor,
                                      target_layer,
                                      targets,

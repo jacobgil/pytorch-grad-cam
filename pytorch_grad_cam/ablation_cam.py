@@ -3,56 +3,21 @@ import torch
 import tqdm
 from pytorch_grad_cam.base_cam import BaseCAM
 from pytorch_grad_cam.utils.find_layers import replace_layer_recursive
-
-class AblationLayer(torch.nn.Module):
-    def __init__(self, layer, reshape_transform, indices):
-        super(AblationLayer, self).__init__()
-
-        self.layer = layer
-        self.reshape_transform = reshape_transform
-        # The channels to zero out:
-        self.indices = indices
-
-    def forward(self, x):
-        self.__call__(x)
-
-    def __call__(self, x):
-        output = self.layer(x)
-
-        # Hack to work with ViT,
-        # Since the activation channels are last and not first like in CNNs
-        # Probably should remove it?
-        if self.reshape_transform is not None:
-            output = output.transpose(1, 2)
-
-        for i in range(output.size(0)):
-
-            # Commonly the minimum activation will be 0,
-            # And then it makes sense to zero it out.
-            # However depending on the architecture,
-            # If the values can be negative, we use very negative values
-            # to perform the ablation, deviating from the paper.
-            if torch.min(output) == 0:
-                output[i, self.indices[i], :] = 0
-            else:
-                ABLATION_VALUE = 1e5
-                output[i, self.indices[i], :] = torch.min(
-                    output) - ABLATION_VALUE
-
-        if self.reshape_transform is not None:
-            output = output.transpose(2, 1)
-
-        return output
-
+from pytorch_grad_cam.ablation_layer import AblationLayer
 
 class AblationCAM(BaseCAM):
     def __init__(self,
                  model,
                  target_layers,
                  use_cuda=False,
-                 reshape_transform=None):
-        super(AblationCAM, self).__init__(model, target_layers, use_cuda,
-                                          reshape_transform, uses_gradients=False)
+                 reshape_transform=None,
+                 ablation_layer = AblationLayer):
+        super(AblationCAM, self).__init__(model, 
+                                          target_layers, 
+                                          use_cuda,
+                                          reshape_transform, 
+                                          uses_gradients=False)
+        self.ablation_layer = ablation_layer    
 
     def get_cam_weights(self,
                         input_tensor,
@@ -65,7 +30,7 @@ class AblationCAM(BaseCAM):
         original_scores = [target(output) for target, output in zip(targets, outputs)]
         original_scores = np.float32(original_scores)
 
-        ablation_layer = AblationLayer(target_layer,
+        ablation_layer = self.ablation_layer(target_layer,
                                        self.reshape_transform,
                                        indices=[])
         replace_layer_recursive(self.model, target_layer, ablation_layer)
@@ -89,6 +54,7 @@ class AblationCAM(BaseCAM):
                         keep = number_of_channels - i
                         batch_tensor = batch_tensor[:keep]
                         ablation_layer.indices = ablation_layer.indices[:keep]
+                    model_output = self.model(batch_tensor)
                     score = target(self.model(batch_tensor))
                     weights.extend(score)
 
