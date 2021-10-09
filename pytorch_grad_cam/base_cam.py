@@ -9,14 +9,14 @@ from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
 class BaseCAM:
     def __init__(self,
                  model,
-                 target_layer,
+                 target_layers,
                  cuda=False,
                  reshape_transform=None):
         self.model = model.eval()
         self.target_layer = target_layer
         self.cuda = cuda
         self.model = model.eval()
-        self.target_layers = target_layers
+        self.target_layerss = target_layers
         if self.cuda:
             self.model = model.to(self.cuda)
         self.reshape_transform = reshape_transform
