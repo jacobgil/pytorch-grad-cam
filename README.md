@@ -90,12 +90,15 @@ target_layers = [model.layer4[-1]]
 input_tensor = # Create an input tensor image for your model..
 # Note: input_tensor can be a batch tensor with several images!
 
+# Control the CUDA device, or set cuda=False.
+cuda = torch.device('cuda')
+
 # Construct the CAM object once, and then re-use it on many images:
-cam = GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda)
+cam = GradCAM(model=model, target_layers=target_layers, cuda=cuda)
 
 # You can also use it within a with statement, to make sure it is freed,
 # In case you need to re-create it inside an outer loop:
-# with GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda) as cam:
+# with GradCAM(model=model, target_layers=target_layers, cuda=cuda) as cam:
 #   ...
 
 # If target_category is None, the highest scoring category
