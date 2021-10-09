@@ -101,9 +101,13 @@ if __name__ == '__main__':
     # Using the with statement ensures the context is freed, and you can
     # recreate different CAM objects in a loop.
     cam_algorithm = methods[args.method]
+    if args.use_cuda:
+        cuda = torch.device('cuda')
+    else:
+        cuda = False
     with cam_algorithm(model=model,
                        target_layers=target_layers,
-                       use_cuda=args.use_cuda) as cam:
+                       cuda=cuda) as cam:
 
         # AblationCAM and ScoreCAM have batched implementations.
         # You can override the internal batch size for faster computation.
