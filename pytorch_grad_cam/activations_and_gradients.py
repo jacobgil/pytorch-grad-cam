@@ -2,14 +2,25 @@ class ActivationsAndGradients:
     """ Class for extracting activations and
     registering gradients from targetted intermediate layers """
 
-    def __init__(self, model, target_layer, reshape_transform):
+    def __init__(self, model, target_layers, reshape_transform):
         self.model = model
         self.gradients = []
         self.activations = []
         self.reshape_transform = reshape_transform
-
-        target_layer.register_forward_hook(self.save_activation)
-        target_layer.register_backward_hook(self.save_gradient)
+        self.handles = []
+        for target_layer in target_layers:
+            self.handles.append(
+                target_layer.register_forward_hook(
+                    self.save_activation))
+            # Backward compitability with older pytorch versions:
+            if hasattr(target_layer, 'register_full_backward_hook'):
+                self.handles.append(
+                    target_layer.register_full_backward_hook(
+                        self.save_gradient))
+            else:
+                self.handles.append(
+                    target_layer.register_backward_hook(
+                        self.save_gradient))
 
     def save_activation(self, module, input, output):
         activation = output
@@ -26,5 +37,9 @@ class ActivationsAndGradients:
 
     def __call__(self, x):
         self.gradients = []
-        self.activations = []        
+        self.activations = []
         return self.model(x)
+
+    def release(self):
+        for handle in self.handles:
+            handle.remove()

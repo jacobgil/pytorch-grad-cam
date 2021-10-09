@@ -1,6 +1,13 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Build Status](https://github.com/jacobgil/pytorch-grad-cam/workflows/Tests/badge.svg)
+[![Downloads](https://static.pepy.tech/personalized-badge/grad-cam?period=month&units=international_system&left_color=black&right_color=brightgreen&left_text=Monthly%20Downloads)](https://pepy.tech/project/grad-cam)
+[![Downloads](https://static.pepy.tech/personalized-badge/grad-cam?period=total&units=international_system&left_color=black&right_color=blue&left_text=Total%20Downloads)](https://pepy.tech/project/grad-cam)
+
 # Class Activation Map methods implemented in Pytorch
 
 `pip install grad-cam`
+
+⭐ Comprehensive collection of Pixel Attribution methods for Computer Vision.
 
 ⭐ Tested on many Common CNN Networks and Vision Transformers.
 
@@ -8,11 +15,8 @@
 
 ⭐ Full support for batches of images in all methods.
 
-
 ![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
 )
-
-
 
 | Method   | What it does |
 |----------|--------------|
@@ -23,6 +27,8 @@
 | ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops |
 | EigenCAM  | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)|
 | EigenGradCAM  | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner|
+| LayerCAM  | Spatially weight the activations by positive gradients. Works better especially in lower layers |
+| FullGrad  | Computes the gradients of the biases from all over the network, and then sums them |
 
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
@@ -80,12 +86,17 @@ from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
 
 model = resnet50(pretrained=True)
-target_layer = model.layer4[-1]
+target_layers = [model.layer4[-1]]
 input_tensor = # Create an input tensor image for your model..
 # Note: input_tensor can be a batch tensor with several images!
 
 # Construct the CAM object once, and then re-use it on many images:
-cam = GradCAM(model=model, target_layer=target_layer, use_cuda=args.use_cuda)
+cam = GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda)
+
+# You can also use it within a with statement, to make sure it is freed,
+# In case you need to re-create it inside an outer loop:
+# with GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda) as cam:
+#   ...
 
 # If target_category is None, the highest scoring category
 # will be used for every image in the batch.
@@ -98,7 +109,7 @@ grayscale_cam = cam(input_tensor=input_tensor, target_category=target_category)
 
 # In this example grayscale_cam has only one image in the batch:
 grayscale_cam = grayscale_cam[0, :]
-visualization = show_cam_on_image(rgb_img, grayscale_cam)
+visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
 ```
 
 ----------
@@ -142,7 +153,7 @@ To use with CUDA:
 
 You can choose between:
 
-`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` and `EigenCAM`.
+`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM` and `EigenCAM`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
@@ -269,3 +280,11 @@ Ruigang Fu, Qingyong Hu, Xiaohu Dong, Yulan Guo, Yinghui Gao, Biao Li`
 https://arxiv.org/abs/2008.00299 <br>
 `Eigen-CAM: Class Activation Map using Principal Components
 Mohammed Bany Muhammad, Mohammed Yeasin`
+
+http://mftp.mmcheng.net/Papers/21TIP_LayerCAM.pdf <br>
+`LayerCAM: Exploring Hierarchical Class Activation Maps for Localization
+Peng-Tao Jiang; Chang-Bin Zhang; Qibin Hou; Ming-Ming Cheng; Yunchao Wei`
+
+https://arxiv.org/abs/1905.00780 <br>
+`Full-Gradient Representation for Neural Network Visualization
+Suraj Srinivas, Francois Fleuret`
