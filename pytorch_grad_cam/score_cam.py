@@ -8,9 +8,9 @@ class ScoreCAM(BaseCAM):
             self,
             model,
             target_layers,
-            use_cuda=False,
+            cuda=False,
             reshape_transform=None):
-        super(ScoreCAM, self).__init__(model, target_layers, use_cuda,
+        super(ScoreCAM, self).__init__(model, target_layers, cuda,
                                        reshape_transform=reshape_transform)
 
         if len(target_layers) > 0:
