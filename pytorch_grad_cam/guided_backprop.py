@@ -44,10 +44,10 @@ class GuidedBackpropReLUasModule(torch.nn.Module):
 
 
 class GuidedBackpropReLUModel:
-    def __init__(self, model, use_cuda):
+    def __init__(self, model, cuda):
         self.model = model
         self.model.eval()
-        self.cuda = use_cuda
+        self.cuda = cuda
         if self.cuda:
             self.model = self.model.cuda()
 
