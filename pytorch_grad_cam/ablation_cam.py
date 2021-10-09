@@ -50,9 +50,9 @@ class AblationCAM(BaseCAM):
     def __init__(self,
                  model,
                  target_layers,
-                 use_cuda=False,
+                 cuda=False,
                  reshape_transform=None):
-        super(AblationCAM, self).__init__(model, target_layers, use_cuda,
+        super(AblationCAM, self).__init__(model, target_layers, cuda,
                                           reshape_transform)
 
     def get_cam_weights(self,
