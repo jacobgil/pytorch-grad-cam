@@ -91,7 +91,7 @@ input_tensor = # Create an input tensor image for your model..
 # Note: input_tensor can be a batch tensor with several images!
 
 # Construct the CAM object once, and then re-use it on many images:
-cam = GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda)
+cam = GradCAM(model=model, target_layer=target_layers, use_cuda=args.use_cuda)
 
 # You can also use it within a with statement, to make sure it is freed,
 # In case you need to re-create it inside an outer loop:
