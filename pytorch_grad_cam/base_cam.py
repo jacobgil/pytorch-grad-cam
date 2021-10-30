@@ -121,6 +121,7 @@ class BaseCAM:
                                      layer_activations,
                                      layer_grads,
                                      eigen_smooth)
+            cam[cam<0]=0 # works like mute the min-max scale in the function of scale_cam_image
             scaled = self.scale_cam_image(cam, target_size)
             cam_per_target_layer.append(scaled[:, None, :])
 
