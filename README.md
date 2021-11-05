@@ -178,7 +178,7 @@ This can also be a starting point for other architectures that will come in the 
 
 ```python
 
-GradCAM(model=model, target_layer=target_layer, reshape_transform=reshape_transform)
+GradCAM(model=model, target_layers=target_layers, reshape_transform=reshape_transform)
 
 def reshape_transform(tensor, height=14, width=14):
     result = tensor[:, 1 :  , :].reshape(tensor.size(0),
@@ -198,7 +198,7 @@ The gradient of the output with respect to them, will be 0!
 
 We should chose any layer before the final attention block, for example:
 ```python
-target_layer = model.blocks[-1].norm1
+target_layers = [model.blocks[-1].norm1]
 ```
 
 ----------
@@ -217,7 +217,7 @@ This can also be a starting point for other architectures that will come in the 
 
 ```python
 
-GradCAM(model=model, target_layer=target_layer, reshape_transform=reshape_transform)
+GradCAM(model=model, target_layers=target_layers, reshape_transform=reshape_transform)
 
 def reshape_transform(tensor, height=7, width=7):
     result = tensor.reshape(tensor.size(0),
@@ -236,7 +236,7 @@ therefore we will use all the 7x7 images we get from the last block of the last 
 
 We should chose any layer before the final attention block, for example:
 ```python
-target_layer = model.layers[-1].blocks[-1].norm1
+target_layers = [model.layers[-1].blocks[-1].norm1]
 ```
 
 ----------
