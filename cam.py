@@ -72,8 +72,9 @@ if __name__ == '__main__':
          "layercam": LayerCAM,
          "fullgrad": FullGrad}
 
-    model = models.resnet50(pretrained=True)
-
+    #model = models.resnet50(pretrained=True)
+    model = models.vgg16(pretrained=True)
+    
     # Choose the target layer you want to compute the visualization for.
     # Usually this will be the last convolutional layer in the model.
     # Some common choices can be:
@@ -86,7 +87,8 @@ if __name__ == '__main__':
     # You can also try selecting all layers of a certain type, with e.g:
     # from pytorch_grad_cam.utils.find_layers import find_layer_types_recursive
     # find_layer_types_recursive(model, [torch.nn.ReLU])
-    target_layers = [model.layer4[-1]]
+    #target_layers = [model.layer4[-1]]
+    target_layers = [model.features[-1]]
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = np.float32(rgb_img) / 255
@@ -107,7 +109,7 @@ if __name__ == '__main__':
 
         # AblationCAM and ScoreCAM have batched implementations.
         # You can override the internal batch size for faster computation.
-        cam.batch_size = 32
+        cam.batch_size = 4
 
         grayscale_cam = cam(input_tensor=input_tensor,
                             target_category=target_category,

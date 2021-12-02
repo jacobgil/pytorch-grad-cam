@@ -39,6 +39,10 @@ class ScoreCAM(BaseCAM):
             maxs, mins = maxs[:, :, None, None], mins[:, :, None, None]
             upsampled = (upsampled - mins) / (maxs - mins)
 
+            #mask = maxs!=mins
+            #maxs, mins = maxs[:, :, None, None], mins[:, :, None, None]
+            #upsampled[mask,:] = (upsampled[mask,:] - mins[mask,:]) / (maxs[mask] - mins[mask])
+
             input_tensors = input_tensor[:, None,
                                          :, :] * upsampled[:, :, None, :, :]
 
