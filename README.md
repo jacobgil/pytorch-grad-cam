@@ -1,4 +1,8 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Build Status](https://github.com/jacobgil/pytorch-grad-cam/workflows/Tests/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Build Status](https://github.com/jacobgil/pytorch-grad-cam/workflows/Tests/badge.svg)
+[![Downloads](https://static.pepy.tech/personalized-badge/grad-cam?period=month&units=international_system&left_color=black&right_color=brightgreen&left_text=Monthly%20Downloads)](https://pepy.tech/project/grad-cam)
+[![Downloads](https://static.pepy.tech/personalized-badge/grad-cam?period=total&units=international_system&left_color=black&right_color=blue&left_text=Total%20Downloads)](https://pepy.tech/project/grad-cam)
+
 # Class Activation Map methods implemented in Pytorch
 
 `pip install grad-cam`
@@ -11,11 +15,8 @@
 
 ⭐ Full support for batches of images in all methods.
 
-
 ![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
 )
-
-
 
 | Method   | What it does |
 |----------|--------------|
@@ -108,7 +109,7 @@ grayscale_cam = cam(input_tensor=input_tensor, target_category=target_category)
 
 # In this example grayscale_cam has only one image in the batch:
 grayscale_cam = grayscale_cam[0, :]
-visualization = show_cam_on_image(rgb_img, grayscale_cam)
+visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
 ```
 
 ----------
@@ -177,7 +178,7 @@ This can also be a starting point for other architectures that will come in the 
 
 ```python
 
-GradCAM(model=model, target_layer=target_layer, reshape_transform=reshape_transform)
+GradCAM(model=model, target_layers=target_layers, reshape_transform=reshape_transform)
 
 def reshape_transform(tensor, height=14, width=14):
     result = tensor[:, 1 :  , :].reshape(tensor.size(0),
@@ -197,7 +198,7 @@ The gradient of the output with respect to them, will be 0!
 
 We should chose any layer before the final attention block, for example:
 ```python
-target_layer = model.blocks[-1].norm1
+target_layers = [model.blocks[-1].norm1]
 ```
 
 ----------
@@ -216,7 +217,7 @@ This can also be a starting point for other architectures that will come in the 
 
 ```python
 
-GradCAM(model=model, target_layer=target_layer, reshape_transform=reshape_transform)
+GradCAM(model=model, target_layers=target_layers, reshape_transform=reshape_transform)
 
 def reshape_transform(tensor, height=7, width=7):
     result = tensor.reshape(tensor.size(0),
@@ -235,7 +236,7 @@ therefore we will use all the 7x7 images we get from the last block of the last 
 
 We should chose any layer before the final attention block, for example:
 ```python
-target_layer = model.layers[-1].blocks[-1].norm1
+target_layers = [model.layers[-1].blocks[-1].norm1]
 ```
 
 ----------

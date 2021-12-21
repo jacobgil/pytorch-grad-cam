@@ -6,6 +6,7 @@ from pytorch_grad_cam.activations_and_gradients import ActivationsAndGradients
 from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
 from pytorch_grad_cam.utils.image import scale_cam_image
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+        
 
 class BaseCAM:
     def __init__(self,
@@ -37,14 +38,7 @@ class BaseCAM:
                         activations,
                         grads):
         raise Exception("Not Implemented")
-
-    def get_loss(self, outputs, targets):
-        loss = 0
-        assert(len(outputs) == len(targets))
-        for i in range(len(targets)):
-            loss = loss + targets[i](outputs[i])
-        return loss
-
+        
     def get_cam_image(self,
                       input_tensor,
                       target_layer,
@@ -72,22 +66,15 @@ class BaseCAM:
             input_tensor = torch.autograd.Variable(input_tensor,
                                                    requires_grad=True)
 
-        output = self.activations_and_grads(input_tensor)
+        outputs = self.activations_and_grads(input_tensor)
         if targets is None:
-            target_categories = np.argmax(output.cpu().data.numpy(), axis=-1)
+            target_categories = np.argmax(outputs.cpu().data.numpy(), axis=-1)
             targets = [ClassifierOutputTarget(category) for category in target_categories]
 
-        # if isinstance(target_category, int):
-        #     target_category = [target_category] * input_tensor.size(0)
-
-        # if target_category is None:
-        #     target_category = np.argmax(output.cpu().data.numpy(), axis=-1)
-        # else:
-        #     assert(len(target_category) == input_tensor.size(0))
-
         if self.uses_gradients:
+            outputs = torch.Tensor([target(output) for target, output in zip(targets, outputs)])
             self.model.zero_grad()
-            loss = self.get_loss(output, targets)
+            loss = outputs.sum()
             loss.backward(retain_graph=True)
 
         # In most of the saliency attribution papers, the saliency is
@@ -136,6 +123,7 @@ class BaseCAM:
                                      layer_activations,
                                      layer_grads,
                                      eigen_smooth)
+            cam = np.maximum(cam, 0)
             scaled = scale_cam_image(cam, target_size)
             cam_per_target_layer.append(scaled[:, None, :])
 
