@@ -147,7 +147,6 @@ class FasterRCNNBoxScoreTarget:
             if ious[0, index] > self.iou_threshold and model_outputs["labels"][index] == label:
                 score = model_outputs["scores"][index]
                 output = output + score
-
         return output
 
 class AblationLayerFasterRCNN(torch.nn.Module):
@@ -158,12 +157,13 @@ class AblationLayerFasterRCNN(torch.nn.Module):
         self.indices = indices
 
     def __call__(self, x):
+        print(result['pool'])
         result = self.layer(x)
         layers = {0: '0', 1: '1', 2:'2', 3:'3', 4:'pool'}
         for i in range(result['pool'].size(0)):
             pyramid_layer = int(self.indices[i]/256)
             index_in_pyramid_layer = int(self.indices[i] % 256)
-            result[layers[pyramid_layer]] [i, index_in_pyramid_layer, :, :] *= 0
+            result[layers[pyramid_layer]] [i, index_in_pyramid_layer, :, :] = 0
         return result
 
 

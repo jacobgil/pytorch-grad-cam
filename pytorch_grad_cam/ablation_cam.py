@@ -63,6 +63,8 @@ class AblationCAM(BaseCAM):
         weights = weights.reshape(activations.shape[:2])
         original_scores = original_scores[:, None]
         weights = (original_scores - weights) / original_scores
+        weights = np.maximum(weights, 0)
+        print("weights", weights.min(), weights.max(), weights.sum())
 
         # Replace the model back to the original state
         replace_layer_recursive(self.model, ablation_layer, target_layers)
