@@ -75,6 +75,7 @@ class BaseCAM:
             outputs = torch.Tensor([target(output) for target, output in zip(targets, outputs)])
             self.model.zero_grad()
             loss = outputs.sum()
+            loss.requires_grad = True
             loss.backward(retain_graph=True)
 
         # In most of the saliency attribution papers, the saliency is
@@ -123,7 +124,7 @@ class BaseCAM:
                                      layer_activations,
                                      layer_grads,
                                      eigen_smooth)
-            #cam = np.maximum(cam, 0)
+            cam = np.maximum(cam, 0)
             scaled = scale_cam_image(cam, target_size)
             cam_per_target_layer.append(scaled[:, None, :])
 
@@ -131,7 +132,7 @@ class BaseCAM:
 
     def aggregate_multi_layers(self, cam_per_target_layer):
         cam_per_target_layer = np.concatenate(cam_per_target_layer, axis=1)
-        #cam_per_target_layer = np.maximum(cam_per_target_layer, 0)
+        cam_per_target_layer = np.maximum(cam_per_target_layer, 0)
         result = np.mean(cam_per_target_layer, axis=1)
         return scale_cam_image(result)
 

@@ -25,12 +25,9 @@ class AblationCAM(BaseCAM):
                         targets,
                         activations,
                         grads):
-
-
         with torch.no_grad():
             outputs = self.model(input_tensor)
             original_scores = np.float32([target(output).cpu().item() for target, output in zip(targets, outputs)])
-        print("original_scores", original_scores)
 
         ablation_layer = self.ablation_layer(target_layers, indices=[])
         replace_layer_recursive(self.model, target_layers, ablation_layer)
@@ -42,7 +39,6 @@ class AblationCAM(BaseCAM):
 
 
         number_of_channels = activations.shape[1]
-        print("activations", activations.shape)
         weights = []
 
         with torch.no_grad():
@@ -63,8 +59,6 @@ class AblationCAM(BaseCAM):
         weights = weights.reshape(activations.shape[:2])
         original_scores = original_scores[:, None]
         weights = (original_scores - weights) / original_scores
-        weights = np.maximum(weights, 0)
-        print("weights", weights.min(), weights.max(), weights.sum())
 
         # Replace the model back to the original state
         replace_layer_recursive(self.model, ablation_layer, target_layers)

@@ -129,7 +129,7 @@ def draw_boxes(boxes, labels, classes, image):
     return image
 
 class FasterRCNNBoxScoreTarget:
-    def __init__(self, labels, bounding_boxes, iou_threshold=0.9):
+    def __init__(self, labels, bounding_boxes, iou_threshold=0.6):
         self.labels = labels
         self.bounding_boxes = bounding_boxes
         self.iou_threshold = iou_threshold
@@ -141,12 +141,16 @@ class FasterRCNNBoxScoreTarget:
             if torch.cuda.is_available():
                 box = box.cuda()
 
-            ious = torchvision.ops.box_iou(box, model_outputs["boxes"]).cpu().numpy()
+            ious = torchvision.ops.box_iou(box, model_outputs["boxes"])
             index = ious.argmax()
-
             if ious[0, index] > self.iou_threshold and model_outputs["labels"][index] == label:
-                score = model_outputs["scores"][index]
+                score = ious[0, index] + model_outputs["scores"][index]
+                #x1, y1, x2, y2 = model_outputs["boxes"][index]
+                #score = (y2-y1) + (x2-x1)
                 output = output + score
+            elif output == 0:
+                output = model_outputs["scores"][index] * 0
+
         return output
 
 class AblationLayerFasterRCNN(torch.nn.Module):
@@ -157,13 +161,12 @@ class AblationLayerFasterRCNN(torch.nn.Module):
         self.indices = indices
 
     def __call__(self, x):
-        print(result['pool'])
         result = self.layer(x)
         layers = {0: '0', 1: '1', 2:'2', 3:'3', 4:'pool'}
         for i in range(result['pool'].size(0)):
             pyramid_layer = int(self.indices[i]/256)
             index_in_pyramid_layer = int(self.indices[i] % 256)
-            result[layers[pyramid_layer]] [i, index_in_pyramid_layer, :, :] = 0
+            result[layers[pyramid_layer]] [i, index_in_pyramid_layer, :, :]  = -1000
         return result
 
 
@@ -171,7 +174,7 @@ def reshape_transform(x):
     target_size = x['pool'].size()[-2 : ]
     activations = []
     for key, value in x.items():
-        activations.append(torch.nn.functional.interpolate(value, target_size, mode='bilinear'))
+        activations.append(torch.nn.functional.interpolate(torch.abs(value), target_size, mode='bilinear'))
     activations = torch.cat(activations, axis=1)
     return activations
 
@@ -211,11 +214,13 @@ input_tensor = input_tensor.unsqueeze(0)  # add a batch dimension
 model = torchvision.models.detection.fasterrcnn_resnet50_fpn(
     pretrained=True, box_detections_per_img=400)
 model.eval().to(device)
+print(model)    
 
 boxes, classes, labels, indices = predict(input_tensor, model, device, 0.9)
 
 targets = [FasterRCNNBoxScoreTarget(labels=labels, bounding_boxes=boxes)]
-target_layers = [model.backbone.fpn]
+target_layers = [model.backbone]
+
 
 cam = AblationCAM(model,
                   target_layers, 
@@ -224,7 +229,7 @@ cam = AblationCAM(model,
                   ablation_layer=AblationLayerFasterRCNN)
 
 cam.batch_size=16
-grayscale_cam = cam(input_tensor, targets=targets)
+grayscale_cam = cam(input_tensor, targets=targets, eigen_smooth=True)
 
 grayscale_cam = grayscale_cam[0, :, :]
 cleaned_grayscale_cam = grayscale_cam * 0
@@ -232,10 +237,12 @@ cleaned_grayscale_cam = grayscale_cam * 0
 cv2.imwrite("grayscale_cam.png", np.uint8(grayscale_cam*255))
 
 # for (x1, y1, x2, y2) in boxes:
-#     cleaned_grayscale_cam[y1:y2, x1:x2] += scale_cam_image(grayscale_cam[y1:y2, x1:x2].copy())
-# grayscale_cam = scale_cam_image(cleaned_grayscale_cam)
+#     cleaned_grayscale_cam[y1:y2, x1:x2] = np.maximum(cleaned_grayscale_cam[y1:y2, x1:x2],
+#                                               scale_cam_image(grayscale_cam[y1:y2, x1:x2].copy()))
+# cam_image = scale_cam_image(cleaned_grayscale_cam)
+cam_image = grayscale_cam
 
-cam_image = show_cam_on_image(image, grayscale_cam, use_rgb=True)
+cam_image = show_cam_on_image(image, cam_image, use_rgb=True)
 # cam_image is RGB encoded whereas "cv2.imwrite" requires BGR encoding.
 cam_image = cv2.cvtColor(cam_image, cv2.COLOR_RGB2BGR)
 
