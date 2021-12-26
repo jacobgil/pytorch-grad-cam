@@ -72,10 +72,8 @@ class BaseCAM:
             targets = [ClassifierOutputTarget(category) for category in target_categories]
 
         if self.uses_gradients:
-            outputs = torch.Tensor([target(output) for target, output in zip(targets, outputs)])
             self.model.zero_grad()
-            loss = outputs.sum()
-            loss.requires_grad = True
+            loss = sum([target(output) for target, output in zip(targets, outputs)])
             loss.backward(retain_graph=True)
 
         # In most of the saliency attribution papers, the saliency is

@@ -3,14 +3,8 @@ import cv2
 import numpy as np
 import torch
 import torchvision
-from pytorch_grad_cam import GradCAM, \
-    ScoreCAM, \
-    GradCAMPlusPlus, \
-    AblationCAM, \
-    XGradCAM, \
-    EigenCAM, \
-    EigenGradCAM, \
-    ActivationsAndGradients
+from pytorch_grad_cam import AblationCAM
+from pytorch_grad_cam.ablation_layer import AblationLayerFasterRCNN
 
 from pytorch_grad_cam.utils.image import show_cam_on_image, scale_accross_batch_and_channels, scale_cam_image
 import sys
@@ -129,7 +123,7 @@ def draw_boxes(boxes, labels, classes, image):
     return image
 
 class FasterRCNNBoxScoreTarget:
-    def __init__(self, labels, bounding_boxes, iou_threshold=0.6):
+    def __init__(self, labels, bounding_boxes, iou_threshold=0.5):
         self.labels = labels
         self.bounding_boxes = bounding_boxes
         self.iou_threshold = iou_threshold
@@ -150,24 +144,7 @@ class FasterRCNNBoxScoreTarget:
                 output = output + score
             elif output == 0:
                 output = model_outputs["scores"][index] * 0
-
         return output
-
-class AblationLayerFasterRCNN(torch.nn.Module):
-    def __init__(self, layer, indices):
-        super(AblationLayerFasterRCNN, self).__init__()
-
-        self.layer = layer
-        self.indices = indices
-
-    def __call__(self, x):
-        result = self.layer(x)
-        layers = {0: '0', 1: '1', 2:'2', 3:'3', 4:'pool'}
-        for i in range(result['pool'].size(0)):
-            pyramid_layer = int(self.indices[i]/256)
-            index_in_pyramid_layer = int(self.indices[i] % 256)
-            result[layers[pyramid_layer]] [i, index_in_pyramid_layer, :, :]  = -1000
-        return result
 
 
 def reshape_transform(x):
@@ -211,10 +188,8 @@ input_tensor = transform(image).to(device)
 input_tensor = input_tensor.unsqueeze(0)  # add a batch dimension
 
 # download or load the model from disk
-model = torchvision.models.detection.fasterrcnn_resnet50_fpn(
-    pretrained=True, box_detections_per_img=400)
+model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
 model.eval().to(device)
-print(model)    
 
 boxes, classes, labels, indices = predict(input_tensor, model, device, 0.9)
 
@@ -228,19 +203,21 @@ cam = AblationCAM(model,
                   reshape_transform=reshape_transform,
                   ablation_layer=AblationLayerFasterRCNN)
 
-cam.batch_size=16
+cam.batch_size=8
+import time
+t0 = time.time()
 grayscale_cam = cam(input_tensor, targets=targets, eigen_smooth=True)
+print("Took", time.time()-t0)
 
 grayscale_cam = grayscale_cam[0, :, :]
 cleaned_grayscale_cam = grayscale_cam * 0
 
 cv2.imwrite("grayscale_cam.png", np.uint8(grayscale_cam*255))
 
-# for (x1, y1, x2, y2) in boxes:
-#     cleaned_grayscale_cam[y1:y2, x1:x2] = np.maximum(cleaned_grayscale_cam[y1:y2, x1:x2],
-#                                               scale_cam_image(grayscale_cam[y1:y2, x1:x2].copy()))
-# cam_image = scale_cam_image(cleaned_grayscale_cam)
-cam_image = grayscale_cam
+for (x1, y1, x2, y2) in boxes:
+    cleaned_grayscale_cam[y1:y2, x1:x2] = np.maximum(cleaned_grayscale_cam[y1:y2, x1:x2],
+                                              scale_cam_image(grayscale_cam[y1:y2, x1:x2].copy()))
+cam_image = scale_cam_image(cleaned_grayscale_cam)
 
 cam_image = show_cam_on_image(image, cam_image, use_rgb=True)
 # cam_image is RGB encoded whereas "cv2.imwrite" requires BGR encoding.

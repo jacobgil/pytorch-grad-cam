@@ -77,7 +77,7 @@ if __name__ == '__main__':
     # Choose the target layer you want to compute the visualization for.
     # Usually this will be the last convolutional layer in the model.
     # Some common choices can be:
-    # Resnet18 and 50: model.layer4[-1]
+    # Resnet18 and 50: model.layer4
     # VGG, densenet161: model.features[-1]
     # mnasnet1_0: model.layers[-1]
     # You can print the model to help chose the layer
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     # You can also try selecting all layers of a certain type, with e.g:
     # from pytorch_grad_cam.utils.find_layers import find_layer_types_recursive
     # find_layer_types_recursive(model, [torch.nn.ReLU])
-    target_layers = [model.layer4[-1]]
+    target_layers = [model.layer4]
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = np.float32(rgb_img) / 255
@@ -101,6 +101,7 @@ if __name__ == '__main__':
     # Using the with statement ensures the context is freed, and you can
     # recreate different CAM objects in a loop.
     cam_algorithm = methods[args.method]
+    import time
     with cam_algorithm(model=model,
                        target_layers=target_layers,
                        use_cuda=args.use_cuda) as cam:
@@ -108,11 +109,12 @@ if __name__ == '__main__':
         # AblationCAM and ScoreCAM have batched implementations.
         # You can override the internal batch size for faster computation.
         cam.batch_size = 32
-
+        t0 = time.time()
         grayscale_cam = cam(input_tensor=input_tensor,
                             targets=targets,
                             aug_smooth=args.aug_smooth,
                             eigen_smooth=args.eigen_smooth)
+        print(time.time()-t0)
 
         # Here grayscale_cam has only one image in the batch
         grayscale_cam = grayscale_cam[0, :]

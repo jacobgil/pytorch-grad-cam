@@ -24,9 +24,10 @@ class ActivationsAndGradients:
         self.activations.append(activation.cpu().detach())
 
     def save_gradient(self, module, input, output):
-        if not output.requires_grad:
+        if not hasattr(output, "requires_grad") or not output.requires_grad:
             # You can only register hooks on tensor requires grad.
             return
+
         # Gradients are computed in reverse order
         def _store_grad(grad):
             if self.reshape_transform is not None:
