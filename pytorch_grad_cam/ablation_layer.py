@@ -102,6 +102,8 @@ class AblationLayer(torch.nn.Module):
                 output[i, self.indices[i], :] = torch.min(
                     output) - ABLATION_VALUE
 
+        self.indices = self.indices[output.size(0) : ]
+
         return output
 
 class AblationLayerVit(AblationLayer):
