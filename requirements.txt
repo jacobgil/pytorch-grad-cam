@@ -1,8 +1,7 @@
 numpy
 Pillow
-torch==1.7.1
-torchvision==0.8.2
-typing-extensions==3.7.4.3
+torch>=1.7.1
+torchvision>=0.8.2
 ttach
 tqdm
 opencv-python
