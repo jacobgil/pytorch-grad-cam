@@ -1,94 +1,63 @@
 import torch
 from collections import OrderedDict
-from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
-import time
 import numpy as np
-import cv2
-
-class AblationLayerFasterRCNN(torch.nn.Module):
-    def __init__(self, layer):
-        super(AblationLayerFasterRCNN, self).__init__()
-        self.layer = layer
-
-    def activations_to_be_ablated(self, activations, top_percent=1.0):
-        index = 0
-        indices = []
-
-        t0 = time.time()
-        projection = get_2d_projection(activations[None, :])[0, :]
-        projection = projection - projection.min()
-        projection = projection / projection.max()
-        projection = projection > 0.1
-        projection = np.float32(projection)
-        scores = []
-        for channel in activations:
-            normalized = channel - channel.min()
-            normalized = normalized / channel.max()
-            score = (projection*normalized).sum()
-            scores.append(score)
-        scores = np.float32(scores)
-        self.indices = np.argsort(scores)[::-1]
-        self.indices = self.indices[: int(len(self.indices) * top_percent)]
-        return self.indices
-
-    def set_next_batch(self, input_batch_index, activations, num_channels_to_ablate):
-        self.activations = OrderedDict()
-        for key, value in activations.items():
-            self.activations[key] = value[input_batch_index, :, :, :].clone().unsqueeze(0).repeat(num_channels_to_ablate, 1, 1, 1)
-
-
-    def __call__(self, x):
-        result = self.activations
-        #result = self.layer(x)
-        layers = {0: '0', 1: '1', 2:'2', 3:'3', 4:'pool'}
-        num_channels_to_ablate = result['pool'].size(0)
-        for i in range(num_channels_to_ablate):
-            pyramid_layer = int(self.indices[i]/256)
-            index_in_pyramid_layer = int(self.indices[i] % 256)
-            result[layers[pyramid_layer]] [i, index_in_pyramid_layer, :, :]  = -1000
-        self.indices = self.indices[num_channels_to_ablate : ]
-        return result
+from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
 
 
 class AblationLayer(torch.nn.Module):
-    def __init__(self, layer):
+    def __init__(self):
         super(AblationLayer, self).__init__()
-        self.layer = layer
 
-
-    def activations_to_be_ablated(self, activations, top_percent=0.05):
-        index = 0
-        indices = []
-
-        t0 = time.time()
-        self.indices = list(range(activations.shape[0]))
-        return self.indices
+    def objectiveness_mask_from_svd(self, activations, threshold=0.01):
+        """ Experimental method to get a binary mask to compare if the activation is worth ablating.
+            The idea is to apply the EigenCAM method by doing PCA on the activations.
+            Then we create a binary mask by comparing to a low threshold.
+            Areas that are masked out, are probably not interesting anyway.
+        """
 
         projection = get_2d_projection(activations[None, :])[0, :]
+        projection = np.abs(projection)
         projection = projection - projection.min()
         projection = projection / projection.max()
-        projection = projection > 0.1
-        projection = np.float32(projection)
+        projection = projection > threshold
+        return projection
+
+    def activations_to_be_ablated(self, activations, ratio_channels_to_ablate=1.0):
+        """ Experimental method to get a binary mask to compare if the activation is worth ablating.
+            Create a binary CAM mask with objectiveness_mask_from_svd.
+            Score each Activation channel, by seeing how much of its values are inside the mask.
+            Then keep the top channels.
+
+        """
+        if ratio_channels_to_ablate == 1.0:
+            self.indices = np.int32(range(activations.shape[0]))
+            return self.indices
+
+        projection = self.objectiveness_mask_from_svd(activations)
+
         scores = []
         for channel in activations:
-            normalized = channel - channel.min()
-            normalized = normalized / channel.max()
-            score = (projection*normalized).sum()
+            normalized = np.abs(channel)
+            normalized = normalized - normalized.min()
+            normalized = normalized / np.max(normalized)
+            score = (projection*normalized).sum() / normalized.sum()
             scores.append(score)
         scores = np.float32(scores)
-        self.indices = np.argsort(scores)[::-1]
-        self.indices = self.indices[: int(len(self.indices) * top_percent)]
+
+        indices = list(np.argsort(scores))
+        high_score_indices = indices[::-1][: int(len(indices) * ratio_channels_to_ablate)]
+        low_score_indices = indices[: int(len(indices) * ratio_channels_to_ablate)]
+        self.indices = np.int32(high_score_indices + low_score_indices)
         return self.indices
 
     def set_next_batch(self, input_batch_index, activations, num_channels_to_ablate):
+        """ This creates the next batch of activations from the layer.
+            Just take corresponding batch member from activations, and repeat it num_channels_to_ablate times.
+        """
         self.activations = activations[input_batch_index, :, :, :].clone().unsqueeze(0).repeat(num_channels_to_ablate, 1, 1, 1)
 
     def __call__(self, x):
-        if self.activations is None:
-            output = self.layer(x)
-        else:
-            output = self.activations
-
+        output = self.activations
         for i in range(output.size(0)):
             # Commonly the minimum activation will be 0,
             # And then it makes sense to zero it out.
@@ -102,17 +71,16 @@ class AblationLayer(torch.nn.Module):
                 output[i, self.indices[i], :] = torch.min(
                     output) - ABLATION_VALUE
 
-        self.indices = self.indices[output.size(0) : ]
-
         return output
 
+
 class AblationLayerVit(AblationLayer):
-    def __init__(self, layer):
-        super(AblationLayerVit, self).__init__(layer)
+    def __init__(self):
+        super(AblationLayerVit, self).__init__()
 
     def __call__(self, x):
-        output = self.layer(x)
-        output = output.transpose(1, 2)        
+        output = self.activations
+        output = output.transpose(1, 2)
         for i in range(output.size(0)):
 
             # Commonly the minimum activation will be 0,
@@ -130,3 +98,24 @@ class AblationLayerVit(AblationLayer):
         output = output.transpose(2, 1)
 
         return output
+
+
+class AblationLayerFasterRCNN(AblationLayer):
+    def __init__(self):
+        super(AblationLayerFasterRCNN, self).__init__()
+
+    def set_next_batch(self, input_batch_index, activations, num_channels_to_ablate):
+        self.activations = OrderedDict()
+        for key, value in activations.items():
+            fpn_activation = value[input_batch_index, :, :, :].clone().unsqueeze(0)
+            self.activations[key] = fpn_activation.repeat(num_channels_to_ablate, 1, 1, 1)
+
+    def __call__(self, x):
+        result = self.activations
+        layers = {0: '0', 1: '1', 2: '2', 3: '3', 4: 'pool'}
+        num_channels_to_ablate = result['pool'].size(0)
+        for i in range(num_channels_to_ablate):
+            pyramid_layer = int(self.indices[i]/256)
+            index_in_pyramid_layer = int(self.indices[i] % 256)
+            result[layers[pyramid_layer]][i, index_in_pyramid_layer, :, :] = -1000
+        return result

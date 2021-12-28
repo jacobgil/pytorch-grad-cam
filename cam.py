@@ -16,6 +16,7 @@ from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
     deprocess_image, \
     preprocess_image
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 
 
 def get_args():
@@ -94,14 +95,17 @@ if __name__ == '__main__':
                                     mean=[0.485, 0.456, 0.406],
                                     std=[0.229, 0.224, 0.225])
 
-    # If None, returns the map for the highest scoring category.
-    # Otherwise, targets the requested category.
+
+    # We have to specify the target we want to generate
+    # the Class Activation Maps for.
+    # If targets is None, the highest scoring category (for every member in the batch) will be used.
+    # You can target specific categories by
+    # targets = [e.g ClassifierOutputTarget(281)]
     targets = None
 
     # Using the with statement ensures the context is freed, and you can
     # recreate different CAM objects in a loop.
     cam_algorithm = methods[args.method]
-    import time
     with cam_algorithm(model=model,
                        target_layers=target_layers,
                        use_cuda=args.use_cuda) as cam:
@@ -109,12 +113,10 @@ if __name__ == '__main__':
         # AblationCAM and ScoreCAM have batched implementations.
         # You can override the internal batch size for faster computation.
         cam.batch_size = 32
-        t0 = time.time()
         grayscale_cam = cam(input_tensor=input_tensor,
                             targets=targets,
                             aug_smooth=args.aug_smooth,
                             eigen_smooth=args.eigen_smooth)
-        print(time.time()-t0)
 
         # Here grayscale_cam has only one image in the batch
         grayscale_cam = grayscale_cam[0, :]
