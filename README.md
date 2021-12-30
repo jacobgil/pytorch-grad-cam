@@ -41,6 +41,11 @@
 
 # More Visual Examples
 
+## Object Detection and Semantic Segmentation
+![](./examples/both_detection.png&raw=true) ![](./examples/cars_segmentation.png&raw=true)
+
+## Classification
+
 #### Resnet50:
 | Category  | Image | GradCAM  |  AblationCAM |  ScoreCAM |
 | ---------|-------|----------|------------|------------|
@@ -59,8 +64,6 @@
 | Dog    | ![](./examples/dog_cat.jfif) | ![](./examples/swinT_dog_gradcam_cam.jpg)     |  ![](./examples/swinT_dog_ablationcam_cam.jpg)   |![](./examples/swinT_dog_scorecam_cam.jpg)   |
 | Cat    | ![](./examples/dog_cat.jfif) | ![](./examples/swinT_cat_gradcam_cam.jpg)     |  ![](./examples/swinT_cat_ablationcam_cam.jpg)   |![](./examples/swinT_cat_scorecam_cam.jpg)   |
 
-It seems that GradCAM++ is almost the same as GradCAM, in
-most networks except VGG where the advantage is larger.
 
 | Network  | Image | GradCAM  |  GradCAM++ |  Score-CAM |  Ablation-CAM |  Eigen-CAM |
 | ---------|-------|----------|------------|------------|---------------|------------|
@@ -122,14 +125,20 @@ visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
 
 # Advanced use cases and examples:
 
+You can use this package for "custom" deep learning models, for example Object Detection or Semantic Segmentation.
+You will have to define objects that you can then pass to the CAM algorithms:
+1. A reshape_transform, that aggregates the layer outputs into 2D tensors that will be displayed.
+2. Model Targets, that define what target do you want to compute the visualizations for, for example a specific category, or a list of bounding boxes.
+
+Here are detailed examples of how to use this for Object detection, Semantic Segmentation, and Vision Transformers:
+
 - [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb>)
 
 - [Notebook tutorial: Class Activation Maps for Semantic Segmentation](<tutorials/Class Activation Maps for Semantic Segmentation.ipynb>)
 
 - [How it works with Vision/SwinT transformers](tutorials/vision_transformers.md)
 
-*Contribution request: more tutorials for custom use cases, like YOLO object detection, or image captioning.*
-
+*Contribution request for the community: more tutorials for custom use cases, like YOLO object detection, or image captioning.*
 
 
 ----------
