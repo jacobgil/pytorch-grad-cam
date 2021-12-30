@@ -44,7 +44,7 @@
 ## Object Detection and Semantic Segmentation
 | Object Detection | Semantic Segmentation |
 | -----------------|-----------------------|
-| <img src="./examples/both_detection.png" width="256" height="256"> | <img src="./examples/cars_segmentation.png" width="256" height="256"> |
+| <img src="./examples/both_detection.png" width="128" height="128"> | <img src="./examples/cars_segmentation.png" width="128" height="100"> |
 
 ## Classification
 
