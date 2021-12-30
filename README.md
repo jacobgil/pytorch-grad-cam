@@ -72,12 +72,12 @@ most networks except VGG where the advantage is larger.
 # Chosing the Target Layer
 You need to choose the target layer to compute CAM for.
 Some common choices are:
+- FasterRCNN: model.backbone
 - Resnet18 and 50: model.layer4[-1]
 - VGG and densenet161: model.features[-1]
 - mnasnet1_0: model.layers[-1]
 - ViT: model.blocks[-1].norm1
 - SwinT: model.layers[-1].blocks[-1].norm1
-- FasterRCNN: model.backbone.fpn
 
 ----------
 
@@ -169,81 +169,15 @@ You can control the batch size with
 
 ----------
 
-# How does it work with Vision Transformers
+Tutorials and examples:
 
-*See [usage_examples/vit_example.py](./usage_examples/vit_example.py)*
+- ![Class Activation Maps for Object Detection with Faster-RCNN]("tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb")
 
-In ViT the output of the layers are typically BATCH x 197 x 192.
-In the dimension with 197, the first element represents the class token, and the rest represent the 14x14 patches in the image.
-We can treat the last 196 elements as a 14x14 spatial image, with 192 channels.
+- ![Class Activation Maps for Semantic Segmentation]("tutorials/Class Activation Maps for Semantic Segmentation.ipynb")
 
-To reshape the activations and gradients to 2D spatial images,
-we can pass the CAM constructor a reshape_transform function.
+- ![How it works with Vision/SwinT transformers]("tutorials/vision_transformers.md")
 
-This can also be a starting point for other architectures that will come in the future.
-
-```python
-
-GradCAM(model=model, target_layers=target_layers, reshape_transform=reshape_transform)
-
-def reshape_transform(tensor, height=14, width=14):
-    result = tensor[:, 1 :  , :].reshape(tensor.size(0),
-        height, width, tensor.size(2))
-
-    # Bring the channels to the first dimension,
-    # like in CNNs.
-    result = result.transpose(2, 3).transpose(1, 2)
-    return result
-```
-
-### Which target_layer should we chose for Vision Transformers?
-
-Since the final classification is done on the class token computed in the last attention block,
-the output will not be affected by the 14x14 channels in the last layer.
-The gradient of the output with respect to them, will be 0!
-
-We should chose any layer before the final attention block, for example:
-```python
-target_layers = [model.blocks[-1].norm1]
-```
-
-----------
-
-# How does it work with Swin Transformers
-
-*See [usage_examples/swinT_example.py](./usage_examples/swinT_example.py)*
-
-In Swin transformer base the output of the layers are typically BATCH x 49 x 1024.
-We can treat the last 49 elements as a 7x7 spatial image, with 1024 channels.
-
-To reshape the activations and gradients to 2D spatial images,
-we can pass the CAM constructor a reshape_transform function.
-
-This can also be a starting point for other architectures that will come in the future.
-
-```python
-
-GradCAM(model=model, target_layers=target_layers, reshape_transform=reshape_transform)
-
-def reshape_transform(tensor, height=7, width=7):
-    result = tensor.reshape(tensor.size(0),
-        height, width, tensor.size(2))
-
-    # Bring the channels to the first dimension,
-    # like in CNNs.
-    result = result.transpose(2, 3).transpose(1, 2)
-    return result
-```
-
-### Which target_layer should we chose for Swin Transformers?
-
-Since the swin transformer is different from ViT, it does not contains `cls_token` as present in ViT,
-therefore we will use all the 7x7 images we get from the last block of the last layer.
-
-We should chose any layer before the final attention block, for example:
-```python
-target_layers = [model.layers[-1].blocks[-1].norm1]
-```
+** Contribution request: more tutorials for custom use cases, like YOLO object detection, or image captioning. **
 
 ----------
 
