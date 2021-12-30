@@ -13,6 +13,7 @@ from pytorch_grad_cam import GradCAM, \
     FullGrad
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
     preprocess_image
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 
 
 @pytest.fixture
@@ -66,8 +67,9 @@ def test_all_cam_models_can_run(numpy_image, batch_size, width, height,
                      target_layers=target_layers,
                      use_cuda=False)
     cam.batch_size = 4
+    targets = [ClassifierOutputTarget(target_category) for _ in range(batch_size)]
     grayscale_cam = cam(input_tensor=input_tensor,
-                        target_category=target_category,
+                        targets=targets,
                         aug_smooth=aug_smooth,
                         eigen_smooth=eigen_smooth)
     assert(grayscale_cam.shape[0] == input_tensor.shape[0])
