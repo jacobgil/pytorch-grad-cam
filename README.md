@@ -34,10 +34,9 @@
 
 ## Visual Examples
 
-### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
 | What makes the network think the image label is 'pug, pug-dog' | 'tabby, tabby cat' | Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class |
 | ---------------------------------------------------------------|--------------------|-----------------------------------------------------------------------------|
-![Dog](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true) |  ![Cat](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true) | ![Combined](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cam_gb_dog.jpg?raw=true) |
+ <img src="https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true" width="256" height="256"> | <img src="https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true" width="256" height="256">) | <img src="https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cam_gb_dog.jpg?raw=true" width="256" height="256"> |
 
 ## Object Detection and Semantic Segmentation
 | Object Detection | Semantic Segmentation |
