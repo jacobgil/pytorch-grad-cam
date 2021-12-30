@@ -86,7 +86,7 @@ Some common choices are:
 # Using from code as a library
 
 ```python
-from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM
+from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM, FullGrad
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
@@ -183,7 +183,7 @@ To use with CUDA:
 
 You can choose between:
 
-`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM` and `EigenCAM`.
+`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, 'FullGrad' and `EigenCAM`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
