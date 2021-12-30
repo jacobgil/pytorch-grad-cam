@@ -105,6 +105,9 @@ class AblationLayerFasterRCNN(AblationLayer):
         super(AblationLayerFasterRCNN, self).__init__()
 
     def set_next_batch(self, input_batch_index, activations, num_channels_to_ablate):
+        """ Extract the next batch member from activations,
+            and repeat it num_channels_to_ablate times.
+        """
         self.activations = OrderedDict()
         for key, value in activations.items():
             fpn_activation = value[input_batch_index, :, :, :].clone().unsqueeze(0)

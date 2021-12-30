@@ -1,106 +1,28 @@
+import sys
 import argparse
 import cv2
 import numpy as np
 import torch
 import torchvision
-from pytorch_grad_cam import AblationCAM
+from pytorch_grad_cam import AblationCAM, EigenCAM
 from pytorch_grad_cam.ablation_layer import AblationLayerFasterRCNN
-
 from pytorch_grad_cam.utils.image import show_cam_on_image, scale_accross_batch_and_channels, scale_cam_image
-import sys
+from pytorch_grad_cam.utils.model_targets import FasterRCNNBoxScoreTarget
+from pytorch_grad_cam.utils.reshape_transforms import fasterrcnn_reshape_transform
 
-coco_names = [
-    '__background__',
-    'person',
-    'bicycle',
-    'car',
-    'motorcycle',
-    'airplane',
-    'bus',
-    'train',
-    'truck',
-    'boat',
-    'traffic light',
-    'fire hydrant',
-    'N/A',
-    'stop sign',
-    'parking meter',
-    'bench',
-    'bird',
-    'cat',
-    'dog',
-    'horse',
-    'sheep',
-    'cow',
-    'elephant',
-    'bear',
-    'zebra',
-    'giraffe',
-    'N/A',
-    'backpack',
-    'umbrella',
-    'N/A',
-    'N/A',
-    'handbag',
-    'tie',
-    'suitcase',
-    'frisbee',
-    'skis',
-    'snowboard',
-    'sports ball',
-    'kite',
-    'baseball bat',
-    'baseball glove',
-    'skateboard',
-    'surfboard',
-    'tennis racket',
-    'bottle',
-    'N/A',
-    'wine glass',
-    'cup',
-    'fork',
-    'knife',
-    'spoon',
-    'bowl',
-    'banana',
-    'apple',
-    'sandwich',
-    'orange',
-    'broccoli',
-    'carrot',
-    'hot dog',
-    'pizza',
-    'donut',
-    'cake',
-    'chair',
-    'couch',
-    'potted plant',
-    'bed',
-    'N/A',
-    'dining table',
-    'N/A',
-    'N/A',
-    'toilet',
-    'N/A',
-    'tv',
-    'laptop',
-    'mouse',
-    'remote',
-    'keyboard',
-    'cell phone',
-    'microwave',
-    'oven',
-    'toaster',
-    'sink',
-    'refrigerator',
-    'N/A',
-    'book',
-    'clock',
-    'vase',
-    'scissors',
-    'teddy bear',
-    'hair drier',
-    'toothbrush']
+coco_names = ['__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', \
+              'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'N/A', 
+              'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 
+              'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'N/A', 'backpack', 'umbrella',
+              'N/A', 'N/A', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard',
+              'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard',
+              'surfboard', 'tennis racket', 'bottle', 'N/A', 'wine glass', 'cup', 'fork',
+              'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange',
+              'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
+              'potted plant', 'bed', 'N/A', 'dining table', 'N/A', 'N/A', 'toilet',
+              'N/A', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave',
+              'oven', 'toaster', 'sink', 'refrigerator', 'N/A', 'book', 'clock', 'vase',
+              'scissors', 'teddy bear', 'hair drier', 'toothbrush']
 
 # this will help us create a different color for each class
 COLORS = np.random.uniform(0, 255, size=(len(coco_names), 3))
@@ -129,7 +51,13 @@ class FasterRCNNBoxScoreTarget:
         self.iou_threshold = iou_threshold
 
     def __call__(self, model_outputs):
-        output = 0
+        output = torch.Tensor([0])
+        if torch.cuda.is_available():
+            output = output.cuda()
+
+        if len(model_outputs["boxes"]) == 0:
+            return output
+
         for box, label in zip(self.bounding_boxes, self.labels):
             box = torch.Tensor(box[None, :])
             if torch.cuda.is_available():
@@ -139,31 +67,15 @@ class FasterRCNNBoxScoreTarget:
             index = ious.argmax()
             if ious[0, index] > self.iou_threshold and model_outputs["labels"][index] == label:
                 score = ious[0, index] + model_outputs["scores"][index]
-                #x1, y1, x2, y2 = model_outputs["boxes"][index]
-                #score = (y2-y1) + (x2-x1)
                 output = output + score
-            elif output == 0:
-                output = model_outputs["scores"][index] * 0
         return output
-
-
-def reshape_transform(x):
-    target_size = x['pool'].size()[-2 : ]
-    activations = []
-    for key, value in x.items():
-        activations.append(torch.nn.functional.interpolate(torch.abs(value), target_size, mode='bilinear'))
-    activations = torch.cat(activations, axis=1)
-    return activations
 
 def predict(input_tensor, model, device, detection_threshold):
     outputs = model(input_tensor)
     pred_classes = [coco_names[i] for i in outputs[0]['labels'].cpu().numpy()]
     pred_labels = outputs[0]['labels'].cpu().numpy()
-    # get score for all the predicted objects
     pred_scores = outputs[0]['scores'].detach().cpu().numpy()
-    # get all the predicted bounding boxes
     pred_bboxes = outputs[0]['boxes'].detach().cpu().numpy()
-    # get boxes above the threshold score
 
     boxes, classes, labels, indices = [], [], [], []
     for index in range(len(pred_scores)):
@@ -196,27 +108,35 @@ boxes, classes, labels, indices = predict(input_tensor, model, device, 0.9)
 targets = [FasterRCNNBoxScoreTarget(labels=labels, bounding_boxes=boxes)]
 target_layers = [model.backbone]
 
-
 cam = AblationCAM(model,
                   target_layers, 
                   use_cuda=True, 
-                  reshape_transform=reshape_transform,
-                  ablation_layer=AblationLayerFasterRCNN)
+                  reshape_transform=fasterrcnn_reshape_transform,
+                  ablation_layer=AblationLayerFasterRCNN(),
+                  ratio_channels_to_ablate=1.0)
+
+# cam = EigenCAM(model,
+#               target_layers, 
+#               use_cuda=True, 
+#               reshape_transform=reshape_transform)
+
 
 cam.batch_size=8
 import time
 t0 = time.time()
-grayscale_cam = cam(input_tensor, targets=targets, eigen_smooth=True)
+grayscale_cam = cam(input_tensor, targets=targets, eigen_smooth=False)
 print("Took", time.time()-t0)
 
 grayscale_cam = grayscale_cam[0, :, :]
+cam_image = grayscale_cam
 cleaned_grayscale_cam = grayscale_cam * 0
+
 
 cv2.imwrite("grayscale_cam.png", np.uint8(grayscale_cam*255))
 
 for (x1, y1, x2, y2) in boxes:
     cleaned_grayscale_cam[y1:y2, x1:x2] = np.maximum(cleaned_grayscale_cam[y1:y2, x1:x2],
-                                              scale_cam_image(grayscale_cam[y1:y2, x1:x2].copy()))
+                                             scale_cam_image(grayscale_cam[y1:y2, x1:x2].copy()))
 cam_image = scale_cam_image(cleaned_grayscale_cam)
 
 cam_image = show_cam_on_image(image, cam_image, use_rgb=True)

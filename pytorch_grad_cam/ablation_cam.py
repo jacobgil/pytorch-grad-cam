@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import tqdm
-from typing import Callable
+from typing import Callable, List
 from pytorch_grad_cam.base_cam import BaseCAM
 from pytorch_grad_cam.utils.find_layers import replace_layer_recursive
 from pytorch_grad_cam.ablation_layer import AblationLayer
@@ -27,12 +27,12 @@ The parameter ratio_channels_to_ablate controls how many channels should be abla
 class AblationCAM(BaseCAM):
     def __init__(self,
                  model: torch.nn.Module,
-                 target_layers: list[torch.nn.Module],
+                 target_layers: List[torch.nn.Module],
                  use_cuda: bool = False,
                  reshape_transform: Callable = None,
                  ablation_layer: torch.nn.Module = AblationLayer(),
                  batch_size: int = 32,
-                 ratio_channels_to_ablate: float = 1.0):
+                 ratio_channels_to_ablate: float = 1.0) -> None:
 
         super(AblationCAM, self).__init__(model,
                                           target_layers,
@@ -43,15 +43,15 @@ class AblationCAM(BaseCAM):
         self.ablation_layer = ablation_layer
         self.ratio_channels_to_ablate = ratio_channels_to_ablate
 
-    def save_activation(self, module, input, output):
+    def save_activation(self, module, input, output) -> None:
         """ Helper function to save the raw activations from the target layer """
         self.activations = output
 
     def assemble_ablation_scores(self,
-                                 new_scores,
-                                 original_score,
-                                 ablated_channels,
-                                 number_of_channels):
+                                 new_scores: list,
+                                 original_score: float ,
+                                 ablated_channels: np.ndarray,
+                                 number_of_channels: int) -> np.ndarray:
         """ Take the value from the channels that were ablated,
             and just set the original score for the channels that were skipped """
 
@@ -72,12 +72,12 @@ class AblationCAM(BaseCAM):
         return result
 
     def get_cam_weights(self,
-                        input_tensor,
-                        target_layer,
-                        targets,
-                        activations,
-                        grads):
-
+                        input_tensor: torch.Tensor,
+                        target_layer: torch.nn.Module,
+                        targets: List[Callable],
+                        activations: torch.Tensor,
+                        grads: torch.Tensor) -> np.ndarray:
+        
         # Do a forward pass, compute the target scores, and cache the activations
         handle = target_layer.register_forward_hook(self.save_activation)
         with torch.no_grad():

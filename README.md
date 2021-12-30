@@ -11,9 +11,11 @@
 
 ⭐ Tested on many Common CNN Networks and Vision Transformers.
 
+⭐ Works with Classification, Object Detection, and Semantic Segmentation.
+
 ⭐ Includes smoothing methods to make the CAMs look nice.
 
-⭐ Full support for batches of images in all methods.
+⭐ High performance: full support for batches of images in all methods.
 
 ![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
 )
@@ -75,6 +77,7 @@ Some common choices are:
 - mnasnet1_0: model.layers[-1]
 - ViT: model.blocks[-1].norm1
 - SwinT: model.layers[-1].blocks[-1].norm1
+- FasterRCNN: model.backbone.fpn
 
 ----------
 
@@ -82,6 +85,7 @@ Some common choices are:
 
 ```python
 from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
 
@@ -98,11 +102,13 @@ cam = GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda)
 # with GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda) as cam:
 #   ...
 
-# If target_category is None, the highest scoring category
+# We have to specify the target we want to generate
+# the Class Activation Maps for.
+# If targets is None, the highest scoring category
 # will be used for every image in the batch.
-# target_category can also be an integer, or a list of different integers
-# for every image in the batch.
-target_category = 281
+# Here we use ClassifierOutputTarget, but you can define your own custom targets
+# That are, for example, combinations of categories, or specific outputs in a non standard model.
+targets = [e.g ClassifierOutputTarget(281)]
 
 # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
 grayscale_cam = cam(input_tensor=input_tensor, target_category=target_category)
