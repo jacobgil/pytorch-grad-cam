@@ -120,6 +120,20 @@ visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
 
 ----------
 
+# Advanced use cases and examples:
+
+- [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN]("tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb")
+
+- [Notebook tutorial: Class Activation Maps for Semantic Segmentation]("tutorials/Class Activation Maps for Semantic Segmentation.ipynb")
+
+- [How it works with Vision/SwinT transformers]("tutorials/vision_transformers.md")
+
+** Contribution request: more tutorials for custom use cases, like YOLO object detection, or image captioning. **
+
+
+
+----------
+
 # Smoothing to get nice looking CAMs
 
 To reduce noise in the CAMs, and make it fit better on the objects,
@@ -166,18 +180,6 @@ and have a batched implementation.
 
 You can control the batch size with
 `cam.batch_size = `
-
-----------
-
-Tutorials and examples:
-
-- ![Class Activation Maps for Object Detection with Faster-RCNN]("tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb")
-
-- ![Class Activation Maps for Semantic Segmentation]("tutorials/Class Activation Maps for Semantic Segmentation.ipynb")
-
-- ![How it works with Vision/SwinT transformers]("tutorials/vision_transformers.md")
-
-** Contribution request: more tutorials for custom use cases, like YOLO object detection, or image captioning. **
 
 ----------
 
