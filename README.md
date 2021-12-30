@@ -43,6 +43,7 @@
 
 ## Object Detection and Semantic Segmentation
 | Object Detection | Semantic Segmentation |
+| -----------------|-----------------------|
 | ![](./examples/both_detection.png) | ![](./examples/cars_segmentation.png) |
 
 ## Classification
