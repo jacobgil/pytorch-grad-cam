@@ -42,7 +42,7 @@
 # More Visual Examples
 
 ## Object Detection and Semantic Segmentation
-![](./examples/both_detection.png&raw=true) ![](./examples/cars_segmentation.png&raw=true)
+![](./examples/both_detection.png) ![](./examples/cars_segmentation.png)
 
 ## Classification
 
