@@ -47,3 +47,27 @@ def show_cam_on_image(img: np.ndarray,
     cam = heatmap + img
     cam = cam / np.max(cam)
     return np.uint8(255 * cam)
+
+def scale_cam_image(cam, target_size=None):
+    result = []
+    for img in cam:
+        img = img - np.min(img)
+        img = img / (1e-7 + np.max(img))
+        if target_size is not None:
+            img = cv2.resize(img, target_size)
+        result.append(img)
+    result = np.float32(result)
+
+    return result
+
+def scale_accross_batch_and_channels(tensor, target_size):
+    batch_size, channel_size = tensor.shape[:2]
+    reshaped_tensor = tensor.reshape(
+        batch_size * channel_size, *tensor.shape[2:])
+    result = scale_cam_image(reshaped_tensor, target_size)
+    result = result.reshape(
+        batch_size,
+        channel_size,
+        target_size[1],
+        target_size[0])
+    return result

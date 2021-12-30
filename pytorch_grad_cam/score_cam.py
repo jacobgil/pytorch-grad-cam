@@ -10,8 +10,11 @@ class ScoreCAM(BaseCAM):
             target_layers,
             use_cuda=False,
             reshape_transform=None):
-        super(ScoreCAM, self).__init__(model, target_layers, use_cuda,
-                                       reshape_transform=reshape_transform)
+        super(ScoreCAM, self).__init__(model,
+                                       target_layers,
+                                       use_cuda,
+                                       reshape_transform=reshape_transform,
+                                       uses_gradients=False)
 
         if len(target_layers) > 0:
             print("Warning: You are using ScoreCAM with target layers, "
@@ -20,7 +23,7 @@ class ScoreCAM(BaseCAM):
     def get_cam_weights(self,
                         input_tensor,
                         target_layer,
-                        target_category,
+                        targets,
                         activations,
                         grads):
         with torch.no_grad():
@@ -36,6 +39,7 @@ class ScoreCAM(BaseCAM):
                                   upsampled.size(1), -1).max(dim=-1)[0]
             mins = upsampled.view(upsampled.size(0),
                                   upsampled.size(1), -1).min(dim=-1)[0]
+
             maxs, mins = maxs[:, :, None, None], mins[:, :, None, None]
             upsampled = (upsampled - mins) / (maxs - mins)
 
@@ -48,14 +52,12 @@ class ScoreCAM(BaseCAM):
                 BATCH_SIZE = 16
 
             scores = []
-            for batch_index, tensor in enumerate(input_tensors):
-                category = target_category[batch_index]
+            for target, tensor in zip(targets, input_tensors):
                 for i in tqdm.tqdm(range(0, tensor.size(0), BATCH_SIZE)):
                     batch = tensor[i: i + BATCH_SIZE, :]
-                    outputs = self.model(batch).cpu().numpy()[:, category]
+                    outputs = [target(o).cpu().item() for o in self.model(batch)]
                     scores.extend(outputs)
             scores = torch.Tensor(scores)
             scores = scores.view(activations.shape[0], activations.shape[1])
-
             weights = torch.nn.Softmax(dim=-1)(scores).numpy()
             return weights

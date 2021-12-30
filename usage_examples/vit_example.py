@@ -94,10 +94,13 @@ if __name__ == '__main__':
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
 
+    from pytorch_grad_cam.ablation_layer import AblationLayerVit
+
     cam = methods[args.method](model=model,
                                target_layers=target_layers,
                                use_cuda=args.use_cuda,
-                               reshape_transform=reshape_transform)
+                               reshape_transform=reshape_transform,
+                               ablation_layer=AblationLayerVit)
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = cv2.resize(rgb_img, (224, 224))
@@ -107,14 +110,14 @@ if __name__ == '__main__':
 
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
-    target_category = None
+    targets = None
 
     # AblationCAM and ScoreCAM have batched implementations.
     # You can override the internal batch size for faster computation.
     cam.batch_size = 32
 
     grayscale_cam = cam(input_tensor=input_tensor,
-                        target_category=target_category,
+                        targets=targets ,
                         eigen_smooth=args.eigen_smooth,
                         aug_smooth=args.aug_smooth)
 

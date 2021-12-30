@@ -15,6 +15,8 @@ from pytorch_grad_cam import GradCAM, \
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
     preprocess_image
 
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+
 torch.manual_seed(0)
 
 
@@ -50,14 +52,14 @@ def test_memory_usage_in_loop(numpy_image, batch_size, width, height,
     target_layers = []
     for layer in target_layer_names:
         target_layers.append(eval(f"model.{layer}"))
-
+    targets = [ClassifierOutputTarget(target_category) for _ in range(batch_size)]
     initial_memory = 0
     for i in range(100):
         with cam_method(model=model,
                         target_layers=target_layers,
                         use_cuda=False) as cam:
             grayscale_cam = cam(input_tensor=input_tensor,
-                                target_category=target_category,
+                                targets=targets,
                                 aug_smooth=aug_smooth,
                                 eigen_smooth=eigen_smooth)
 

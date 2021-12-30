@@ -3,6 +3,7 @@ import torch
 from pytorch_grad_cam.base_cam import BaseCAM
 from pytorch_grad_cam.utils.find_layers import find_layer_predicate_recursive
 from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
+from pytorch_grad_cam.utils.image import scale_accross_batch_and_channels, scale_cam_image
 
 # https://arxiv.org/abs/1905.00780
 
@@ -42,18 +43,6 @@ class FullGrad(BaseCAM):
         else:
             return layer.bias.data
 
-    def scale_accross_batch_and_channels(self, tensor, target_size):
-        batch_size, channel_size = tensor.shape[:2]
-        reshaped_tensor = tensor.reshape(
-            batch_size * channel_size, *tensor.shape[2:])
-        result = self.scale_cam_image(reshaped_tensor, target_size)
-        result = result.reshape(
-            batch_size,
-            channel_size,
-            target_size[1],
-            target_size[0])
-        return result
-
     def compute_cam_per_layer(
             self,
             input_tensor,
@@ -67,7 +56,7 @@ class FullGrad(BaseCAM):
 
         gradient_multiplied_input = input_grad * input_tensor.data.cpu().numpy()
         gradient_multiplied_input = np.abs(gradient_multiplied_input)
-        gradient_multiplied_input = self.scale_accross_batch_and_channels(
+        gradient_multiplied_input = scale_accross_batch_and_channels(
             gradient_multiplied_input,
             target_size)
         cam_per_target_layer.append(gradient_multiplied_input)
@@ -80,7 +69,7 @@ class FullGrad(BaseCAM):
             # but possibily taking only the positive gradients will work
             # better.
             bias_grad = np.abs(bias * grads)
-            result = self.scale_accross_batch_and_channels(
+            result = scale_accross_batch_and_channels(
                 bias_grad, target_size)
             result = np.sum(result, axis=1)
             cam_per_target_layer.append(result[:, None, :])
@@ -88,11 +77,11 @@ class FullGrad(BaseCAM):
         if eigen_smooth:
             # Resize to a smaller image, since this method typically has a very large number of channels,
             # and then consumes a lot of memory
-            cam_per_target_layer = self.scale_accross_batch_and_channels(
+            cam_per_target_layer = scale_accross_batch_and_channels(
                 cam_per_target_layer, (target_size[0] // 8, target_size[1] // 8))
             cam_per_target_layer = get_2d_projection(cam_per_target_layer)
             cam_per_target_layer = cam_per_target_layer[:, None, :, :]
-            cam_per_target_layer = self.scale_accross_batch_and_channels(
+            cam_per_target_layer = scale_accross_batch_and_channels(
                 cam_per_target_layer,
                 target_size)
         else:
@@ -103,4 +92,4 @@ class FullGrad(BaseCAM):
 
     def aggregate_multi_layers(self, cam_per_target_layer):
         result = np.sum(cam_per_target_layer, axis=1)
-        return self.scale_cam_image(result)
+        return scale_cam_image(result)
