@@ -32,14 +32,12 @@
 | LayerCAM  | Spatially weight the activations by positive gradients. Works better especially in lower layers |
 | FullGrad  | Computes the gradients of the biases from all over the network, and then sums them |
 
+## Visual Examples
 
 ### What makes the network think the image label is 'pug, pug-dog' and 'tabby, tabby cat':
-![Dog](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true) ![Cat](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true)
-
-### Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class:
-![Combined](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cam_gb_dog.jpg?raw=true)
-
-# More Visual Examples
+| What makes the network think the image label is 'pug, pug-dog' | 'tabby, tabby cat' | Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class |
+| ---------------------------------------------------------------|--------------------|-----------------------------------------------------------------------------|
+![Dog](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/dog.jpg?raw=true) |  ![Cat](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cat.jpg?raw=true) | ![Combined](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/cam_gb_dog.jpg?raw=true) |
 
 ## Object Detection and Semantic Segmentation
 | Object Detection | Semantic Segmentation |
@@ -125,14 +123,16 @@ visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
 
 ----------
 
-# Advanced use cases and examples:
+# Advanced use cases and tutorials:
 
 You can use this package for "custom" deep learning models, for example Object Detection or Semantic Segmentation.
+
+
 You will have to define objects that you can then pass to the CAM algorithms:
 1. A reshape_transform, that aggregates the layer outputs into 2D tensors that will be displayed.
 2. Model Targets, that define what target do you want to compute the visualizations for, for example a specific category, or a list of bounding boxes.
 
-Here are detailed examples of how to use this for Object detection, Semantic Segmentation, and Vision Transformers:
+Here you can find detailed examples of how to use this for Object detection, Semantic Segmentation, and Vision Transformers:
 
 - [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb>)
 
