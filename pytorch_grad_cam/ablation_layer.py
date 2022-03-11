@@ -99,6 +99,13 @@ class AblationLayerVit(AblationLayer):
 
         return output
 
+    def set_next_batch(self, input_batch_index, activations, num_channels_to_ablate):
+        """ This creates the next batch of activations from the layer.
+            Just take corresponding batch member from activations, and repeat it num_channels_to_ablate times.
+        """
+        self.activations = activations[input_batch_index, :, :].clone().unsqueeze(0).repeat(num_channels_to_ablate, 1, 1)
+
+
 
 class AblationLayerFasterRCNN(AblationLayer):
     def __init__(self):
