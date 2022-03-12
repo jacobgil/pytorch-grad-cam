@@ -16,7 +16,7 @@ from pytorch_grad_cam import GradCAM, \
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
     preprocess_image
-
+from pytorch_grad_cam.ablation_layer import AblationLayerVit
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -94,13 +94,18 @@ if __name__ == '__main__':
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
 
-    from pytorch_grad_cam.ablation_layer import AblationLayerVit
+    if args.method == "ablationcam":
+        cam = methods[args.method](model=model,
+                                   target_layers=target_layers,
+                                   use_cuda=args.use_cuda,
+                                   reshape_transform=reshape_transform,
+                                   ablation_layer=AblationLayerVit())
+    else:
+        cam = methods[args.method](model=model,
+                                   target_layers=target_layers,
+                                   use_cuda=args.use_cuda,
+                                   reshape_transform=reshape_transform)
 
-    cam = methods[args.method](model=model,
-                               target_layers=target_layers,
-                               use_cuda=args.use_cuda,
-                               reshape_transform=reshape_transform,
-                               ablation_layer=AblationLayerVit)
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = cv2.resize(rgb_img, (224, 224))

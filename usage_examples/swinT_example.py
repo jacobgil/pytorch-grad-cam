@@ -16,7 +16,7 @@ from pytorch_grad_cam import GradCAM, \
 
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
     preprocess_image
-
+from pytorch_grad_cam.ablation_layer import AblationLayerVit
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -93,10 +93,17 @@ if __name__ == '__main__':
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
 
-    cam = methods[args.method](model=model,
-                               target_layers=target_layers,
-                               use_cuda=args.use_cuda,
-                               reshape_transform=reshape_transform)
+    if args.method == "ablationcam":
+        cam = methods[args.method](model=model,
+                                   target_layers=target_layers,
+                                   use_cuda=args.use_cuda,
+                                   reshape_transform=reshape_transform,
+                                   ablation_layer=AblationLayerVit())
+    else:
+        cam = methods[args.method](model=model,
+                                   target_layers=target_layers,
+                                   use_cuda=args.use_cuda,
+                                   reshape_transform=reshape_transform)
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = cv2.resize(rgb_img, (224, 224))
@@ -104,16 +111,13 @@ if __name__ == '__main__':
     input_tensor = preprocess_image(rgb_img, mean=[0.5, 0.5, 0.5],
                                     std=[0.5, 0.5, 0.5])
 
-    # If None, returns the map for the highest scoring category.
-    # Otherwise, targets the requested category.
-    target_category = None
 
     # AblationCAM and ScoreCAM have batched implementations.
     # You can override the internal batch size for faster computation.
     cam.batch_size = 32
 
     grayscale_cam = cam(input_tensor=input_tensor,
-                        target_category=target_category,
+                        targets=None,
                         eigen_smooth=args.eigen_smooth,
                         aug_smooth=args.aug_smooth)
 
