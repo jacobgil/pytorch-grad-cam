@@ -135,7 +135,10 @@ Here you can find detailed examples of how to use this for Object detection, Sem
 
 - [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb>)
 
-- [Notebook tutorial: Class Activation Maps for Semantic Segmentation](<tutorials/Class Activation Maps for Semantic Segmentation.ipynb>)
+- [Notebook tutorial: Class Activation Maps for Semantic Segmentation](<tutorials/Pixel Attribution for embeddings.ipynb>)
+
+- [Notebook tutorial: Adapting pixel attribution for embedding outputs from models](<tutorials/Class Activation Maps for Semantic Segmentation.ipynb>)
+
 
 - [How it works with Vision/SwinT transformers](tutorials/vision_transformers.md)
 
