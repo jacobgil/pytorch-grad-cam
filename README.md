@@ -131,17 +131,17 @@ You will have to define objects that you can then pass to the CAM algorithms:
 1. A reshape_transform, that aggregates the layer outputs into 2D tensors that will be displayed.
 2. Model Targets, that define what target do you want to compute the visualizations for, for example a specific category, or a list of bounding boxes.
 
-Here you can find detailed examples of how to use this for Object detection, Semantic Segmentation, and Vision Transformers:
+Here you can find detailed examples of how to use this for various custom use cases like object detection:
 
 - [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb>)
+
+- [Notebook tutorial: Class Activation Maps for YOLO5](<tutorials/EigenCAM for YOLO5.ipynb>)
 
 - [Notebook tutorial: Class Activation Maps for Semantic Segmentation](<tutorials/Class Activation Maps for Semantic Segmentation.ipynb>)
 
 - [Notebook tutorial: Adapting pixel attribution methods for embedding outputs from models](<tutorials/Pixel Attribution for embeddings.ipynb>)
 
 - [How it works with Vision/SwinT transformers](tutorials/vision_transformers.md)
-
-*Contribution request for the community: more tutorials for custom use cases, like YOLO object detection, or image captioning.*
 
 
 ----------
