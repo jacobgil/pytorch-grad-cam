@@ -62,7 +62,7 @@ def reshape_transform(tensor, height=14, width=14):
 
 
 if __name__ == '__main__':
-    """ python vit_gradcam.py -image-path <path_to_image>
+    """ python vit_gradcam.py --image-path <path_to_image>
     Example usage of using cam-methods on a VIT network.
 
     """
