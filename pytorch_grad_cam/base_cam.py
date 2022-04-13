@@ -62,7 +62,8 @@ class BaseCAM:
     def forward(self,
                 input_tensor: torch.Tensor,
                 targets: List[torch.nn.Module],
-                eigen_smooth: bool = False) -> np.ndarray:
+                eigen_smooth: bool = False,
+                is_batched: bool = False) -> np.ndarray:
 
         if self.cuda:
             input_tensor = input_tensor.cuda()
@@ -72,14 +73,30 @@ class BaseCAM:
                                                    requires_grad=True)
 
         outputs = self.activations_and_grads(input_tensor)
-        if targets is None:
-            target_categories = np.argmax(outputs.cpu().data.numpy(), axis=-1)
-            targets = [ClassifierOutputTarget(category) for category in target_categories]
+        if is_batched:
+            num_classes = outputs.size()[-1]  # Assumes a softmax output at the last dimension
+            outputs_flattened = outputs.view(-1, num_classes) # Flatten across batch-dim
 
-        if self.uses_gradients:
-            self.model.zero_grad()
-            loss = sum([target(output) for target, output in zip(targets, outputs)])
-            loss.backward(retain_graph=True)
+            if targets is None:
+                targets = torch.argmax(outputs_flattened, axis=-1)
+            else:
+                targets = targets.long().view(-1) # Flatten across batch-dim
+            criterion = torch.nn.CrossEntropyLoss()
+
+            if self.uses_gradients:
+                self.model.zero_grad()
+                loss = criterion(outputs_flattened.view(-1, num_classes), targets)
+                loss.backward(retain_graph=True)
+
+        else:
+            if targets is None:
+                target_categories = np.argmax(outputs.cpu().data.numpy(), axis=-1)
+                targets = [ClassifierOutputTarget(category) for category in target_categories]
+
+            if self.uses_gradients:
+                self.model.zero_grad()
+                loss = sum([target(output) for target, output in zip(targets, outputs)])
+                loss.backward(retain_graph=True)
 
         # In most of the saliency attribution papers, the saliency is
         # computed with a single target layer.
