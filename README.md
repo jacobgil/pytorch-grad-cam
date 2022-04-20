@@ -185,7 +185,7 @@ To use with CUDA:
 
 You can choose between:
 
-`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, 'FullGrad' and `EigenCAM`.
+`gradcam`, `gradcam++`, `scorecam`, `xgradcam`, `ablationcam`, `eigencam`, `eigengradcam`, `layercam`, `fullgrad`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
