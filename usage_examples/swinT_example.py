@@ -108,9 +108,9 @@ if __name__ == '__main__':
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = cv2.resize(rgb_img, (224, 224))
     rgb_img = np.float32(rgb_img) / 255
-    input_tensor = preprocess_image(rgb_img, mean=[0.5, 0.5, 0.5],
-                                    std=[0.5, 0.5, 0.5])
-
+    input_tensor = preprocess_image(
+        rgb_img, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+    )
 
     # AblationCAM and ScoreCAM have batched implementations.
     # You can override the internal batch size for faster computation.
