@@ -11,7 +11,7 @@ setuptools.setup(
     version='1.3.9',
     author='Jacob Gildenblat',
     author_email='jacob.gildenblat@gmail.com',
-    description='Many Class Activation Map methods implemented in Pytorch for classification, segmentation, object detection and more'.
+    description='Many Class Activation Map methods implemented in Pytorch for classification, segmentation, object detection and more',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/jacobgil/pytorch-grad-cam',
