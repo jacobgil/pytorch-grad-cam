@@ -24,7 +24,7 @@
 |--------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | GradCAM            | Weight the 2D activations by the average gradient                                                                           |
 | GradCAM++          | Like GradCAM but uses second order gradients                                                                                |
-| GradCAMElementWise | Like GradCAM but getting the maximum instead of average gradient                                                            |
+| GradCAMElementWise | Like GradCAM but element-wise multiply the activations with the gradients                                                   |
 | XGradCAM           | Like GradCAM but scale the gradients by the normalized activations                                                          |
 | AblationCAM        | Zero out activations and measure how the output drops (this repository includes a fast batched implementation)              |
 | ScoreCAM           | Perbutate the image by the scaled activations and measure how the output drops                                              |
