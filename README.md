@@ -20,17 +20,18 @@
 ![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
 )
 
-| Method   | What it does |
-|----------|--------------|
-| GradCAM  | Weight the 2D activations by the average gradient |
-| GradCAM++  | Like GradCAM but uses second order gradients |
-| XGradCAM  | Like GradCAM but scale the gradients by the normalized activations |
-| AblationCAM  | Zero out activations and measure how the output drops (this repository includes a fast batched implementation) |
-| ScoreCAM  | Perbutate the image by the scaled activations and measure how the output drops |
-| EigenCAM  | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)|
-| EigenGradCAM  | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner|
-| LayerCAM  | Spatially weight the activations by positive gradients. Works better especially in lower layers |
-| FullGrad  | Computes the gradients of the biases from all over the network, and then sums them |
+| Method             | What it does                                                                                                                |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| GradCAM            | Weight the 2D activations by the average gradient                                                                           |
+| GradCAM++          | Like GradCAM but uses second order gradients                                                                                |
+| GradCAMElementWise | Like GradCAM but element-wise multiply the activations with the gradients                                                   |
+| XGradCAM           | Like GradCAM but scale the gradients by the normalized activations                                                          |
+| AblationCAM        | Zero out activations and measure how the output drops (this repository includes a fast batched implementation)              |
+| ScoreCAM           | Perbutate the image by the scaled activations and measure how the output drops                                              |
+| EigenCAM           | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)        |
+| EigenGradCAM       | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner |
+| LayerCAM           | Spatially weight the activations by positive gradients. Works better especially in lower layers                             |
+| FullGrad           | Computes the gradients of the biases from all over the network, and then sums them                                          |
 
 ## Visual Examples
 
