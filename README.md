@@ -148,7 +148,8 @@ visualization = deprocess_image(visualization)
 # State of the art metric: Remove and Debias
 from pytorch_grad_cam.metrics.road import ROADMostRelevantFirst, ROADLeastRelevantFirst
 cam_metric = ROADMostRelevantFirst(percentile=75)
-scores, perturbation_visualizations = cam_metric(input_tensor, grayscale_cams, targets, model, return_visualization=True)
+scores, perturbation_visualizations = cam_metric(input_tensor, 
+  grayscale_cams, targets, model, return_visualization=True)
 
 # You can also average accross different percentiles, and combine
 # (LeastRelevantFirst - MostRelevantFirst) / 2
