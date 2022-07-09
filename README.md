@@ -7,15 +7,22 @@
 
 `pip install grad-cam`
 
+This is a repository with state of the art methods for Explainable AI for computer vision.
+This can be used for diagnosing model predictions, either in production or while
+developing models.
+The aim is also to serve as a benchmark of algorithms and metrics for research of new explainability methods.
+
 ⭐ Comprehensive collection of Pixel Attribution methods for Computer Vision.
 
 ⭐ Tested on many Common CNN Networks and Vision Transformers.
 
-⭐ Works with Classification, Object Detection, and Semantic Segmentation.
+⭐ Advanced use cases: Works with Classification, Object Detection, Semantic Segmentation, Embedding-similarity and more.
 
 ⭐ Includes smoothing methods to make the CAMs look nice.
 
 ⭐ High performance: full support for batches of images in all methods.
+
+⭐ Includes different metrics for evaluating and tuning explanations.
 
 ![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
 )
@@ -82,6 +89,9 @@ Some common choices are:
 - ViT: model.blocks[-1].norm1
 - SwinT: model.layers[-1].blocks[-1].norm1
 
+If you pass a list with several layers, the CAM will be averaged accross them.
+This can be useful if you're not sure what layer will perform best.
+
 ----------
 
 # Using from code as a library
@@ -123,6 +133,33 @@ visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
 
 ----------
 
+# Metrics and evaluating the explanations
+
+```python
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputSoftmaxTarget
+# Create the metric target, often the confidence drop in a score of some category
+metric_target = ClassifierOutputSoftmaxTarget(281)
+from pytorch_grad_cam.metrics.cam_mult_image import CamMultImageConfidenceChange
+scores, visualizations = CamMultImageConfidenceChange()(input_tensor, 
+  inverse_cams, targets, model, return_visualization=True)
+visualization = deprocess_image(visualization)
+
+# State of the art metric: Remove and Debias
+from pytorch_grad_cam.metrics.road import ROADMostRelevantFirst, ROADLeastRelevantFirst
+cam_metric = ROADMostRelevantFirst(percentile=75)
+scores, visualizations = cam_metric(input_tensor, grayscale_cams, targets, model, return_visualization=True)
+
+# You can also average accross different percentiles, and combine
+# (LeastRelevantFirst - MostRelevantFirst) / 2
+from pytorch_grad_cam.metrics.road import ROADMostRelevantFirstAverage,
+                                          ROADLeastRelevantFirstAverage,
+                                          ROADCombined
+cam_metric = ROADCombined(percentiles=[20, 40, 60, 80])
+scores = cam_metric(input_tensor, grayscale_cams * 0, targets, model)
+```
+----------
+
+
 # Advanced use cases and tutorials:
 
 You can use this package for "custom" deep learning models, for example Object Detection or Semantic Segmentation.
@@ -141,6 +178,8 @@ Here you can find detailed examples of how to use this for various custom use ca
 - [Notebook tutorial: Class Activation Maps for Semantic Segmentation](<tutorials/Class Activation Maps for Semantic Segmentation.ipynb>)
 
 - [Notebook tutorial: Adapting pixel attribution methods for embedding outputs from models](<tutorials/Pixel Attribution for embeddings.ipynb>)
+
+- [Notebook tutorial: CAM Metrics and Tuning](<tutorials/CAM Metrics And Tuning Tutorial.ipynb>)
 
 - [How it works with Vision/SwinT transformers](tutorials/vision_transformers.md)
 
