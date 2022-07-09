@@ -51,6 +51,9 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | -----------------|-----------------------|
 | <img src="./examples/both_detection.png" width="256" height="256"> | <img src="./examples/cars_segmentation.png" width="256" height="200"> |
 
+## Explaining similarity to other images / embeddings
+<img src="./examples/embeddings.png">
+
 ## Classification
 
 #### Resnet50:
@@ -72,10 +75,8 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | Cat    | ![](./examples/dog_cat.jfif) | ![](./examples/swinT_cat_gradcam_cam.jpg)     |  ![](./examples/swinT_cat_ablationcam_cam.jpg)   |![](./examples/swinT_cat_scorecam_cam.jpg)   |
 
 
-| Network  | Image | GradCAM  |  GradCAM++ |  Score-CAM |  Ablation-CAM |  Eigen-CAM |
-| ---------|-------|----------|------------|------------|---------------|------------|
-| VGG16    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/horses.jpg?raw=true) |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_gradcam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_gradcam++_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_scorecam_cam.jpg?raw=true) |  ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_ablationcam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/vgg_horses_eigencam_cam.jpg?raw=true) |
-| Resnet50    | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/horses.jpg?raw=true) |![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_gradcam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_gradcam++_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_scorecam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_ablationcam_cam.jpg?raw=true) | ![](https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/resnet_horses_horses_eigencam_cam.jpg?raw=true)   |
+# Metrics and Evaluation
+<img src="./examples/metrics.png">
 
 
 ----------
@@ -137,9 +138,9 @@ visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
 
 ```python
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputSoftmaxTarget
+from pytorch_grad_cam.metrics.cam_mult_image import CamMultImageConfidenceChange
 # Create the metric target, often the confidence drop in a score of some category
 metric_target = ClassifierOutputSoftmaxTarget(281)
-from pytorch_grad_cam.metrics.cam_mult_image import CamMultImageConfidenceChange
 scores, visualizations = CamMultImageConfidenceChange()(input_tensor, 
   inverse_cams, targets, model, return_visualization=True)
 visualization = deprocess_image(visualization)
@@ -147,7 +148,7 @@ visualization = deprocess_image(visualization)
 # State of the art metric: Remove and Debias
 from pytorch_grad_cam.metrics.road import ROADMostRelevantFirst, ROADLeastRelevantFirst
 cam_metric = ROADMostRelevantFirst(percentile=75)
-scores, visualizations = cam_metric(input_tensor, grayscale_cams, targets, model, return_visualization=True)
+scores, perturbation_visualizations = cam_metric(input_tensor, grayscale_cams, targets, model, return_visualization=True)
 
 # You can also average accross different percentiles, and combine
 # (LeastRelevantFirst - MostRelevantFirst) / 2
@@ -155,7 +156,7 @@ from pytorch_grad_cam.metrics.road import ROADMostRelevantFirstAverage,
                                           ROADLeastRelevantFirstAverage,
                                           ROADCombined
 cam_metric = ROADCombined(percentiles=[20, 40, 60, 80])
-scores = cam_metric(input_tensor, grayscale_cams * 0, targets, model)
+scores = cam_metric(input_tensor, grayscale_cams, targets, model)
 ```
 ----------
 
