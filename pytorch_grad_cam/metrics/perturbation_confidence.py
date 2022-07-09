@@ -34,8 +34,45 @@ class PerturbationConfidenceMetric:
             for target, output in zip(targets, outputs_after_imputation)]
         scores_after_imputation = np.float32(scores_after_imputation)
         
-        result = (scores_after_imputation - scores) / scores
+        result = scores_after_imputation - scores
         if return_visualization:
             return result, perturbated_tensors
         else:
             return result
+
+class RemoveMostRelevantFirst:
+    def __init__(self, percentile, imputer):
+        self.percentile = percentile
+        self.imputer = imputer
+    
+    def __call__(self, input_tensor, mask):
+        imputer = self.imputer
+        threshold = np.percentile(mask.cpu().numpy(), self.percentile)
+        binary_mask = np.float32(mask < threshold)
+        binary_mask = torch.from_numpy(binary_mask)
+        binary_mask = binary_mask.to(mask.device)
+        return imputer(input_tensor, binary_mask)
+
+class RemoveLeastRelevantFirst(RemoveMostRelevantFirst):
+    def __init__(self, percentile, imputer):
+        super(RemoveLeastRelevantFirst, self).__init__(percentile, imputer)
+
+    def __call__(self, input_tensor, mask):
+        return super(RemoveLeastRelevantFirst, self).__call__(
+            input_tensor, 1-mask)
+
+class AveragerAcrossThresholds:
+    def __init__(self, imputer, percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90]):
+        self.imputer = imputer
+        self.percentiles = percentiles
+        
+    def __call__(self, 
+            input_tensor: torch.Tensor, 
+            cams: np.ndarray,
+            targets: List[Callable],
+            model: torch.nn.Module):
+        scores = []		
+        for percentile in self.percentiles:
+            imputer = self.imputer(percentile)
+            scores.append(imputer(input_tensor, cams, targets, model))
+        return np.mean(np.float32(scores), axis=0)

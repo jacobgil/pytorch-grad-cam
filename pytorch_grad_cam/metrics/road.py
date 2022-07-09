@@ -30,7 +30,10 @@ import numpy as np
 from scipy.sparse import lil_matrix, csc_matrix
 from scipy.sparse.linalg import spsolve
 from typing import List, Callable
-from pytorch_grad_cam.metrics.perturbation_confidence import PerturbationConfidenceMetric
+from pytorch_grad_cam.metrics.perturbation_confidence import PerturbationConfidenceMetric, \
+															 AveragerAcrossThresholds, \
+															 RemoveMostRelevantFirst, \
+															 RemoveLeastRelevantFirst
 
 # The weights of the surrounding pixels
 neighbors_weights = [((1,1), 1/12), 
@@ -130,55 +133,19 @@ class NoisyLinearImputer:
 
 		# Fill the values with the solution of the system.
 		img_infill = imgflt.clone()
-		img_infill[:, indices_linear] = res.t() #+ self.noise*torch.randn_like(res.t())
+		img_infill[:, indices_linear] = res.t() + self.noise*torch.randn_like(res.t())
 			
 		return img_infill.reshape_as(img)
-
-class RemoveMostRelevantFirst:
-	def __init__(self, percentile):
-		self.percentile = percentile
-	
-	def __call__(self, input_tensor, mask):
-		imputer = NoisyLinearImputer()
-		threshold = np.percentile(mask.cpu().numpy(), self.percentile)
-		binary_mask = np.float32(mask < threshold)
-		binary_mask = torch.from_numpy(binary_mask)
-		binary_mask = binary_mask.to(mask.device)
-		return imputer(input_tensor, binary_mask)
-
-class RemoveLeastRelevantFirst(RemoveMostRelevantFirst):
-	def __init__(self, percentile):
-		super(RemoveLeastRelevantFirst, self).__init__(percentile)
-
-	def __call__(self, input_tensor, mask):
-		return super(RemoveLeastRelevantFirst, self).__call__(
-			input_tensor, 1-mask)
 
 class ROADMostRelevantFirst(PerturbationConfidenceMetric):
     def __init__(self, percentile=80):
         super(ROADMostRelevantFirst, self).__init__(
-			RemoveMostRelevantFirst(percentile))
+			RemoveMostRelevantFirst(percentile, NoisyLinearImputer()))
 
 class ROADLeastRelevantFirst(PerturbationConfidenceMetric):
     def __init__(self, percentile=20):
         super(ROADLeastRelevantFirst, self).__init__(
-			RemoveLeastRelevantFirst(percentile))
-
-class AveragerAcrossThresholds:
-	def __init__(self, imputer, percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90]):
-		self.percentiles = percentiles
-		self.imputer = imputer
-
-	def __call__(self, 
-			input_tensor: torch.Tensor, 
-			cams: np.ndarray,
-			targets: List[Callable],
-			model: torch.nn.Module):
-		scores = []		
-		for percentile in self.percentiles:
-			imputer = self.imputer(percentile)
-			scores.append(imputer(input_tensor, cams, targets, model))
-		return np.mean(np.float32(scores), axis=0)
+			RemoveLeastRelevantFirst(percentile, NoisyLinearImputer()))
 
 class ROADMostRelevantFirstAverage(AveragerAcrossThresholds):
 	def __init__(self, percentiles = [10, 20, 30, 40, 50, 60, 70, 80, 90]):
