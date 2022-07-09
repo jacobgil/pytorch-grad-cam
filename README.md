@@ -181,7 +181,7 @@ Here you can find detailed examples of how to use this for various custom use ca
 
 - [Notebook tutorial: Adapting pixel attribution methods for embedding outputs from models](<tutorials/Pixel Attribution for embeddings.ipynb>)
 
-- [Notebook tutorial: CAM Metrics and Tuning](<tutorials/CAM Metrics And Tuning Tutorial.ipynb>)
+- [Notebook tutorial: May the best explanation win. CAM Metrics and Tuning](<tutorials/CAM Metrics And Tuning Tutorial.ipynb>)
 
 - [How it works with Vision/SwinT transformers](tutorials/vision_transformers.md)
 
