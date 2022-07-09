@@ -22,7 +22,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 
 ⭐ High performance: full support for batches of images in all methods.
 
-⭐ Includes different metrics for evaluating and tuning explanations.
+⭐ Includes metrics for checking if you can trust the explanations, and tuning them for best performance.
 
 ![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
 )
