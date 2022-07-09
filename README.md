@@ -7,7 +7,7 @@
 
 `pip install grad-cam`
 
-This is a repository with state of the art methods for Explainable AI for computer vision.
+This is a package with state of the art methods for Explainable AI for computer vision.
 This can be used for diagnosing model predictions, either in production or while
 developing models.
 The aim is also to serve as a benchmark of algorithms and metrics for research of new explainability methods.
@@ -141,9 +141,9 @@ from pytorch_grad_cam.utils.model_targets import ClassifierOutputSoftmaxTarget
 from pytorch_grad_cam.metrics.cam_mult_image import CamMultImageConfidenceChange
 # Create the metric target, often the confidence drop in a score of some category
 metric_target = ClassifierOutputSoftmaxTarget(281)
-scores, visualizations = CamMultImageConfidenceChange()(input_tensor, 
+scores, batch_visualizations = CamMultImageConfidenceChange()(input_tensor, 
   inverse_cams, targets, model, return_visualization=True)
-visualization = deprocess_image(visualization)
+visualization = deprocess_image(batch_visualizations[0, :])
 
 # State of the art metric: Remove and Debias
 from pytorch_grad_cam.metrics.road import ROADMostRelevantFirst, ROADLeastRelevantFirst
