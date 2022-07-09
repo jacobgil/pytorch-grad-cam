@@ -8,11 +8,10 @@ with open("requirements.txt", "r") as f:
 
 setuptools.setup(
     name='grad-cam',
-    version='1.3.7',
+    version='1.4.0',
     author='Jacob Gildenblat',
     author_email='jacob.gildenblat@gmail.com',
-    description='Many Class Activation Map methods implemented in Pytorch. '
-                'Including Grad-CAM, Grad-CAM++, Score-CAM, Ablation-CAM and XGrad-CAM',
+    description='Many Class Activation Map methods implemented in Pytorch for classification, segmentation, object detection and more',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/jacobgil/pytorch-grad-cam',

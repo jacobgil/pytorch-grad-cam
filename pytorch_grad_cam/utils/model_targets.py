@@ -10,6 +10,15 @@ class ClassifierOutputTarget:
             return model_output[self.category]
         return model_output[:, self.category]
 
+class ClassifierOutputSoftmaxTarget:
+    def __init__(self, category):
+        self.category = category
+    def __call__(self, model_output):
+        if len(model_output.shape) == 1:
+            return torch.softmax(model_output, dim=-1)[self.category]
+        return torch.softmax(model_output, dim=-1)[:, self.category]
+
+
 class SemanticSegmentationTarget:
     """ Gets a binary spatial mask and a category,
         And return the sum of the category scores,

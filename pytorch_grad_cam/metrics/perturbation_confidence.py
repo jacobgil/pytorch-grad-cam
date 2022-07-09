@@ -1,0 +1,41 @@
+import torch
+import numpy as np
+from typing import List, Callable
+
+class PerturbationConfidenceMetric:
+    def __init__(self, perturbation):
+        self.perturbation = perturbation
+
+    def __call__(self, input_tensor: torch.Tensor, 
+               cams: np.ndarray,
+               targets: List[Callable],
+               model: torch.nn.Module,
+               return_visualization=False):
+
+        with torch.no_grad():
+            outputs = model(input_tensor)
+            scores = [target(output).cpu().numpy() \
+                for target, output in zip(targets, outputs)]
+            scores = np.float32(scores)
+
+        batch_size = input_tensor.size(0)
+        perturbated_tensors = []
+        for i in range(batch_size):
+            cam = cams[i]
+            tensor = self.perturbation(input_tensor[i, ...].cpu(), 
+                                  torch.from_numpy(cam))
+            tensor = tensor.to(input_tensor.device)
+            perturbated_tensors.append(tensor.unsqueeze(0))
+        perturbated_tensors = torch.cat(perturbated_tensors)
+
+        with torch.no_grad():
+            outputs_after_imputation = model(perturbated_tensors)
+        scores_after_imputation = [target(output).cpu().numpy() \
+            for target, output in zip(targets, outputs_after_imputation)]
+        scores_after_imputation = np.float32(scores_after_imputation)
+        
+        result = (scores_after_imputation - scores) / scores
+        if return_visualization:
+            return result, perturbated_tensors
+        else:
+            return result
