@@ -30,8 +30,9 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | Method             | What it does                                                                                                                |
 |--------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | GradCAM            | Weight the 2D activations by the average gradient                                                                           |
+| HiResCAM           | Like GradCAM but element-wise multiply the activations with the gradients; [provably guaranteed faithfulness](https://arxiv.org/abs/2011.08891) for certain models |
+| GradCAMElementWise | Like GradCAM but element-wise multiply the activations with the gradients then apply ReLU before summing                    |
 | GradCAM++          | Like GradCAM but uses second order gradients                                                                                |
-| GradCAMElementWise | Like GradCAM but element-wise multiply the activations with the gradients                                                   |
 | XGradCAM           | Like GradCAM but scale the gradients by the normalized activations                                                          |
 | AblationCAM        | Zero out activations and measure how the output drops (this repository includes a fast batched implementation)              |
 | ScoreCAM           | Perbutate the image by the scaled activations and measure how the output drops                                              |
@@ -100,7 +101,7 @@ This can be useful if you're not sure what layer will perform best.
 # Using from code as a library
 
 ```python
-from pytorch_grad_cam import GradCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM, FullGrad
+from pytorch_grad_cam import GradCAM, HiResCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM, FullGrad
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from torchvision.models import resnet50
@@ -230,7 +231,7 @@ To use with CUDA:
 
 You can choose between:
 
-`GradCAM` , `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, 'FullGrad' and `EigenCAM`.
+`GradCAM` , `HiResCAM`, `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, 'FullGrad' and `EigenCAM`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
@@ -259,6 +260,10 @@ If you use this for research, please cite. Here is an example BibTeX entry:
 https://arxiv.org/abs/1610.02391 <br>
 `Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization
 Ramprasaath R. Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam, Devi Parikh, Dhruv Batra`
+
+https://arxiv.org/abs/2011.08891 <br>
+`Use HiResCAM instead of Grad-CAM for faithful explanations of convolutional neural networks
+Rachel L. Draelos, Lawrence Carin`
 
 https://arxiv.org/abs/1710.11063 <br>
 `Grad-CAM++: Improved Visual Explanations for Deep Convolutional Networks
