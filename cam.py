@@ -12,8 +12,7 @@ from pytorch_grad_cam import GradCAM, \
     EigenCAM, \
     EigenGradCAM, \
     LayerCAM, \
-    FullGrad, \
-    GradCAMElementWise
+    FullGrad
     
 
 from pytorch_grad_cam import GuidedBackpropReLUModel
@@ -76,8 +75,7 @@ if __name__ == '__main__':
          "eigencam": EigenCAM,
          "eigengradcam": EigenGradCAM,
          "layercam": LayerCAM,
-         "fullgrad": FullGrad,
-         "gradcamelementwise": GradCAMElementWise}
+         "fullgrad": FullGrad}
 
     model = models.resnet50(pretrained=True)
 
