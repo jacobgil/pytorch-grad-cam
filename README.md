@@ -31,6 +31,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 |--------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | GradCAM            | Weight the 2D activations by the average gradient                                                                           |
 | HiResCAM           | Like GradCAM but element-wise multiply the activations with the gradients; [provably guaranteed faithfulness](https://arxiv.org/abs/2011.08891) for certain models |
+| GradCAMElementWise | Like GradCAM but element-wise multiply the activations with the gradients then apply ReLU before summing                    |
 | GradCAM++          | Like GradCAM but uses second order gradients                                                                                |
 | XGradCAM           | Like GradCAM but scale the gradients by the normalized activations                                                          |
 | AblationCAM        | Zero out activations and measure how the output drops (this repository includes a fast batched implementation)              |
