@@ -1,4 +1,5 @@
 from pytorch_grad_cam.grad_cam import GradCAM
+from pytorch_grad_cam.hirescam import HiResCAM
 from pytorch_grad_cam.grad_cam_elementwise import GradCAMElementWise
 from pytorch_grad_cam.ablation_layer import AblationLayer, AblationLayerVit, AblationLayerFasterRCNN
 from pytorch_grad_cam.ablation_cam import AblationCAM
