@@ -1,1 +1,0 @@
-def cam_mult_image_confidence_change(

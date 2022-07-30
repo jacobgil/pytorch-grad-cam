@@ -4,6 +4,7 @@ import numpy as np
 import torch
 from torchvision import models
 from pytorch_grad_cam import GradCAM, \
+    HiResCAM, \
     ScoreCAM, \
     GradCAMPlusPlus, \
     AblationCAM, \
@@ -13,6 +14,7 @@ from pytorch_grad_cam import GradCAM, \
     LayerCAM, \
     FullGrad, \
     GradCAMElementWise
+    
 
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
@@ -38,7 +40,7 @@ def get_args():
         help='Reduce noise by taking the first principle componenet'
         'of cam_weights*activations')
     parser.add_argument('--method', type=str, default='gradcam',
-                        choices=['gradcam', 'gradcam++',
+                        choices=['gradcam', 'hirescam', 'gradcam++',
                                  'scorecam', 'xgradcam',
                                  'ablationcam', 'eigencam',
                                  'eigengradcam', 'layercam', 'fullgrad'],
@@ -66,6 +68,7 @@ if __name__ == '__main__':
     args = get_args()
     methods = \
         {"gradcam": GradCAM,
+         "hirescam":HiResCAM,
          "scorecam": ScoreCAM,
          "gradcam++": GradCAMPlusPlus,
          "ablationcam": AblationCAM,
