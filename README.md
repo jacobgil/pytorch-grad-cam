@@ -40,7 +40,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | EigenGradCAM        | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner |
 | LayerCAM            | Spatially weight the activations by positive gradients. Works better especially in lower layers                             |
 | FullGrad            | Computes the gradients of the biases from all over the network, and then sums them                                          |
-| Deep Feature Factorizations           | Non Negative Matrix Factorization on the 2D activations.                                                 |
+| Deep Feature Factorizations           | Non Negative Matrix Factorization on the 2D activations                                                 |
 
 ## Visual Examples
 
