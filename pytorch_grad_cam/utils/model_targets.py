@@ -26,8 +26,20 @@ class BinaryClassifierOutputTarget:
             sign = 1
         else:
             sign = -1
-        return model_output * sign    
-    
+        return model_output * sign
+
+class SoftmaxOutputTarget:
+    def __init__(self):
+        pass
+    def __call__(self, model_output):
+        return torch.softmax(model_output, dim=-1)
+
+class RawScoresOutputTarget:
+    def __init__(self):
+        pass
+    def __call__(self, model_output):
+        return model_output
+
 
 class SemanticSegmentationTarget:
     """ Gets a binary spatial mask and a category,

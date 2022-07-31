@@ -2,6 +2,9 @@ import torch
 import numpy as np
 from typing import List, Callable
 
+import numpy as np
+import cv2
+
 class PerturbationConfidenceMetric:
     def __init__(self, perturbation):
         self.perturbation = perturbation
@@ -10,13 +13,15 @@ class PerturbationConfidenceMetric:
                cams: np.ndarray,
                targets: List[Callable],
                model: torch.nn.Module,
-               return_visualization=False):
+               return_visualization=False,
+               return_diff=True):
 
-        with torch.no_grad():
-            outputs = model(input_tensor)
-            scores = [target(output).cpu().numpy() \
-                for target, output in zip(targets, outputs)]
-            scores = np.float32(scores)
+        if return_diff:
+            with torch.no_grad():
+                outputs = model(input_tensor)
+                scores = [target(output).cpu().numpy() \
+                    for target, output in zip(targets, outputs)]
+                scores = np.float32(scores)
 
         batch_size = input_tensor.size(0)
         perturbated_tensors = []
@@ -34,7 +39,11 @@ class PerturbationConfidenceMetric:
             for target, output in zip(targets, outputs_after_imputation)]
         scores_after_imputation = np.float32(scores_after_imputation)
         
-        result = scores_after_imputation - scores
+        if return_diff:
+            result = scores_after_imputation - scores
+        else:
+            result = scores_after_imputation
+            
         if return_visualization:
             return result, perturbated_tensors
         else:
@@ -47,8 +56,12 @@ class RemoveMostRelevantFirst:
     
     def __call__(self, input_tensor, mask):
         imputer = self.imputer
-        threshold = np.percentile(mask.cpu().numpy(), self.percentile)
-        binary_mask = np.float32(mask < threshold)
+        if self.percentile is not 'auto':
+            threshold = np.percentile(mask.cpu().numpy(), self.percentile)
+            binary_mask = np.float32(mask < threshold)
+        else:
+            _,binary_mask = cv2.threshold(np.uint8(mask*255),0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+            
         binary_mask = torch.from_numpy(binary_mask)
         binary_mask = binary_mask.to(mask.device)
         return imputer(input_tensor, binary_mask)
