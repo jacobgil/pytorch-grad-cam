@@ -182,6 +182,8 @@ You will have to define objects that you can then pass to the CAM algorithms:
 
 Here you can find detailed examples of how to use this for various custom use cases like object detection:
 
+- [Notebook tutorial: Deep Feature Factorizations for better model explainability](<tutorials/Deep Feature Factorizations.ipynb>)
+
 - [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb>)
 
 - [Notebook tutorial: Class Activation Maps for YOLO5](<tutorials/EigenCAM for YOLO5.ipynb>)
