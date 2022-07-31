@@ -43,7 +43,7 @@ class PerturbationConfidenceMetric:
             result = scores_after_imputation - scores
         else:
             result = scores_after_imputation
-            
+
         if return_visualization:
             return result, perturbated_tensors
         else:
@@ -56,7 +56,7 @@ class RemoveMostRelevantFirst:
     
     def __call__(self, input_tensor, mask):
         imputer = self.imputer
-        if self.percentile is not 'auto':
+        if self.percentile != 'auto':
             threshold = np.percentile(mask.cpu().numpy(), self.percentile)
             binary_mask = np.float32(mask < threshold)
         else:
