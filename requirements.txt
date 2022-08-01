@@ -5,3 +5,5 @@ torchvision>=0.8.2
 ttach
 tqdm
 opencv-python
+matplotlib
+scikit-learn

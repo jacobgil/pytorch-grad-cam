@@ -27,19 +27,20 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 ![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
 )
 
-| Method             | What it does                                                                                                                |
-|--------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| GradCAM            | Weight the 2D activations by the average gradient                                                                           |
-| HiResCAM           | Like GradCAM but element-wise multiply the activations with the gradients; [provably guaranteed faithfulness](https://arxiv.org/abs/2011.08891) for certain models |
-| GradCAMElementWise | Like GradCAM but element-wise multiply the activations with the gradients then apply a ReLU operation before summing        |
-| GradCAM++          | Like GradCAM but uses second order gradients                                                                                |
-| XGradCAM           | Like GradCAM but scale the gradients by the normalized activations                                                          |
-| AblationCAM        | Zero out activations and measure how the output drops (this repository includes a fast batched implementation)              |
-| ScoreCAM           | Perbutate the image by the scaled activations and measure how the output drops                                              |
-| EigenCAM           | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)        |
-| EigenGradCAM       | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner |
-| LayerCAM           | Spatially weight the activations by positive gradients. Works better especially in lower layers                             |
-| FullGrad           | Computes the gradients of the biases from all over the network, and then sums them                                          |
+| Method              | What it does                                                                                                                |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| GradCAM             | Weight the 2D activations by the average gradient                                                                           |
+| HiResCAM            | Like GradCAM but element-wise multiply the activations with the gradients; provably guaranteed faithfulness for certain models |
+| GradCAMElementWise  | Like GradCAM but element-wise multiply the activations with the gradients then apply a ReLU operation before summing        |
+| GradCAM++           | Like GradCAM but uses second order gradients                                                                                |
+| XGradCAM            | Like GradCAM but scale the gradients by the normalized activations                                                          |
+| AblationCAM         | Zero out activations and measure how the output drops (this repository includes a fast batched implementation)              |
+| ScoreCAM            | Perbutate the image by the scaled activations and measure how the output drops                                              |
+| EigenCAM            | Takes the first principle component of the 2D Activations (no class discrimination, but seems to give great results)        |
+| EigenGradCAM        | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner |
+| LayerCAM            | Spatially weight the activations by positive gradients. Works better especially in lower layers                             |
+| FullGrad            | Computes the gradients of the biases from all over the network, and then sums them                                          |
+| Deep Feature Factorizations           | Non Negative Matrix Factorization on the 2D activations                                                 |
 
 ## Visual Examples
 
@@ -54,6 +55,10 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 
 ## Explaining similarity to other images / embeddings
 <img src="./examples/embeddings.png">
+
+## Deep Feature Factorization
+<img src="./examples/dff1.png">
+<img src="./examples/dff2.png">
 
 ## Classification
 
@@ -177,6 +182,8 @@ You will have to define objects that you can then pass to the CAM algorithms:
 
 Here you can find detailed examples of how to use this for various custom use cases like object detection:
 
+- [Notebook tutorial: Deep Feature Factorizations for better model explainability](<tutorials/Deep Feature Factorizations.ipynb>)
+
 - [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb>)
 
 - [Notebook tutorial: Class Activation Maps for YOLO5](<tutorials/EigenCAM for YOLO5.ipynb>)
@@ -231,7 +238,7 @@ To use with CUDA:
 
 You can choose between:
 
-`GradCAM` , `HiResCAM`, `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, 'FullGrad' and `EigenCAM`.
+`GradCAM` , `HiResCAM`, `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, `FullGrad` and `EigenCAM`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
@@ -292,3 +299,7 @@ Peng-Tao Jiang; Chang-Bin Zhang; Qibin Hou; Ming-Ming Cheng; Yunchao Wei`
 https://arxiv.org/abs/1905.00780 <br>
 `Full-Gradient Representation for Neural Network Visualization
 Suraj Srinivas, Francois Fleuret`
+
+https://arxiv.org/abs/1806.10206 <br>
+`Deep Feature Factorization For Concept Discovery
+Edo Collins, Radhakrishna Achanta, Sabine Süsstrunk`
