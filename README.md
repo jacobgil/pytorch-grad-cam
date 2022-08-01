@@ -3,7 +3,7 @@
 [![Downloads](https://static.pepy.tech/personalized-badge/grad-cam?period=month&units=international_system&left_color=black&right_color=brightgreen&left_text=Monthly%20Downloads)](https://pepy.tech/project/grad-cam)
 [![Downloads](https://static.pepy.tech/personalized-badge/grad-cam?period=total&units=international_system&left_color=black&right_color=blue&left_text=Total%20Downloads)](https://pepy.tech/project/grad-cam)
 
-# Advanced AI explainability in PyTorch
+# Advanced AI explainability for PyTorch
 
 `pip install grad-cam`
 
