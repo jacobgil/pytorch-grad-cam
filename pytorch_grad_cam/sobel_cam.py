@@ -1,5 +1,6 @@
 import cv2
 
+
 def sobel_cam(img):
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     grad_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)

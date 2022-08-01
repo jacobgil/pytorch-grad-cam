@@ -2,25 +2,31 @@ import numpy as np
 import torch
 import torchvision
 
+
 class ClassifierOutputTarget:
     def __init__(self, category):
         self.category = category
+
     def __call__(self, model_output):
         if len(model_output.shape) == 1:
             return model_output[self.category]
         return model_output[:, self.category]
 
+
 class ClassifierOutputSoftmaxTarget:
     def __init__(self, category):
         self.category = category
+
     def __call__(self, model_output):
         if len(model_output.shape) == 1:
             return torch.softmax(model_output, dim=-1)[self.category]
         return torch.softmax(model_output, dim=-1)[:, self.category]
 
+
 class BinaryClassifierOutputTarget:
     def __init__(self, category):
         self.category = category
+
     def __call__(self, model_output):
         if self.category == 1:
             sign = 1
@@ -28,15 +34,19 @@ class BinaryClassifierOutputTarget:
             sign = -1
         return model_output * sign
 
+
 class SoftmaxOutputTarget:
     def __init__(self):
         pass
+
     def __call__(self, model_output):
         return torch.softmax(model_output, dim=-1)
+
 
 class RawScoresOutputTarget:
     def __init__(self):
         pass
+
     def __call__(self, model_output):
         return model_output
 
@@ -45,14 +55,15 @@ class SemanticSegmentationTarget:
     """ Gets a binary spatial mask and a category,
         And return the sum of the category scores,
         of the pixels in the mask. """
+
     def __init__(self, category, mask):
         self.category = category
         self.mask = torch.from_numpy(mask)
         if torch.cuda.is_available():
             self.mask = self.mask.cuda()
-        
+
     def __call__(self, model_output):
-        return (model_output[self.category, :, : ] * self.mask).sum()
+        return (model_output[self.category, :, :] * self.mask).sum()
 
 
 class FasterRCNNBoxScoreTarget:

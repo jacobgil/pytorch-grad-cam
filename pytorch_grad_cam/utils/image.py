@@ -7,7 +7,11 @@ import torch
 from torchvision.transforms import Compose, Normalize, ToTensor
 from typing import List
 
-def preprocess_image(img: np.ndarray, mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]) -> torch.Tensor:
+
+def preprocess_image(
+    img: np.ndarray, mean=[
+        0.5, 0.5, 0.5], std=[
+            0.5, 0.5, 0.5]) -> torch.Tensor:
     preprocessing = Compose([
         ToTensor(),
         Normalize(mean=mean, std=std)
@@ -54,15 +58,16 @@ def show_cam_on_image(img: np.ndarray,
             f"image_weight should be in the range [0, 1].\
                 Got: {image_weight}")
 
-    cam = (1-image_weight) * heatmap + image_weight * img
+    cam = (1 - image_weight) * heatmap + image_weight * img
     cam = cam / np.max(cam)
     return np.uint8(255 * cam)
 
+
 def show_factorization_on_image(img: np.ndarray,
-                      explanations: np.ndarray,
-                      colors: List[np.ndarray] = None,
-                      image_weight: float = 0.5,
-                      concept_labels: List = None) -> np.ndarray:
+                                explanations: np.ndarray,
+                                colors: List[np.ndarray] = None,
+                                image_weight: float = 0.5,
+                                concept_labels: List = None) -> np.ndarray:
     """ Color code the different component heatmaps on top of the image.
         Every component color code will be magnified according to the heatmap itensity
         (by modifying the V channel in the HSV color space),
@@ -85,7 +90,13 @@ def show_factorization_on_image(img: np.ndarray,
     if colors is None:
         # taken from https://github.com/edocollins/DFF/blob/master/utils.py
         _cmap = plt.cm.get_cmap('gist_rainbow')
-        colors = [np.array(_cmap(i)) for i in np.arange(0,1,1.0/n_components)]
+        colors = [
+            np.array(
+                _cmap(i)) for i in np.arange(
+                0,
+                1,
+                1.0 /
+                n_components)]
     concept_per_pixel = explanations.argmax(axis=0)
     masks = []
     for i in range(n_components):
@@ -95,27 +106,28 @@ def show_factorization_on_image(img: np.ndarray,
         explanation[concept_per_pixel != i] = 0
         mask = np.uint8(mask * 255)
         mask = cv2.cvtColor(mask, cv2.COLOR_RGB2HSV)
-        mask[:, :, 2] = np.uint8(255*explanation)
+        mask[:, :, 2] = np.uint8(255 * explanation)
         mask = cv2.cvtColor(mask, cv2.COLOR_HSV2RGB)
         mask = np.float32(mask) / 255
         masks.append(mask)
-        
+
     mask = np.sum(np.float32(masks), axis=0)
     result = img * image_weight + mask * (1 - image_weight)
     result = np.uint8(result * 255)
-    
+
     if concept_labels is not None:
-        px = 1/plt.rcParams['figure.dpi']  # pixel in inches
-        fig = plt.figure(figsize=(result.shape[1]*px, result.shape[0]*px))
+        px = 1 / plt.rcParams['figure.dpi']  # pixel in inches
+        fig = plt.figure(figsize=(result.shape[1] * px, result.shape[0] * px))
         plt.rcParams['legend.fontsize'] = 15 * result.shape[0] / 256
         lw = 5 * result.shape[0] / 256
-        lines = [Line2D([0], [0], color=colors[i], lw=lw) for i in range(n_components)]
+        lines = [Line2D([0], [0], color=colors[i], lw=lw)
+                 for i in range(n_components)]
         plt.legend(lines,
                    concept_labels,
                    mode="expand",
                    fancybox=True,
                    shadow=True)
-        
+
         plt.tight_layout(pad=0, w_pad=0, h_pad=0)
         plt.axis('off')
         fig.canvas.draw()
@@ -138,6 +150,7 @@ def scale_cam_image(cam, target_size=None):
     result = np.float32(result)
 
     return result
+
 
 def scale_accross_batch_and_channels(tensor, target_size):
     batch_size, channel_size = tensor.shape[:2]

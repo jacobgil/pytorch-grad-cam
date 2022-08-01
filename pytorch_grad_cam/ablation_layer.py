@@ -22,7 +22,10 @@ class AblationLayer(torch.nn.Module):
         projection = projection > threshold
         return projection
 
-    def activations_to_be_ablated(self, activations, ratio_channels_to_ablate=1.0):
+    def activations_to_be_ablated(
+            self,
+            activations,
+            ratio_channels_to_ablate=1.0):
         """ Experimental method to get a binary mask to compare if the activation is worth ablating.
             Create a binary CAM mask with objectiveness_mask_from_svd.
             Score each Activation channel, by seeing how much of its values are inside the mask.
@@ -40,21 +43,29 @@ class AblationLayer(torch.nn.Module):
             normalized = np.abs(channel)
             normalized = normalized - normalized.min()
             normalized = normalized / np.max(normalized)
-            score = (projection*normalized).sum() / normalized.sum()
+            score = (projection * normalized).sum() / normalized.sum()
             scores.append(score)
         scores = np.float32(scores)
 
         indices = list(np.argsort(scores))
-        high_score_indices = indices[::-1][: int(len(indices) * ratio_channels_to_ablate)]
-        low_score_indices = indices[: int(len(indices) * ratio_channels_to_ablate)]
+        high_score_indices = indices[::-
+                                     1][: int(len(indices) *
+                                              ratio_channels_to_ablate)]
+        low_score_indices = indices[: int(
+            len(indices) * ratio_channels_to_ablate)]
         self.indices = np.int32(high_score_indices + low_score_indices)
         return self.indices
 
-    def set_next_batch(self, input_batch_index, activations, num_channels_to_ablate):
+    def set_next_batch(
+            self,
+            input_batch_index,
+            activations,
+            num_channels_to_ablate):
         """ This creates the next batch of activations from the layer.
             Just take corresponding batch member from activations, and repeat it num_channels_to_ablate times.
         """
-        self.activations = activations[input_batch_index, :, :, :].clone().unsqueeze(0).repeat(num_channels_to_ablate, 1, 1, 1)
+        self.activations = activations[input_batch_index, :, :, :].clone(
+        ).unsqueeze(0).repeat(num_channels_to_ablate, 1, 1, 1)
 
     def __call__(self, x):
         output = self.activations
@@ -99,34 +110,46 @@ class AblationLayerVit(AblationLayer):
 
         return output
 
-    def set_next_batch(self, input_batch_index, activations, num_channels_to_ablate):
+    def set_next_batch(
+            self,
+            input_batch_index,
+            activations,
+            num_channels_to_ablate):
         """ This creates the next batch of activations from the layer.
             Just take corresponding batch member from activations, and repeat it num_channels_to_ablate times.
         """
-        repeat_params = [num_channels_to_ablate] + len(activations.shape[:-1]) * [1]
-        self.activations = activations[input_batch_index, :, :].clone().unsqueeze(0).repeat(*repeat_params)
-
+        repeat_params = [num_channels_to_ablate] + \
+            len(activations.shape[:-1]) * [1]
+        self.activations = activations[input_batch_index, :, :].clone(
+        ).unsqueeze(0).repeat(*repeat_params)
 
 
 class AblationLayerFasterRCNN(AblationLayer):
     def __init__(self):
         super(AblationLayerFasterRCNN, self).__init__()
 
-    def set_next_batch(self, input_batch_index, activations, num_channels_to_ablate):
+    def set_next_batch(
+            self,
+            input_batch_index,
+            activations,
+            num_channels_to_ablate):
         """ Extract the next batch member from activations,
             and repeat it num_channels_to_ablate times.
         """
         self.activations = OrderedDict()
         for key, value in activations.items():
-            fpn_activation = value[input_batch_index, :, :, :].clone().unsqueeze(0)
-            self.activations[key] = fpn_activation.repeat(num_channels_to_ablate, 1, 1, 1)
+            fpn_activation = value[input_batch_index,
+                                   :, :, :].clone().unsqueeze(0)
+            self.activations[key] = fpn_activation.repeat(
+                num_channels_to_ablate, 1, 1, 1)
 
     def __call__(self, x):
         result = self.activations
         layers = {0: '0', 1: '1', 2: '2', 3: '3', 4: 'pool'}
         num_channels_to_ablate = result['pool'].size(0)
         for i in range(num_channels_to_ablate):
-            pyramid_layer = int(self.indices[i]/256)
+            pyramid_layer = int(self.indices[i] / 256)
             index_in_pyramid_layer = int(self.indices[i] % 256)
-            result[layers[pyramid_layer]][i, index_in_pyramid_layer, :, :] = -1000
+            result[layers[pyramid_layer]][i,
+                                          index_in_pyramid_layer, :, :] = -1000
         return result
