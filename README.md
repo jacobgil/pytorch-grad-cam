@@ -3,7 +3,7 @@
 [![Downloads](https://static.pepy.tech/personalized-badge/grad-cam?period=month&units=international_system&left_color=black&right_color=brightgreen&left_text=Monthly%20Downloads)](https://pepy.tech/project/grad-cam)
 [![Downloads](https://static.pepy.tech/personalized-badge/grad-cam?period=total&units=international_system&left_color=black&right_color=blue&left_text=Total%20Downloads)](https://pepy.tech/project/grad-cam)
 
-# Class Activation Map methods implemented in Pytorch
+# Advanced AI explainability for computer vision in PyTorch
 
 `pip install grad-cam`
 
@@ -23,6 +23,10 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 ⭐ High performance: full support for batches of images in all methods.
 
 ⭐ Includes metrics for checking if you can trust the explanations, and tuning them for best performance.
+
+
+Documentation with advanced tutorials: [https://jacobgil.github.io/pytorch-gradcam-book](https://jacobgil.github.io/pytorch-gradcam-book)
+
 
 ![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
 )
@@ -182,17 +186,20 @@ You will have to define objects that you can then pass to the CAM algorithms:
 
 Here you can find detailed examples of how to use this for various custom use cases like object detection:
 
-- [Notebook tutorial: Deep Feature Factorizations for better model explainability](<tutorials/Deep Feature Factorizations.ipynb>)
+These point to the new documentation jupter-book for fast rendering.
+The jupyter notebooks themselves can be found under the tutorials folder in the git repository.
 
-- [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<tutorials/Class Activation Maps for Object Detection With Faster RCNN.ipynb>)
+- [Notebook tutorial: Deep Feature Factorizations for better model explainability](<https://jacobgil.github.io/pytorch-gradcam-book/Deep%20Feature%20Factorizations.html>)
 
-- [Notebook tutorial: Class Activation Maps for YOLO5](<tutorials/EigenCAM for YOLO5.ipynb>)
+- [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<https://jacobgil.github.io/pytorch-gradcam-book/Class%20Activation%20Maps%20for%20Object%20Detection%20With%20Faster%20RCNN.html>)
 
-- [Notebook tutorial: Class Activation Maps for Semantic Segmentation](<tutorials/Class Activation Maps for Semantic Segmentation.ipynb>)
+- [Notebook tutorial: Class Activation Maps for YOLO5](<https://jacobgil.github.io/pytorch-gradcam-book/EigenCAM%20for%20YOLO5.html>)
 
-- [Notebook tutorial: Adapting pixel attribution methods for embedding outputs from models](<tutorials/Pixel Attribution for embeddings.ipynb>)
+- [Notebook tutorial: Class Activation Maps for Semantic Segmentation](<https://jacobgil.github.io/pytorch-gradcam-book/Class%20Activation%20Maps%20for%20Semantic%20Segmentation.html>)
 
-- [Notebook tutorial: May the best explanation win. CAM Metrics and Tuning](<tutorials/CAM Metrics And Tuning Tutorial.ipynb>)
+- [Notebook tutorial: Adapting pixel attribution methods for embedding outputs from models](<https://jacobgil.github.io/pytorch-gradcam-book/Pixel%20Attribution%20for%20embeddings.html>)
+
+- [Notebook tutorial: May the best explanation win. CAM Metrics and Tuning](<https://jacobgil.github.io/pytorch-gradcam-book/CAM%20Metrics%20And%20Tuning%20Tutorial.html>)
 
 - [How it works with Vision/SwinT transformers](tutorials/vision_transformers.md)
 
