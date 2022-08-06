@@ -16,10 +16,6 @@ class ScoreCAM(BaseCAM):
                                        reshape_transform=reshape_transform,
                                        uses_gradients=False)
 
-        if len(target_layers) > 0:
-            print("Warning: You are using ScoreCAM with target layers, "
-                  "however ScoreCAM will ignore them.")
-
     def get_cam_weights(self,
                         input_tensor,
                         target_layer,
