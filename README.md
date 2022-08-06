@@ -7,6 +7,9 @@
 
 `pip install grad-cam`
 
+Documentation with advanced tutorials: [https://jacobgil.github.io/pytorch-gradcam-book](https://jacobgil.github.io/pytorch-gradcam-book)
+
+
 This is a package with state of the art methods for Explainable AI for computer vision.
 This can be used for diagnosing model predictions, either in production or while
 developing models.
@@ -23,9 +26,6 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 ⭐ High performance: full support for batches of images in all methods.
 
 ⭐ Includes metrics for checking if you can trust the explanations, and tuning them for best performance.
-
-
-Documentation with advanced tutorials: [https://jacobgil.github.io/pytorch-gradcam-book](https://jacobgil.github.io/pytorch-gradcam-book)
 
 
 ![visualization](https://github.com/jacobgil/jacobgil.github.io/blob/master/assets/cam_dog.gif?raw=true
