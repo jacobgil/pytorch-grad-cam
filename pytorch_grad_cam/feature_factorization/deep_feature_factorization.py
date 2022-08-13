@@ -20,13 +20,15 @@ def dff(activations: np.ndarray, n_components: int = 5):
     reshaped_activations[np.isnan(reshaped_activations)] = 0
     reshaped_activations = reshaped_activations.reshape(
         reshaped_activations.shape[0], -1)
-    reshaped_activations = reshaped_activations - \
-        reshaped_activations.min(axis=0)
+    offset = reshaped_activations.min(axis=-1)
+    reshaped_activations = reshaped_activations - offset[:, None]
+        
     model = NMF(n_components=n_components, init='random', random_state=0)
     W = model.fit_transform(reshaped_activations)
     H = model.components_
-    concepts = W
-    explanations = H.reshape(batch_size, n_components, h, w)
+    concepts = W + offset[:, None]
+    explanations = H.reshape(n_components, batch_size, h, w)
+    explanations = explanations.transpose((1, 0, 2, 3))
     return concepts, explanations
 
 
@@ -62,6 +64,7 @@ class DeepFeatureFactorization:
         concepts, explanations = dff(activations, n_components=n_components)
 
         processed_explanations = []
+        
         for batch in explanations:
             processed_explanations.append(scale_cam_image(batch, (w, h)))
 
