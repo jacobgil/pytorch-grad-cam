@@ -16,3 +16,5 @@ from pytorch_grad_cam.activations_and_gradients import ActivationsAndGradients
 from pytorch_grad_cam.feature_factorization.deep_feature_factorization import DeepFeatureFactorization
 import pytorch_grad_cam.utils.model_targets
 import pytorch_grad_cam.utils.reshape_transforms
+import pytorch_grad_cam.metrics.cam_mult_image
+import pytorch_grad_cam.metrics.road
