@@ -14,7 +14,7 @@ from pytorch_grad_cam import GradCAM, \
     LayerCAM, \
     FullGrad, \
     GradCAMElementWise
-    
+
 
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     args = get_args()
     methods = \
         {"gradcam": GradCAM,
-         "hirescam":HiResCAM,
+         "hirescam": HiResCAM,
          "scorecam": ScoreCAM,
          "gradcam++": GradCAMPlusPlus,
          "ablationcam": AblationCAM,
@@ -100,7 +100,6 @@ if __name__ == '__main__':
     input_tensor = preprocess_image(rgb_img,
                                     mean=[0.485, 0.456, 0.406],
                                     std=[0.229, 0.224, 0.225])
-
 
     # We have to specify the target we want to generate
     # the Class Activation Maps for.

@@ -18,6 +18,7 @@ from pytorch_grad_cam.utils.image import show_cam_on_image, \
     preprocess_image
 from pytorch_grad_cam.ablation_layer import AblationLayerVit
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--use-cuda', action='store_true', default=False,
@@ -110,7 +111,6 @@ if __name__ == '__main__':
     rgb_img = np.float32(rgb_img) / 255
     input_tensor = preprocess_image(rgb_img, mean=[0.5, 0.5, 0.5],
                                     std=[0.5, 0.5, 0.5])
-
 
     # AblationCAM and ScoreCAM have batched implementations.
     # You can override the internal batch size for faster computation.

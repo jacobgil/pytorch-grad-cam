@@ -18,6 +18,7 @@ from pytorch_grad_cam.utils.image import show_cam_on_image, \
     preprocess_image
 from pytorch_grad_cam.ablation_layer import AblationLayerVit
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--use-cuda', action='store_true', default=False,
@@ -106,7 +107,6 @@ if __name__ == '__main__':
                                    use_cuda=args.use_cuda,
                                    reshape_transform=reshape_transform)
 
-
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = cv2.resize(rgb_img, (224, 224))
     rgb_img = np.float32(rgb_img) / 255
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     cam.batch_size = 32
 
     grayscale_cam = cam(input_tensor=input_tensor,
-                        targets=targets ,
+                        targets=targets,
                         eigen_smooth=args.eigen_smooth,
                         aug_smooth=args.aug_smooth)
 

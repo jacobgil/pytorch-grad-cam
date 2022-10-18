@@ -5,7 +5,8 @@ import cv2
 import numpy as np
 import torch
 from torchvision.transforms import Compose, Normalize, ToTensor
-from typing import List
+from typing import List, Dict
+import math
 
 
 def preprocess_image(
@@ -63,6 +64,22 @@ def show_cam_on_image(img: np.ndarray,
     return np.uint8(255 * cam)
 
 
+def create_labels_legend(concept_scores: np.ndarray,
+                         labels: Dict[int, str],
+                         top_k=2):
+    concept_categories = np.argsort(concept_scores, axis=1)[:, ::-1][:, :top_k]
+    concept_labels_topk = []
+    for concept_index in range(concept_categories.shape[0]):
+        categories = concept_categories[concept_index, :]
+        concept_labels = []
+        for category in categories:
+            score = concept_scores[concept_index, category]
+            label = f"{','.join(labels[category].split(',')[:3])}:{score:.2f}"
+            concept_labels.append(label)
+        concept_labels_topk.append("\n".join(concept_labels))
+    return concept_labels_topk
+
+
 def show_factorization_on_image(img: np.ndarray,
                                 explanations: np.ndarray,
                                 colors: List[np.ndarray] = None,
@@ -118,7 +135,8 @@ def show_factorization_on_image(img: np.ndarray,
     if concept_labels is not None:
         px = 1 / plt.rcParams['figure.dpi']  # pixel in inches
         fig = plt.figure(figsize=(result.shape[1] * px, result.shape[0] * px))
-        plt.rcParams['legend.fontsize'] = 15 * result.shape[0] / 256
+        plt.rcParams['legend.fontsize'] = int(
+            14 * result.shape[0] / 256 / max(1, n_components / 6))
         lw = 5 * result.shape[0] / 256
         lines = [Line2D([0], [0], color=colors[i], lw=lw)
                  for i in range(n_components)]

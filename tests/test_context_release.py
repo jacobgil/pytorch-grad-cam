@@ -52,7 +52,8 @@ def test_memory_usage_in_loop(numpy_image, batch_size, width, height,
     target_layers = []
     for layer in target_layer_names:
         target_layers.append(eval(f"model.{layer}"))
-    targets = [ClassifierOutputTarget(target_category) for _ in range(batch_size)]
+    targets = [ClassifierOutputTarget(target_category)
+               for _ in range(batch_size)]
     initial_memory = 0
     for i in range(100):
         with cam_method(model=model,
