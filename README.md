@@ -189,6 +189,8 @@ Here you can find detailed examples of how to use this for various custom use ca
 These point to the new documentation jupter-book for fast rendering.
 The jupyter notebooks themselves can be found under the tutorials folder in the git repository.
 
+- [Notebook tutorial: XAI Recepies for the HuggingFace 🤗 Image Classification Models](<https://jacobgil.github.io/pytorch-gradcam-book/huggingface.html>)
+
 - [Notebook tutorial: Deep Feature Factorizations for better model explainability](<https://jacobgil.github.io/pytorch-gradcam-book/Deep%20Feature%20Factorizations.html>)
 
 - [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<https://jacobgil.github.io/pytorch-gradcam-book/Class%20Activation%20Maps%20for%20Object%20Detection%20With%20Faster%20RCNN.html>)
