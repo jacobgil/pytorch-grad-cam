@@ -168,10 +168,10 @@ def scale_cam_image(cam, target_size=None):
         img = img - torch.min(img)
         img = img / (1e-7 + torch.max(img))
 
-        if target_size is not None:
+        # if target_size is not None:
             # transform = Resize(target_size)
             # img = Resize(size = target_size)(img)
-            img = img.T # Swap axes around for now. TODO: Investigate a better solution
+
 
         result[i] = img
 
