@@ -139,7 +139,7 @@ class BaseCAM:
     def aggregate_multi_layers(
             self,
             cam_per_target_layer: torch.Tensor) -> torch.Tensor:
-        cam_per_target_layer = torch.concatenate(cam_per_target_layer, axis=1)
+        cam_per_target_layer = torch.cat(cam_per_target_layer, axis=1)
         cam_per_target_layer = torch.maximum(cam_per_target_layer, torch.tensor(0))
         result = torch.mean(cam_per_target_layer, axis=1)
         return scale_cam_image(result)
