@@ -175,7 +175,7 @@ def scale_cam_image(cam, target_size=None):
             # Convert to numpy
             img = torch.tensor(cv2.resize(img.cpu().numpy(), target_size))
         result.append(img)
-    result = result.to(torch.float32)
+    result = torch.tensor(np.array(result)).to(torch.float32) # TODO: Optimise this to use pre-initialised torch tensor
 
     return result
 
