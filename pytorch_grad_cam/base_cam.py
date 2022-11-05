@@ -169,9 +169,9 @@ class BaseCAM:
             # Back to numpy float32, HxW
             # cam = cam.numpy()
             cam = cam[:, 0, :, :]
-            cams.append(cam)
+            cams.append(cam) # TODO: Handle this for torch tensors
 
-        cam = torch.mean(torch.float32(cams), axis=0)
+        cam = torch.mean(cams.to(torch.float32), axis=0)
         return cam
 
     def __call__(self,

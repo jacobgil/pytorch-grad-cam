@@ -160,12 +160,12 @@ def show_factorization_on_image(img: np.ndarray,
 def scale_cam_image(cam, target_size=None):
     result = []
     for img in cam:
-        img = img - np.min(img)
-        img = img / (1e-7 + np.max(img))
+        img = img - torch.min(img)
+        img = img / (1e-7 + torch.max(img))
         if target_size is not None:
-            img = cv2.resize(img, target_size)
+            img = cv2.resize(img, target_size) # TODO: Change this to handle torch tensors via a convert
         result.append(img)
-    result = np.float32(result)
+    result = result.to(torch.float32)
 
     return result
 
