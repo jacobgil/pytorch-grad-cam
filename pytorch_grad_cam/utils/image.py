@@ -173,9 +173,10 @@ def scale_cam_image(cam, target_size=None):
             # img = F.resize(img, target_size) # TODO: Investigate better resizing techniques - Keeping defaults for now
 
             # Convert to numpy
-            img = torch.tensor(cv2.resize(img.cpu().numpy(), target_size))
+            # img = torch.tensor(cv2.resize(img.cpu().numpy(), target_size))
+            img = cv2.resize(img.cpu().numpy(), target_size)
         result.append(img)
-    result = torch.tensor(np.array(result)).to(torch.float32) # TODO: Optimise this to use pre-initialised torch tensor
+    result = torch.tensor(np.array(result).astype('float32')) # TODO: Optimise this to use pre-initialised torch tensor
 
     return result
 
