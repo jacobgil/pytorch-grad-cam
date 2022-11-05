@@ -130,7 +130,7 @@ class BaseCAM:
                                      layer_activations,
                                      layer_grads,
                                      eigen_smooth)
-            cam = torch.maximum(cam, 0)
+            cam = torch.maximum(cam, torch.tensor(0))
             scaled = scale_cam_image(cam, target_size)
             cam_per_target_layer.append(scaled[:, None, :])
 
@@ -140,7 +140,7 @@ class BaseCAM:
             self,
             cam_per_target_layer: torch.Tensor) -> torch.Tensor:
         cam_per_target_layer = torch.concatenate(cam_per_target_layer, axis=1)
-        cam_per_target_layer = torch.maximum(cam_per_target_layer, 0)
+        cam_per_target_layer = torch.maximum(cam_per_target_layer, torch.tensor(0))
         result = torch.mean(cam_per_target_layer, axis=1)
         return scale_cam_image(result)
 
