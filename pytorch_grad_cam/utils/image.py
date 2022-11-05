@@ -164,7 +164,16 @@ def scale_cam_image(cam, target_size=None):
         img = img - torch.min(img)
         img = img / (1e-7 + torch.max(img))
         if target_size is not None:
-            img = F.resize(img, target_size) # TODO: Investigate better resizing techniques - Keeping defaults for now
+            # There seem to be many different ways to resize a torch tensor
+            # with varying results
+            # TODO: Investigate these
+            # For now going to convert to cpu numpy and back just to get
+            # the crude experiment working - and then begin to tune and refine
+            # Possible way:
+            # img = F.resize(img, target_size) # TODO: Investigate better resizing techniques - Keeping defaults for now
+
+            # Convert to numpy
+            img = torch.tensor(cv2.resize(img.cpu().numpy(), target_size))
         result.append(img)
     result = result.to(torch.float32)
 
