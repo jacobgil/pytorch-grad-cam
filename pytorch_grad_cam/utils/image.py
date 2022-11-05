@@ -4,8 +4,7 @@ from matplotlib.lines import Line2D
 import cv2
 import numpy as np
 import torch
-import torchvision.transforms.functional as F
-from torchvision.transforms import Compose, Normalize, ToTensor
+from torchvision.transforms import Compose, Normalize, ToTensor, Resize
 from typing import List, Dict
 import math
 
@@ -159,26 +158,22 @@ def show_factorization_on_image(img: np.ndarray,
 
 
 def scale_cam_image(cam, target_size=None):
-    result = []
-    for img in cam:
+    if target_size is not None:
+        result = torch.zeros([cam.shape[0], target_size[0], target_size[1]])
+    else:
+        result = torch.zeros(cam.shape)
+
+    for i in range(cam.shape[0]):
+        img = cam[i]
         img = img - torch.min(img)
         img = img / (1e-7 + torch.max(img))
+
         if target_size is not None:
-            # There seem to be many different ways to resize a torch tensor
-            # with varying results
-            # TODO: Investigate these
-            # For now going to convert to cpu numpy and back just to get
-            # the crude experiment working - and then begin to tune and refine
-            # Possible way:
-            # img = F.resize(img, target_size) # TODO: Investigate better resizing techniques - Keeping defaults for now
+            img = Resize(img, target_size)
 
-            # Convert to numpy
-            # img = torch.tensor(cv2.resize(img.cpu().numpy(), target_size))
-            img = cv2.resize(img.cpu().numpy(), target_size)
-        result.append(img)
-    result = torch.tensor(np.array(result).astype('float32')) # TODO: Optimise this to use pre-initialised torch tensor
+        result[i] = img
 
-    return result
+    return result.to(torch.float32)
 
 
 def scale_accross_batch_and_channels(tensor, target_size):
