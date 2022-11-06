@@ -26,10 +26,12 @@ random_tensor = torch.rand((256, 60, 3)) # TODO: Use real data?
 
 # Run on CPU with profiler (save the profile to print later)
 dev = torch.device('cpu')
+use_cuda = False
 model.to(dev)
+target_layers = [model.blocks[-1].norm1]
 
 with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
-
+    GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
 print(prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15))
 breakpoint() # For now as I write this
 
