@@ -68,7 +68,7 @@ def run_gradcam(model, number_of_inputs, use_cuda=False):
     avg_time = sum_of_times / number_of_inputs
     return [min_time, max_time, avg_time]
 
-number_of_inputs = 1000
+number_of_inputs = 100
 model =  models.resnet50()
 
 print(f'Benchmarking GradCAM using {number_of_inputs} images for ResNet50...')
