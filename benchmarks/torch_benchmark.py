@@ -42,11 +42,11 @@ def run_gradcam(model, number_of_inputs, use_cuda=False):
     cam_function = GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
     cam_function.batch_size = batch_size
 
-    for i in range(number_of_inputs):
+    for i in range(0, number_of_inputs, batch_size):
         start_time = time.time()
 
         # Actual code to benchmark
-        input_image = input_tensor[i].to(dev)
+        input_image = input_tensor[i:i+batch_size].to(dev)
         heatmap = cam_function(input_tensor=input_image, targets=targets)
 
         end_time = time.time()
