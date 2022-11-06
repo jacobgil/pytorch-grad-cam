@@ -66,6 +66,8 @@ def run_gradcam(model, number_of_inputs, use_cuda=False):
 number_of_inputs = 1000
 model =  models.resnet50()
 
+print(f'Benchmarking GradCAM using {number_of_inputs} images for ResNet50...')
+
 # TODOs:
 # Test with numpy v1.4.6 (master)
 # Test with torch v1.4.7 (wip)
@@ -73,19 +75,46 @@ model =  models.resnet50()
 # Nice output
 
 # Run on CPU with profiler (save the profile to print later)
+print('Profile list of images on CPU...')
 with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
     cpu_profile_min_time, cpu_profile_max_time, cpu_profile_avg_time = run_gradcam(model, number_of_inputs, use_cuda=False)
 cpu_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
 
 # Run on CUDA with profiler (save the profile to print later)
+print('Profile list of images on Cuda...')
 with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
     cuda_profile_min_time, cuda_profile_max_time, cuda_profile_avg_time = run_gradcam(model, number_of_inputs, use_cuda=True)
 cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
 
 # Run on CPU x1000 (get min, max, and avg times)
+print('Run list of images on CPU...')
 cpu_min_time, cpu_max_time, cpu_avg_time = run_gradcam(model, number_of_inputs, use_cuda=False)
 
 # Run on CUDA x1000
+print('Run list of images on Cuda...')
 cuda_min_time, cuda_max_time, cuda_avg_time = run_gradcam(model, number_of_inputs, use_cuda=True)
 
-breakpoint()
+print('Complete!')
+
+print('==============================================================================\n\n')
+print('CPU Profile:\n')
+print(cpu_profile)
+
+print('==============================================================================\n\n')
+print('Cuda Profile:\n')
+print(cuda_profile)
+
+print('==============================================================================\n\n')
+print('CPU Timing (No Profiler):\n')
+print(f'Min time: {cpu_min_time}\n')
+print(f'Max time: {cpu_max_time}\n')
+print(f'Avg time: {cpu_avg_time}\n')
+
+print('==============================================================================\n\n')
+print('Cuda Timing (No Profiler):\n')
+print(f'Min time: {cuda_min_time}\n')
+print(f'Max time: {cuda_max_time}\n')
+print(f'Avg time: {cuda_avg_time}\n')
+
+print('==============================================================================\n\n')
+print('Done!')
