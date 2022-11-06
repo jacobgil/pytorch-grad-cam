@@ -19,7 +19,7 @@ from torchvision import models
 from torch.profiler import profile, record_function, ProfilerActivity
 
 model =  models.resnet50()
-input_tensor = torch.rand((1, 256, 60, 3)) # TODO: Use real data?
+input_tensor = torch.rand((1, 3, 256, 60)) # TODO: Use real data?
 
 # TODOs:
 # Test with numpy v1.4.6 (master)
