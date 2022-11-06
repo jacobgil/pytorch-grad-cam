@@ -21,17 +21,29 @@ from torch.profiler import profile, record_function, ProfilerActivity
 model =  models.resnet50()
 random_tensor = torch.rand((256, 60, 3)) # TODO: Use real data?
 
+# TODOs:
 # Test with numpy v1.4.6 (master)
 # Test with torch v1.4.7 (wip)
+# Test other CAMs besides GradCAM
 
 # Run on CPU with profiler (save the profile to print later)
 dev = torch.device('cpu')
 use_cuda = False
-model.to(dev)
-target_layers = [model.blocks[-1].norm1]
 
+model.to(dev)
+random_tensor.to(dev)
+
+# Some defaults I use in research code
+target_layers = [model.fc]
+batch_size = 8
+targets = None # [ClassifierOutputTarget(None)]
+
+# Profile the CPU call
 with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
-    GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
+    cam_function = GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
+    cam_function.batch_size = batch_size
+    heatmap = cam_function(input_tensor=input_tensor, targets=targets)
+
 print(prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15))
 breakpoint() # For now as I write this
 
