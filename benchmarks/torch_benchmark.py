@@ -19,7 +19,7 @@ from torchvision import models
 from torch.profiler import profile, record_function, ProfilerActivity
 
 model =  models.resnet50()
-random_tensor = torch.rand((256, 60, 3)) # TODO: Use real data?
+input_tensor = torch.rand((256, 60, 3)) # TODO: Use real data?
 
 # TODOs:
 # Test with numpy v1.4.6 (master)
@@ -31,7 +31,7 @@ dev = torch.device('cpu')
 use_cuda = False
 
 model.to(dev)
-random_tensor.to(dev)
+input_tensor.to(dev)
 
 # Some defaults I use in research code
 target_layers = [model.fc]
