@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import torch
 import time
+import tqdm
 
 from pytorch_grad_cam import GradCAM, \
     ScoreCAM, \
@@ -42,6 +43,8 @@ def run_gradcam(model, number_of_inputs, use_cuda=False):
     cam_function = GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
     cam_function.batch_size = batch_size
 
+    pbar = tqdm.tqdm(total=number_of_inputs)
+
     for i in range(0, number_of_inputs, batch_size):
         start_time = time.time()
 
@@ -59,6 +62,8 @@ def run_gradcam(model, number_of_inputs, use_cuda=False):
 
         if time_difference < min_time:
             min_time = time_difference
+
+        pbar.update(batch_size)
 
     avg_time = sum_of_times / number_of_inputs
     return [min_time, max_time, avg_time]
