@@ -20,7 +20,7 @@ from torchvision import models
 
 from torch.profiler import profile, record_function, ProfilerActivity
 
-def run_gradcam(model, number_of_inputs, use_cuda=False):
+def run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=False):
     min_time = 10000000000000
     max_time = 0
     sum_of_times = 0
@@ -34,7 +34,6 @@ def run_gradcam(model, number_of_inputs, use_cuda=False):
 
     # Some defaults I use in research code
     input_tensor = torch.rand((number_of_inputs, 3, 256, 60))
-    batch_size = 8
     targets = None # [ClassifierOutputTarget(None)]
 
     model.to(dev)
@@ -82,22 +81,22 @@ print(f'Benchmarking GradCAM using {number_of_inputs} images for ResNet50...')
 # Run on CPU with profiler (save the profile to print later)
 print('Profile list of images on CPU...')
 with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
-    cpu_profile_min_time, cpu_profile_max_time, cpu_profile_avg_time = run_gradcam(model, number_of_inputs, use_cuda=False)
+    cpu_profile_min_time, cpu_profile_max_time, cpu_profile_avg_time = run_gradcam(model, number_of_inputs, batch_size=32, use_cuda=False)
 cpu_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
 
 # Run on CUDA with profiler (save the profile to print later)
 print('Profile list of images on Cuda...')
 with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
-    cuda_profile_min_time, cuda_profile_max_time, cuda_profile_avg_time = run_gradcam(model, number_of_inputs, use_cuda=True)
+    cuda_profile_min_time, cuda_profile_max_time, cuda_profile_avg_time = run_gradcam(model, number_of_inputs, batch_size=32, use_cuda=True)
 cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
 
 # Run on CPU x1000 (get min, max, and avg times)
 print('Run list of images on CPU...')
-cpu_min_time, cpu_max_time, cpu_avg_time = run_gradcam(model, number_of_inputs, use_cuda=False)
+cpu_min_time, cpu_max_time, cpu_avg_time = run_gradcam(model, number_of_inputs, batch_size=32, use_cuda=False)
 
 # Run on CUDA x1000
 print('Run list of images on Cuda...')
-cuda_min_time, cuda_max_time, cuda_avg_time = run_gradcam(model, number_of_inputs, use_cuda=True)
+cuda_min_time, cuda_max_time, cuda_avg_time = run_gradcam(model, number_of_inputs, batch_size=32, use_cuda=True)
 
 print('Complete!')
 
