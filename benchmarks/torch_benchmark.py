@@ -34,7 +34,7 @@ model.to(dev)
 input_tensor.to(dev)
 
 # Some defaults I use in research code
-target_layers = [model.fc]
+target_layers = [model.layer4]
 batch_size = 8
 targets = None # [ClassifierOutputTarget(None)]
 
