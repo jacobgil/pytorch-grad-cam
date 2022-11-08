@@ -57,9 +57,10 @@ def run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=False, workflow_
         heatmap = cam_function(input_tensor=input_image, targets=targets)
 
         if workflow_test:
-            # Create a binary map
-            threshold_plot = torch.where(torch.tensor(heatmap) > 0.5, 1, 0)
-            output_image = input_image * threshold_plot
+            for j in range(batch_size):
+                # Create a binary map
+                threshold_plot = torch.where(torch.tensor(heatmap[j]) > 0.5, 1, 0)
+                output_image = input_image * threshold_plot
 
         end_time = time.time()
         time_difference = end_time - start_time
