@@ -25,7 +25,7 @@ model =  models.resnet50()
 
 print(f'Benchmarking GradCAM using {number_of_inputs} images for ResNet50...')
 
-def run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=False):
+def run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=False, workflow_test=False):
     min_time = 10000000000000
     max_time = 0
     sum_of_times = 0
@@ -55,6 +55,11 @@ def run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=False):
         # Actual code to benchmark
         input_image = input_tensor[i:i+batch_size].to(dev)
         heatmap = cam_function(input_tensor=input_image, targets=targets)
+
+        if workflow_test:
+            # Create a binary map
+            threshold_plot = torch.where(heatmap > 0.5, 1, 0)
+            output_image = input_image * threshold_plot
 
         end_time = time.time()
         time_difference = end_time - start_time
@@ -90,6 +95,12 @@ with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shap
     cuda_profile_min_time, cuda_profile_max_time, cuda_profile_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True)
 cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
 
+# Run on CUDA with extra workflow
+print('Profile list of images on Cuda and then run workflow...')
+with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
+    cuda_profile_min_time, cuda_profile_max_time, cuda_profile_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
+work_flow_cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
+
 # Run on CPU x1000 (get min, max, and avg times)
 print('Run list of images on CPU...')
 cpu_min_time, cpu_max_time, cpu_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=False)
@@ -97,6 +108,10 @@ cpu_min_time, cpu_max_time, cpu_avg_time = run_gradcam(model, number_of_inputs, 
 # Run on CUDA x1000
 print('Run list of images on Cuda...')
 cuda_min_time, cuda_max_time, cuda_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True)
+
+# Run Workflow
+print('Run list of images on Cuda with a workflow...')
+workflow_cuda_min_time, workflow_cuda_max_time, workflow_cuda_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
 
 print('Complete!')
 
@@ -109,6 +124,10 @@ print('Cuda Profile:\n')
 print(cuda_profile)
 
 print('==============================================================================\n\n')
+print('Workflow Cuda Profile:\n')
+print(work_flow_cuda_profile)
+
+print('==============================================================================\n\n')
 print('CPU Timing (No Profiler):\n')
 print(f'Min time: {cpu_min_time}\n')
 print(f'Max time: {cpu_max_time}\n')
@@ -119,6 +138,12 @@ print('Cuda Timing (No Profiler):\n')
 print(f'Min time: {cuda_min_time}\n')
 print(f'Max time: {cuda_max_time}\n')
 print(f'Avg time: {cuda_avg_time}\n')
+
+print('==============================================================================\n\n')
+print('Workflow Cuda Timing (No Profiler):\n')
+print(f'Min time: {workflow_cuda_min_time}\n')
+print(f'Max time: {workflow_cuda_max_time}\n')
+print(f'Avg time: {workflow_cuda_avg_time}\n')
 
 print('==============================================================================\n\n')
 print('Done!')
