@@ -207,9 +207,9 @@ print(f'Avg time: {workflow_cuda_avg_time}\n')
 
 print('==============================================================================\n\n')
 print('Simple Workflow Cuda Timing (No Profiler):\n')
-print(f'Min time: {workflow_cuda_min_time}\n')
-print(f'Max time: {workflow_cuda_max_time}\n')
-print(f'Avg time: {workflow_cuda_avg_time}\n')
+print(f'Min time: {simple_workflow_cuda_min_time}\n')
+print(f'Max time: {simple_workflow_cuda_max_time}\n')
+print(f'Avg time: {simple_workflow_cuda_avg_time}\n')
 
 print('==============================================================================\n\n')
 print('Done!')
