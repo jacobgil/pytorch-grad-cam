@@ -162,12 +162,10 @@ def scale_cam_image(cam, target_size=None):
     # It appears to swap the axes dimensions and needs further work for the
     # proof of concept
 
-    # if target_size is not None:
-    #     result = torch.zeros([cam.shape[0], target_size[0], target_size[1]])
-    # else:
-    #     result = torch.zeros(cam.shape)
-
-    result = torch.zeros(cam.shape)
+    if target_size is not None:
+        result = torch.zeros([cam.shape[0], target_size[0], target_size[1]])
+    else:
+        result = torch.zeros(cam.shape)
 
     for i in range(cam.shape[0]):
         img = cam[i]
