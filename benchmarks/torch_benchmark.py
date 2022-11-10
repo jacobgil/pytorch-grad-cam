@@ -15,6 +15,8 @@ from pytorch_grad_cam import GradCAM, \
     LayerCAM, \
     FullGrad
 
+from torch import nn
+
 import torchvision # You may need to install separately
 from torchvision import models
 
@@ -25,6 +27,43 @@ model =  models.resnet50()
 
 print(f'Benchmarking GradCAM using {number_of_inputs} images for ResNet50...')
 
+# Simple model to test
+class SimpleCNN(nn.Module):
+  def __init__(self):
+    super(SimpleCNN, self).__init__()
+
+    # Grad-CAM interface
+    self.target_layer = nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1)
+    self.target_layers = [self.target_layer]
+
+    self.cnn_stack = nn.Sequential(
+      nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1),
+      nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1),
+      nn.ReLU(inplace=True),
+      self.target_layer,
+      nn.ReLU(inplace=True),
+      nn.MaxPool2d((2, 2)),
+      nn.Flatten(),
+      nn.Linear(122880, 10),
+      nn.Linear(10, 1)
+    )
+
+  def forward(self, x):
+    logits = self.cnn_stack(x)
+    logits = F.normalize(logits, dim = 0)
+
+    return logits
+
+def xavier_uniform_init(layer):
+  if type(layer) == nn.Linear or type(layer) == nn.Conv2d:
+    gain = nn.init.calculate_gain('relu')
+
+    if layer.bias is not None:
+      nn.init.zeros_(layer.bias)
+
+    nn.init.xavier_uniform_(layer.weight, gain=gain)
+
+# Code to run benchmark
 def run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=False, workflow_test=False):
     min_time = 10000000000000
     max_time = 0
@@ -102,6 +141,12 @@ with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shap
     cuda_profile_min_time, cuda_profile_max_time, cuda_profile_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
 work_flow_cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
 
+# Run on CUDA with extra workflow
+print('Profile list of images on Cuda and then run workflow with a simple CNN...')
+with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
+    cuda_profile_min_time, cuda_profile_max_time, cuda_profile_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
+simple_work_flow_cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
+
 # Run on CPU x1000 (get min, max, and avg times)
 print('Run list of images on CPU...')
 cpu_min_time, cpu_max_time, cpu_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=False)
@@ -113,6 +158,11 @@ cuda_min_time, cuda_max_time, cuda_avg_time = run_gradcam(model, number_of_input
 # Run Workflow
 print('Run list of images on Cuda with a workflow...')
 workflow_cuda_min_time, workflow_cuda_max_time, workflow_cuda_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
+
+print('Run list of images on Cuda with a workflow using simple CNN...')
+model = SimpleCNN()
+model.apply(xavier_uniform_init) # Randomise more weights
+simple_workflow_cuda_min_time, simple_workflow_cuda_max_time, simple_workflow_cuda_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
 
 print('Complete!')
 
@@ -129,6 +179,10 @@ print('Workflow Cuda Profile:\n')
 print(work_flow_cuda_profile)
 
 print('==============================================================================\n\n')
+print('Simple Workflow Cuda Profile:\n')
+print(simple_work_flow_cuda_profile)
+
+print('==============================================================================\n\n')
 print('CPU Timing (No Profiler):\n')
 print(f'Min time: {cpu_min_time}\n')
 print(f'Max time: {cpu_max_time}\n')
@@ -142,6 +196,12 @@ print(f'Avg time: {cuda_avg_time}\n')
 
 print('==============================================================================\n\n')
 print('Workflow Cuda Timing (No Profiler):\n')
+print(f'Min time: {workflow_cuda_min_time}\n')
+print(f'Max time: {workflow_cuda_max_time}\n')
+print(f'Avg time: {workflow_cuda_avg_time}\n')
+
+print('==============================================================================\n\n')
+print('Simple Workflow Cuda Timing (No Profiler):\n')
 print(f'Min time: {workflow_cuda_min_time}\n')
 print(f'Max time: {workflow_cuda_max_time}\n')
 print(f'Avg time: {workflow_cuda_avg_time}\n')
