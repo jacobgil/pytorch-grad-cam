@@ -35,6 +35,7 @@ class SimpleCNN(nn.Module):
     # Grad-CAM interface
     self.target_layer = nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1)
     self.target_layers = [self.target_layer]
+    self.layer4 = self.target_layer
 
     self.cnn_stack = nn.Sequential(
       nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1),

@@ -163,7 +163,7 @@ def scale_cam_image(cam, target_size=None):
     # proof of concept
 
     if target_size is not None:
-        result = torch.zeros([cam.shape[0], target_size[0], target_size[1]])
+        result = torch.zeros([cam.shape[0], target_size[1], target_size[0]])
     else:
         result = torch.zeros(cam.shape)
 
@@ -173,7 +173,7 @@ def scale_cam_image(cam, target_size=None):
         img = img / (1e-7 + torch.max(img))
 
         if target_size is not None:
-            img = img.resize_(target_size)
+            img = img.resize_(target_size).T
 
         result[i] = img
 
