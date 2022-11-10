@@ -16,6 +16,7 @@ from pytorch_grad_cam import GradCAM, \
     FullGrad
 
 from torch import nn
+import torch.nn.functional as F
 
 import torchvision # You may need to install separately
 from torchvision import models
@@ -144,10 +145,13 @@ work_flow_cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usag
 
 # Run on CUDA with extra workflow
 print('Profile list of images on Cuda and then run workflow with a simple CNN...')
+model = SimpleCNN()
+model.apply(xavier_uniform_init) # Randomise more weights
 with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
     cuda_profile_min_time, cuda_profile_max_time, cuda_profile_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
 simple_work_flow_cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
 
+model =  models.resnet50()
 # Run on CPU x1000 (get min, max, and avg times)
 print('Run list of images on CPU...')
 cpu_min_time, cpu_max_time, cpu_avg_time = run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=False)
