@@ -36,7 +36,7 @@ class SimpleCNN(nn.Module):
       nn.Linear(122880, 10),
       nn.Linear(10, 1)
     )
-    self.features = slef.cnn_stack
+    self.features = self.cnn_stack
 
   def forward(self, x):
     logits = self.cnn_stack(x)
