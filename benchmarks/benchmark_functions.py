@@ -54,7 +54,13 @@ def xavier_uniform_init(layer):
     nn.init.xavier_uniform_(layer.weight, gain=gain)
 
 def last_cnn_layer(model):
-  for name, param in model.named_parameters():
+  if hasattr(model, 'layer4'):
+    return model.layer4
+
+  if hasattr(model, 'conv3'):
+    return model.conv3
+
+  for param in model.features:
     if isinstance(param, nn.Conv2d):
       return feature
 
