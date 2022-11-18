@@ -60,8 +60,8 @@ def last_cnn_layer(model):
   if hasattr(model, 'conv3'):
     return model.conv3
 
-  for param in model.features:
-    if isinstance(param, nn.Conv2d):
+  for feature in model.features:
+    if isinstance(feature, nn.Conv2d):
       return feature
 
   return None
