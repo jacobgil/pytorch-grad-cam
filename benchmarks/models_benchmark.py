@@ -37,7 +37,7 @@ for model_name, model in tqdm.tqdm(models_to_benchmark):
     print('==============================================================================\n\n')
     print(f'Simple Workflow for model #{model_name}:\n')
 
-    model.apply(xavier_uniform_init) # Randomise more weights
+    model.apply(benchmark_functions.xavier_uniform_init) # Randomise more weights
     cpu_min_time, cpu_max_time, cpu_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=False, workflow_test=True)
     cuda_min_time, cuda_max_time, cuda_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=True, workflow_test=True)
 

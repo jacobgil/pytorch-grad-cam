@@ -57,7 +57,7 @@ work_flow_cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usag
 # Run on CUDA with extra workflow
 print('Profile list of images on Cuda and then run workflow with a simple CNN...')
 model = benchmark_functions.SimpleCNN()
-model.apply(xavier_uniform_init) # Randomise more weights
+model.apply(benchmark_functions.xavier_uniform_init) # Randomise more weights
 with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
     cuda_profile_min_time, cuda_profile_max_time, cuda_profile_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
 simple_work_flow_cuda_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
@@ -77,7 +77,7 @@ workflow_cuda_min_time, workflow_cuda_max_time, workflow_cuda_avg_time = benchma
 
 print('Run list of images on Cuda with a workflow using simple CNN...')
 model = benchmark_functions.SimpleCNN()
-model.apply(xavier_uniform_init) # Randomise more weights
+model.apply(benchmark_functions.xavier_uniform_init) # Randomise more weights
 simple_workflow_cuda_min_time, simple_workflow_cuda_max_time, simple_workflow_cuda_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
 
 print('Complete!')
