@@ -36,6 +36,7 @@ class SimpleCNN(nn.Module):
       nn.Linear(122880, 10),
       nn.Linear(10, 1)
     )
+    self.features = slef.cnn_stack
 
   def forward(self, x):
     logits = self.cnn_stack(x)
@@ -51,6 +52,13 @@ def xavier_uniform_init(layer):
       nn.init.zeros_(layer.bias)
 
     nn.init.xavier_uniform_(layer.weight, gain=gain)
+
+def last_cnn_layer(features):
+  for feature in features:
+    if isinstance(feature, nn.Conv2d):
+      return feature
+
+  return None
 
 # Code to run benchmark
 def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_test=False):
@@ -70,7 +78,7 @@ def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_
     targets = None # [ClassifierOutputTarget(None)]
 
     model.to(dev)
-    target_layers = [model.layer4] # Last CNN layer of ResNet50
+    target_layers = [last_cnn_layer(model.features)] # Last CNN layer of ResNet50
 
     cam_function = GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
     cam_function.batch_size = batch_size
