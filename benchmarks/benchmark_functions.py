@@ -67,7 +67,7 @@ def last_cnn_layer(model):
   return None
 
 # Code to run benchmark
-def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_test=False, progress_bar=True):
+def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_test=False, progress_bar=True, method=GradCAM):
     min_time = 10000000000000
     max_time = 0
     sum_of_times = 0
@@ -86,7 +86,7 @@ def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_
     model.to(dev)
     target_layers = [last_cnn_layer(model)] # Last CNN layer of ResNet50
 
-    cam_function = GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
+    cam_function = method(model=model, target_layers=target_layers, use_cuda=use_cuda)
     cam_function.batch_size = batch_size
 
     pbar = tqdm.tqdm(total=number_of_inputs)
