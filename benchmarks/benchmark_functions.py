@@ -67,7 +67,7 @@ def last_cnn_layer(model):
   return None
 
 # Code to run benchmark
-def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_test=False):
+def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_test=False, progress_bar=True):
     min_time = 10000000000000
     max_time = 0
     sum_of_times = 0
@@ -115,7 +115,8 @@ def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_
         if time_difference < min_time:
             min_time = time_difference
 
-        pbar.update(batch_size)
+        if progress_bar:
+          pbar.update(batch_size)
 
     avg_time = sum_of_times / number_of_inputs
     return [min_time, max_time, avg_time]
