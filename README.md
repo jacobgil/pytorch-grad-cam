@@ -92,7 +92,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 
 
 ----------
-# Chosing the Target Layer
+# Choosing the Target Layer
 You need to choose the target layer to compute CAM for.
 Some common choices are:
 - FasterRCNN: model.backbone
