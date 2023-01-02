@@ -105,7 +105,7 @@ if __name__ == '__main__':
         cam = methods[args.method](model=model,
                                    target_layers=target_layers,
                                    use_cuda=args.use_cuda,
-                                   reshape_transform=reshape_transform)
+                                   reshape_transform=reshape_transform) # Ignored
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
     rgb_img = cv2.resize(rgb_img, (224, 224))
