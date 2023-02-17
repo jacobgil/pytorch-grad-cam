@@ -13,7 +13,7 @@ class BaseCAM:
                  model: torch.nn.Module,
                  target_layers: List[torch.nn.Module],
                  use_cuda: bool = False,
-                 cuda_device: None,
+                 cuda_device = None,
                  reshape_transform: Callable = None,
                  compute_input_gradient: bool = False,
                  uses_gradients: bool = True) -> None:
