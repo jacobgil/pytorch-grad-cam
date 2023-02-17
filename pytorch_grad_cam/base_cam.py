@@ -13,14 +13,21 @@ class BaseCAM:
                  model: torch.nn.Module,
                  target_layers: List[torch.nn.Module],
                  use_cuda: bool = False,
+                 cuda_device: None,
                  reshape_transform: Callable = None,
                  compute_input_gradient: bool = False,
                  uses_gradients: bool = True) -> None:
         self.model = model.eval()
         self.target_layers = target_layers
+
         self.cuda = use_cuda
-        if self.cuda:
+        self.cuda_device = cuda_device
+
+        if self.cuda_device and self.cuda:
+            self.model.to(self.cuda_device)
+        elif self.cuda:
             self.model = model.cuda()
+
         self.reshape_transform = reshape_transform
         self.compute_input_gradient = compute_input_gradient
         self.uses_gradients = uses_gradients
@@ -64,7 +71,9 @@ class BaseCAM:
                 targets: List[torch.nn.Module],
                 eigen_smooth: bool = False) -> torch.Tensor:
 
-        if self.cuda:
+        if self.cuda_device and self.cuda:
+            input_tensor = input_tensor.to(self.cuda_device)
+        elif self.cuda:
             input_tensor = input_tensor.cuda()
 
         if self.compute_input_gradient:
