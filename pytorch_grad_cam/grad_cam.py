@@ -3,7 +3,7 @@ from pytorch_grad_cam.base_cam import BaseCAM
 
 
 class GradCAM(BaseCAM):
-    def __init__(self, model, target_layers, use_cuda=False, cuda_device: None,
+    def __init__(self, model, target_layers, use_cuda=False, cuda_device=None,
                  reshape_transform=None):
         super(
             GradCAM,

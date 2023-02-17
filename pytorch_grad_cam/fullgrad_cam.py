@@ -9,7 +9,7 @@ from pytorch_grad_cam.utils.image import scale_accross_batch_and_channels, scale
 
 
 class FullGrad(BaseCAM):
-    def __init__(self, model, target_layers, use_cuda=False, cuda_device: None,
+    def __init__(self, model, target_layers, use_cuda=False, cuda_device=None,
                  reshape_transform=None):
         if len(target_layers) > 0:
             print(
