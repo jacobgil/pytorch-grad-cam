@@ -33,10 +33,10 @@ model =  models.resnet50()
 print(f'Benchmarking GradCAM using {number_of_inputs} image for ResNet50...')
 
 # Run on CPU with profiler (save the profile to print later)
-print('Profile list of images on CPU...')
-with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
-    cpu_profile_min_time, cpu_profile_max_time, cpu_profile_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=False)
-cpu_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
+# print('Profile list of images on CPU...')
+# with profile(activities=[ProfilerActivity.CPU], profile_memory=True, record_shapes=True) as prof:
+#     cpu_profile_min_time, cpu_profile_max_time, cpu_profile_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=False)
+# cpu_profile = prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=15)
 
 # Run on CUDA with profiler (save the profile to print later)
 print('Profile list of images on Cuda...')
@@ -60,8 +60,8 @@ simple_work_flow_cuda_profile = prof.key_averages().table(sort_by="self_cpu_memo
 
 model =  models.resnet50()
 # Run on CPU x1000 (get min, max, and avg times)
-print('Run list of images on CPU...')
-cpu_min_time, cpu_max_time, cpu_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=False)
+# print('Run list of images on CPU...')
+# cpu_min_time, cpu_max_time, cpu_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=False)
 
 # Run on CUDA x1000
 print('Run list of images on Cuda...')
@@ -78,9 +78,9 @@ simple_workflow_cuda_min_time, simple_workflow_cuda_max_time, simple_workflow_cu
 
 print('Complete!')
 
-print('==============================================================================\n\n')
-print('CPU Profile:\n')
-print(cpu_profile)
+# print('==============================================================================\n\n')
+# print('CPU Profile:\n')
+# print(cpu_profile)
 
 print('==============================================================================\n\n')
 print('Cuda Profile:\n')
@@ -94,11 +94,11 @@ print('=========================================================================
 print('Simple Workflow Cuda Profile:\n')
 print(simple_work_flow_cuda_profile)
 
-print('==============================================================================\n\n')
-print('CPU Timing (No Profiler):\n')
-print(f'Min time: {cpu_min_time}\n')
-print(f'Max time: {cpu_max_time}\n')
-print(f'Avg time: {cpu_avg_time}\n')
+# print('==============================================================================\n\n')
+# print('CPU Timing (No Profiler):\n')
+# print(f'Min time: {cpu_min_time}\n')
+# print(f'Max time: {cpu_max_time}\n')
+# print(f'Avg time: {cpu_avg_time}\n')
 
 print('==============================================================================\n\n')
 print('Cuda Timing (No Profiler):\n')
