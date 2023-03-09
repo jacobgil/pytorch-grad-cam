@@ -28,7 +28,9 @@ import benchmark_functions
 number_of_inputs = 1
 model =  models.resnet50()
 
-# TODO: Load image
+# Just hard-coding a path for now
+image_path = '~/image.jpg'
+input_tensor = torch.read_image(image_path)
 
 print(f'Benchmarking GradCAM using {number_of_inputs} image for ResNet50...')
 
