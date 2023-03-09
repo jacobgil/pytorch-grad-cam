@@ -67,7 +67,7 @@ def last_cnn_layer(model):
   return None
 
 def save_image(image, path):
-  return torchvision.utils.save_image(tensor: image, fp: path)
+  return torchvision.utils.save_image(image, path)
 
 # Code to run benchmark
 def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_test=False, progress_bar=True, method=GradCAM, input_image=None):
