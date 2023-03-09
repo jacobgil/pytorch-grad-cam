@@ -26,7 +26,7 @@ from torch.profiler import profile, record_function, ProfilerActivity
 import benchmark_functions
 
 number_of_inputs = 1
-model =  models.resnet50()
+model =  benchmark_functions.SimpleCNN()
 
 # Just hard-coding a path for now
 image_path = '~/image.jpg'
