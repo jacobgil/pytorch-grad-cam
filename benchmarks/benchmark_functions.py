@@ -66,6 +66,9 @@ def last_cnn_layer(model):
 
   return None
 
+def save_image(image, path):
+  return torchvision.utils.save_image(tensor: image, fp: path)
+
 # Code to run benchmark
 def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_test=False, progress_bar=True, method=GradCAM, input_image=None):
     min_time = 10000000000000
@@ -86,7 +89,7 @@ def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_
     model.to(dev)
     target_layers = [last_cnn_layer(model)] # Last CNN layer of ResNet50
 
-    cam_function = method(model=model, target_layers=target_layers, use_cuda=use_cuda)
+    cam_function = method(model=model, target_layers=target_layers, cuda_device=dev, use_cuda=use_cuda)
     cam_function.batch_size = batch_size
 
     pbar = tqdm.tqdm(total=number_of_inputs)
@@ -122,4 +125,4 @@ def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_
           pbar.update(batch_size)
 
     avg_time = sum_of_times / number_of_inputs
-    return [min_time, max_time, avg_time, output_image]
+    return [min_time, max_time, avg_time, [threshold_plot, output_image]]

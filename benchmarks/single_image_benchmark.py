@@ -74,7 +74,7 @@ workflow_cuda_min_time, workflow_cuda_max_time, workflow_cuda_avg_time, _output_
 print('Run list of images on Cuda with a workflow using simple CNN...')
 model = benchmark_functions.SimpleCNN()
 model.apply(benchmark_functions.xavier_uniform_init) # Randomise more weights
-simple_workflow_cuda_min_time, simple_workflow_cuda_max_time, simple_workflow_cuda_avg_time, _output_image = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
+simple_workflow_cuda_min_time, simple_workflow_cuda_max_time, simple_workflow_cuda_avg_time, output = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=64, use_cuda=True, workflow_test=True)
 
 print('Complete!')
 
@@ -117,6 +117,13 @@ print('Simple Workflow Cuda Timing (No Profiler):\n')
 print(f'Min time: {simple_workflow_cuda_min_time}\n')
 print(f'Max time: {simple_workflow_cuda_max_time}\n')
 print(f'Avg time: {simple_workflow_cuda_avg_time}\n')
+
+print('==============================================================================\n\n')
+print('Output the resultant heat-map')
+threshold_plot, output_image = output
+
+benchmark_functions.save_image(threshold_plot, '~/threshold.png')
+benchmark_functions.save_image(output_image, '~/output_image.png')
 
 print('==============================================================================\n\n')
 print('Done!')
