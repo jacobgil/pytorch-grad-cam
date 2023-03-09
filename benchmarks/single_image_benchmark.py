@@ -122,8 +122,8 @@ print('=========================================================================
 print('Output the resultant heat-map')
 threshold_plot, output_image = output
 
-benchmark_functions.save_image(threshold_plot, '~/threshold.png')
-benchmark_functions.save_image(output_image, '~/output_image.png')
+benchmark_functions.save_image(threshold_plot.to("cpu", torch.uint8), '~/threshold.png')
+benchmark_functions.save_image(output_image.to("cpu", torch.uint8), '~/output_image.png')
 
 print('==============================================================================\n\n')
 print('Done!')
