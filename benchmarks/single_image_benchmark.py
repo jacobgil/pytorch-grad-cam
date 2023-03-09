@@ -30,7 +30,7 @@ model =  models.resnet50()
 
 # Just hard-coding a path for now
 image_path = '~/image.jpg'
-input_tensor = torch.read_image(image_path)
+input_tensor = torchvision.io.read_image(image_path)
 
 print(f'Benchmarking GradCAM using {number_of_inputs} image for ResNet50...')
 
