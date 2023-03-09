@@ -97,6 +97,9 @@ def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_
     for i in range(0, number_of_inputs, batch_size):
         start_time = time.time()
 
+        threshold_plot = torch.rand((number_of_inputs, 3, 256, 60))
+        output_image = torch.rand((number_of_inputs, 3, 256, 60))
+
         # Actual code to benchmark
         if input_image is None:
           input_image = input_tensor[i:i+batch_size]
