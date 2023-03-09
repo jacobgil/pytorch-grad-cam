@@ -50,8 +50,8 @@ for method_name, method in tqdm.tqdm(methods_to_benchmark):
     print('==============================================================================\n\n')
     print(f'Simple Workflow for method #{method_name}:\n')
 
-    cpu_min_time, cpu_max_time, cpu_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=False, workflow_test=True, progress_bar=False, method=method)
-    cuda_min_time, cuda_max_time, cuda_avg_time = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=True, workflow_test=True, progress_bar=False, method=method)
+    cpu_min_time, cpu_max_time, cpu_avg_time, _output_image = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=False, workflow_test=True, progress_bar=False, method=method)
+    cuda_min_time, cuda_max_time, cuda_avg_time, _output_image = benchmark_functions.run_gradcam(model, number_of_inputs, batch_size=8, use_cuda=True, workflow_test=True, progress_bar=False, method=method)
 
     print(f'Cuda Min time: {cuda_min_time}\n')
     print(f'Cuda Max time: {cuda_max_time}\n')

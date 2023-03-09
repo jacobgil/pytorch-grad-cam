@@ -67,7 +67,7 @@ def last_cnn_layer(model):
   return None
 
 # Code to run benchmark
-def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_test=False, progress_bar=True, method=GradCAM):
+def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_test=False, progress_bar=True, method=GradCAM, input_image=None):
     min_time = 10000000000000
     max_time = 0
     sum_of_times = 0
@@ -95,7 +95,10 @@ def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_
         start_time = time.time()
 
         # Actual code to benchmark
-        input_image = input_tensor[i:i+batch_size].to(dev)
+        if input_image is None:
+          input_image = input_tensor[i:i+batch_size]
+        input_image = input_image.to(dev)
+
         heatmap = cam_function(input_tensor=input_image, targets=targets)
 
         if workflow_test:
@@ -119,4 +122,4 @@ def run_gradcam(model, number_of_inputs, batch_size=1, use_cuda=False, workflow_
           pbar.update(batch_size)
 
     avg_time = sum_of_times / number_of_inputs
-    return [min_time, max_time, avg_time]
+    return [min_time, max_time, avg_time, output_image]
