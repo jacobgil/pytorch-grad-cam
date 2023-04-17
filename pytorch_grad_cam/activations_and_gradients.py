@@ -1,12 +1,3 @@
-# from torch._subclasses import fake_tensor
-
-# from torch._subclasses.fake_tensor import (
-#     FakeTensor,
-#     FakeTensorMode,
-#     FakeTensorConverter)
-
-from torch._subclasses.fake_tensor import FakeTensorMode
-
 class ActivationsAndGradients:
     """ Class for extracting activations and
     registering gradients from targetted intermediate layers """
@@ -21,14 +12,13 @@ class ActivationsAndGradients:
         self.use_cuda = use_cuda
         self.cuda_device = cuda_device
 
-        with FakeTensorMode(allow_non_fake_inputs=True):
-            for target_layer in target_layers:
-                self.handles.append(
-                    target_layer.register_forward_hook(self.save_activation))
-                # Because of https://github.com/pytorch/pytorch/issues/61519,
-                # we don't use backward hook to record gradients.
-                self.handles.append(
-                    target_layer.register_forward_hook(self.save_gradient))
+        for target_layer in target_layers:
+            self.handles.append(
+                target_layer.register_forward_hook(self.save_activation))
+            # Because of https://github.com/pytorch/pytorch/issues/61519,
+            # we don't use backward hook to record gradients.
+            self.handles.append(
+                target_layer.register_forward_hook(self.save_gradient))
 
     def save_activation(self, module, input, output):
         activation = output

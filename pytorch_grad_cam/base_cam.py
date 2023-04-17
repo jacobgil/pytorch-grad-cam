@@ -6,7 +6,7 @@ from pytorch_grad_cam.activations_and_gradients import ActivationsAndGradients
 from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
 from pytorch_grad_cam.utils.image import scale_cam_image
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-
+from torch._subclasses.fake_tensor import FakeTensor, FakeTensorMode
 
 class BaseCAM:
     def __init__(self,
@@ -143,7 +143,7 @@ class BaseCAM:
                                      layer_grads,
                                      eigen_smooth)
 
-            cam = torch.maximum(cam, torch.tensor(0))
+            with FakeTensorMode(allow_non_fake_inputs=True): cam = torch.maximum(cam.cpu(), torch.tensor(0))
             scaled = scale_cam_image(cam, target_size)
             cam_per_target_layer.append(scaled[:, None, :])
 
