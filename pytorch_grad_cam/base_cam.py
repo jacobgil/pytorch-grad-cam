@@ -32,7 +32,7 @@ class BaseCAM:
         self.compute_input_gradient = compute_input_gradient
         self.uses_gradients = uses_gradients
         self.activations_and_grads = ActivationsAndGradients(
-            self.model, target_layers, reshape_transform)
+            self.model, target_layers, reshape_transfor, use_cuda = use_cuda, cuda_device = cuda_device)
 
     """ Get a vector of weights for every channel in the target layer.
         Methods that return weights channels,
@@ -126,8 +126,10 @@ class BaseCAM:
         # Loop over the saliency image from every layer
         for i in range(len(self.target_layers)):
             target_layer = self.target_layers[i]
+
             layer_activations = None
             layer_grads = None
+
             if i < len(activations_list):
                 layer_activations = activations_list[i]
             if i < len(grads_list):
@@ -139,6 +141,7 @@ class BaseCAM:
                                      layer_activations,
                                      layer_grads,
                                      eigen_smooth)
+
             cam = torch.maximum(cam, torch.tensor(0))
             scaled = scale_cam_image(cam, target_size)
             cam_per_target_layer.append(scaled[:, None, :])
