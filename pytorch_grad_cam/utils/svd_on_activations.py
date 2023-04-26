@@ -2,7 +2,6 @@ import torch
 
 
 def get_2d_projection(activation_batch):
-    # TBD: use pytorch batch svd implementation
     activation_batch[torch.isnan(activation_batch)] = 0
     projections = []
     for activations in activation_batch:
