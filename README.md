@@ -143,6 +143,9 @@ grayscale_cam = cam(input_tensor=input_tensor, targets=targets)
 # In this example grayscale_cam has only one image in the batch:
 grayscale_cam = grayscale_cam[0, :]
 visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+
+# You can also get the model outputs without having to re-inference
+model_outputs = cam.outputs
 ```
 
 ----------
