@@ -1,7 +1,8 @@
 
-import torch 
 
 def get_2d_projection( batch_activations): 
+    
+    batch_activations = torch.from_numpy( batch_activations)
     
     b, c, h, w = batch_activations.shape
     
@@ -20,9 +21,9 @@ def get_2d_projection( batch_activations):
     V = VT.permute( 0, 2, 1)
     V = V[ :, :, 0 : 1 ]
 
-    projection = torch.bmm(x, V).squeeze( )
+    projection = torch.bmm(x, V).squeeze( -1 )
     
     #projection = rearrange( projection, 'b (h w) -> b h w', h = h, w = w)
     projection = projection.reshape( b, h, w)
     
-    return projection
+    return projection.detach().numpy( )
