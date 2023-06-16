@@ -1,9 +1,9 @@
-import numpy as np
+import torch
 from pytorch_grad_cam.base_cam import BaseCAM
 
 
 class GradCAM(BaseCAM):
-    def __init__(self, model, target_layers, use_cuda=False,
+    def __init__(self, model, target_layers, use_cuda=False, cuda_device=None,
                  reshape_transform=None):
         super(
             GradCAM,
@@ -11,6 +11,7 @@ class GradCAM(BaseCAM):
             model,
             target_layers,
             use_cuda,
+            cuda_device,
             reshape_transform)
 
     def get_cam_weights(self,
@@ -19,4 +20,4 @@ class GradCAM(BaseCAM):
                         target_category,
                         activations,
                         grads):
-        return np.mean(grads, axis=(2, 3))
+        return torch.mean(grads, axis=(2, 3))

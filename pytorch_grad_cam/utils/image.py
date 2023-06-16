@@ -4,7 +4,7 @@ from matplotlib.lines import Line2D
 import cv2
 import numpy as np
 import torch
-from torchvision.transforms import Compose, Normalize, ToTensor
+from torchvision.transforms import Compose, Normalize, ToTensor, Resize
 from typing import List, Dict
 import math
 
@@ -158,16 +158,26 @@ def show_factorization_on_image(img: np.ndarray,
 
 
 def scale_cam_image(cam, target_size=None):
-    result = []
-    for img in cam:
-        img = img - np.min(img)
-        img = img / (1e-7 + np.max(img))
-        if target_size is not None:
-            img = cv2.resize(img, target_size)
-        result.append(img)
-    result = np.float32(result)
+    # Disabled the target_size scaling for now
+    # It appears to swap the axes dimensions and needs further work for the
+    # proof of concept
 
-    return result
+    if target_size is not None:
+        result = torch.zeros([cam.shape[0], target_size[1], target_size[0]])
+    else:
+        result = torch.zeros(cam.shape)
+
+    for i in range(cam.shape[0]):
+        img = cam[i]
+        img = img - torch.min(img)
+        img = img / (1e-7 + torch.max(img))
+
+        if target_size is not None:
+            img = img.resize_(target_size).T
+
+        result[i] = img
+
+    return result.to(torch.float32)
 
 
 def scale_accross_batch_and_channels(tensor, target_size):
