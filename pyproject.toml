@@ -1,6 +1,36 @@
 [build-system]
 requires = [
     "setuptools>=42",
-    "wheel"
+    "wheel",
+    "setuptools-git-versioning<2"
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "grad-cam"
+authors = [
+    {name = "Jacob Gildenblat", email = "jacob.gildenblat@gmail.com"}
+]
+description = "Many Class Activation Map methods implemented in Pytorch for classification, segmentation, object detection and more"
+readme = "README.md"
+requires-python = ">=3.6"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["version", "dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/jacobgil/pytorch-grad-cam"
+"Bug Tracker" = "https://github.com/jacobgil/pytorch-grad-cam/issues"
+
+[tool.setuptools]
+packages = ["pytorch_grad_cam"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools-git-versioning]
+enabled = true
