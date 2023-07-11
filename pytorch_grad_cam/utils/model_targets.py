@@ -32,7 +32,7 @@ class BinaryClassifierOutputTarget:
             sign = 1
         else:
             sign = -1
-        return model_output * sign
+        return torch.abs(model_output) * sign
 
 
 class SoftmaxOutputTarget:
