@@ -16,6 +16,8 @@ class BaseCAM:
                  reshape_transform: Callable = None,
                  compute_input_gradient: bool = False,
                  uses_gradients: bool = True) -> None:
+        for params in model.parameters():
+            params.requires_grad = True
         self.model = model.eval()
         self.target_layers = target_layers
         self.cuda = use_cuda
