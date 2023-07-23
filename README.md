@@ -238,10 +238,11 @@ two smoothing methods are supported:
 
 # Running the example script:
 
-Usage: `python cam.py --image-path <path_to_image> --method <method>`
+Usage: `python cam.py --image-path <path_to_image> --method <method> --output-dir <output_dir_path> `
+
 
 To use with CUDA:
-`python cam.py --image-path <path_to_image> --use-cuda`
+`python cam.py --image-path <path_to_image> --use-cuda  --output-dir <output_dir_path> `
 
 ----------
 
