@@ -53,9 +53,9 @@ class DeepFeatureFactorization:
                  ):
         self.model = model
         self.computation_on_concepts = computation_on_concepts
-        self.activations_and_grads = ActivationsAndGradients(
-            self.model, [target_layer], reshape_transform)
-
+        #print("Error is here: ActivationsAndGradients")
+        #self.activations_and_grads = ActivationsAndGradients(self.model, [target_layer], reshape_transform) #for swin of vision transformer comment
+        self.activations_and_grads = ActivationsAndGradients(self.model, target_layer, reshape_transform)
     def __call__(self,
                  input_tensor: torch.Tensor,
                  n_components: int = 16):
