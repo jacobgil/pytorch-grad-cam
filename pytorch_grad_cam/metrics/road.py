@@ -120,9 +120,14 @@ class NoisyLinearImputer:
         """
 		This is the function to do the linear infilling
 		img: original image (C,H,W)-tensor;
-		mask: mask; (H,W)-tensor
+		mask: mask; (C,H,W)-tensor
 
 		"""
+        if mask.size()[0] == 3:
+            weights = torch.tensor([0.299, 0.587, 0.114]).view(3, 1, 1)
+            mask = torch.sum(img * weights, dim=0)
+        mask = mask.squeeze(0)
+
         imgflt = img.reshape(img.shape[0], -1)
         maskflt = mask.reshape(-1)
     # Indices that need to be imputed.
