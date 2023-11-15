@@ -1,11 +1,13 @@
+from typing import Callable, List, Tuple
+
 import numpy as np
 import torch
 import ttach as tta
-from typing import Callable, List, Tuple
+
 from pytorch_grad_cam.activations_and_gradients import ActivationsAndGradients
-from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
 from pytorch_grad_cam.utils.image import scale_cam_image
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
 
 
 class BaseCAM:
@@ -47,12 +49,14 @@ class BaseCAM:
                       grads: torch.Tensor,
                       eigen_smooth: bool = False) -> np.ndarray:
 
+
         weights = self.get_cam_weights(input_tensor,
                                        target_layer,
                                        targets,
                                        activations,
                                        grads)
-        weighted_activations = weights[:, :, None, None] * activations
+        w_shape = (slice(None), slice(None)) + (None,) * (len(activations.shape)-2)
+        weighted_activations = weights[w_shape] * activations
         if eigen_smooth:
             cam = get_2d_projection(weighted_activations)
         else:
@@ -99,8 +103,14 @@ class BaseCAM:
 
     def get_target_width_height(self,
                                 input_tensor: torch.Tensor) -> Tuple[int, int]:
-        width, height = input_tensor.size(-1), input_tensor.size(-2)
-        return width, height
+        if len(input_tensor.shape) == 4:
+            width, height = input_tensor.size(-1), input_tensor.size(-2)
+            return width, height
+        elif len(input_tensor.shape) == 5:
+            depth, width, height = input_tensor.size(-1), input_tensor.size(-2), input_tensor.size(-3)
+            return depth, width, height
+        else:
+            raise ValueError("Invalid input_tensor shape. Only 2D or 3D images are supported.")
 
     def compute_cam_per_layer(
             self,

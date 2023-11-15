@@ -1,12 +1,14 @@
-import matplotlib
-from matplotlib import pyplot as plt
-from matplotlib.lines import Line2D
+import math
+from typing import Dict, List
+
 import cv2
+import matplotlib
 import numpy as np
 import torch
+from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
+from scipy.ndimage import zoom
 from torchvision.transforms import Compose, Normalize, ToTensor
-from typing import List, Dict
-import math
 
 
 def preprocess_image(
@@ -163,7 +165,7 @@ def scale_cam_image(cam, target_size=None):
         img = img - np.min(img)
         img = img / (1e-7 + np.max(img))
         if target_size is not None:
-            img = cv2.resize(img, target_size)
+            img = zoom(img, [(t_s/i_s) for i_s, t_s in zip(img.shape, target_size[::-1])])
         result.append(img)
     result = np.float32(result)
 
