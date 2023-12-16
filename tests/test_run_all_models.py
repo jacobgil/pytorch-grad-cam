@@ -65,7 +65,7 @@ def test_all_cam_models_can_run(numpy_image, batch_size, width, height,
 
     cam = cam_method(model=model,
                      target_layers=target_layers,
-                     use_cuda=False)
+                     device=None)
     cam.batch_size = 4
     if target_category is None:
         targets = None

@@ -44,12 +44,12 @@ class GuidedBackpropReLUasModule(torch.nn.Module):
 
 
 class GuidedBackpropReLUModel:
-    def __init__(self, model, use_cuda):
+    def __init__(self, model, device):
         self.model = model
         self.model.eval()
-        self.cuda = use_cuda
-        if self.cuda:
-            self.model = self.model.cuda()
+        self.device = device
+        if self.device:
+            self.model = self.model.to(self.device)
 
     def forward(self, input_img):
         return self.model(input_img)
@@ -76,8 +76,8 @@ class GuidedBackpropReLUModel:
                                          torch.nn.ReLU,
                                          GuidedBackpropReLUasModule())
 
-        if self.cuda:
-            input_img = input_img.cuda()
+        if self.device:
+            input_img = input_img.to(self.device)
 
         input_img = input_img.requires_grad_(True)
 

@@ -58,7 +58,7 @@ def test_memory_usage_in_loop(numpy_image, batch_size, width, height,
     for i in range(100):
         with cam_method(model=model,
                         target_layers=target_layers,
-                        use_cuda=False) as cam:
+                        device=None) as cam:
             grayscale_cam = cam(input_tensor=input_tensor,
                                 targets=targets,
                                 aug_smooth=aug_smooth,

@@ -28,7 +28,7 @@ class AblationCAM(BaseCAM):
     def __init__(self,
                  model: torch.nn.Module,
                  target_layers: List[torch.nn.Module],
-                 use_cuda: bool = False,
+                 device: torch.device = None,
                  reshape_transform: Callable = None,
                  ablation_layer: torch.nn.Module = AblationLayer(),
                  batch_size: int = 32,
@@ -36,7 +36,7 @@ class AblationCAM(BaseCAM):
 
         super(AblationCAM, self).__init__(model,
                                           target_layers,
-                                          use_cuda,
+                                          device,
                                           reshape_transform,
                                           uses_gradients=False)
         self.batch_size = batch_size

@@ -8,11 +8,11 @@ class ScoreCAM(BaseCAM):
             self,
             model,
             target_layers,
-            use_cuda=False,
+            device=None,
             reshape_transform=None):
         super(ScoreCAM, self).__init__(model,
                                        target_layers,
-                                       use_cuda,
+                                       device,
                                        reshape_transform=reshape_transform,
                                        uses_gradients=False)
 
@@ -26,8 +26,8 @@ class ScoreCAM(BaseCAM):
             upsample = torch.nn.UpsamplingBilinear2d(
                 size=input_tensor.shape[-2:])
             activation_tensor = torch.from_numpy(activations)
-            if self.cuda:
-                activation_tensor = activation_tensor.cuda()
+            if self.device:
+                activation_tensor = activation_tensor.to(self.device)
 
             upsampled = upsample(activation_tensor)
 
