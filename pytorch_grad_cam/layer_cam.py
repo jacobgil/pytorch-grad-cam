@@ -10,14 +10,12 @@ class LayerCAM(BaseCAM):
             self,
             model,
             target_layers,
-            device=None,
             reshape_transform=None):
         super(
             LayerCAM,
             self).__init__(
             model,
             target_layers,
-            device,
             reshape_transform)
 
     def get_cam_image(self,

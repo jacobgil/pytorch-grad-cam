@@ -12,16 +12,13 @@ class BaseCAM:
     def __init__(self,
                  model: torch.nn.Module,
                  target_layers: List[torch.nn.Module],
-                 device: torch.device = None,
                  reshape_transform: Callable = None,
                  compute_input_gradient: bool = False,
                  uses_gradients: bool = True,
                  tta_transforms: Optional[tta.Compose] = None) -> None:
         self.model = model.eval()
         self.target_layers = target_layers
-        self.device = device
-        if self.device is not None:
-            self.model.to(self.device)
+        self.device = next(self.model.parameters()).device
 
         self.reshape_transform = reshape_transform
         self.compute_input_gradient = compute_input_gradient
@@ -76,8 +73,7 @@ class BaseCAM:
                 targets: List[torch.nn.Module],
                 eigen_smooth: bool = False) -> np.ndarray:
 
-        if self.device is not None:
-            input_tensor = input_tensor.to(self.device)
+        input_tensor = input_tensor.to(self.device)
 
         if self.compute_input_gradient:
             input_tensor = torch.autograd.Variable(input_tensor,

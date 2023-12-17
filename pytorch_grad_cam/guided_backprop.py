@@ -47,9 +47,7 @@ class GuidedBackpropReLUModel:
     def __init__(self, model, device):
         self.model = model
         self.model.eval()
-        self.device = device
-        if self.device:
-            self.model = self.model.to(self.device)
+        self.device = next(self.model.parameters()).device
 
     def forward(self, input_img):
         return self.model(input_img)
@@ -76,8 +74,8 @@ class GuidedBackpropReLUModel:
                                          torch.nn.ReLU,
                                          GuidedBackpropReLUasModule())
 
-        if self.device:
-            input_img = input_img.to(self.device)
+
+        input_img = input_img.to(self.device)
 
         input_img = input_img.requires_grad_(True)
 
