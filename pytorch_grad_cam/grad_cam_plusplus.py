@@ -5,9 +5,9 @@ from pytorch_grad_cam.base_cam import BaseCAM
 
 
 class GradCAMPlusPlus(BaseCAM):
-    def __init__(self, model, target_layers, use_cuda=False,
+    def __init__(self, model, target_layers,
                  reshape_transform=None):
-        super(GradCAMPlusPlus, self).__init__(model, target_layers, use_cuda,
+        super(GradCAMPlusPlus, self).__init__(model, target_layers,
                                               reshape_transform)
 
     def get_cam_weights(self,

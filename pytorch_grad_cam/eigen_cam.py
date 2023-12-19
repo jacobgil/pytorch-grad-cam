@@ -5,11 +5,10 @@ from pytorch_grad_cam.utils.svd_on_activations import get_2d_projection
 
 
 class EigenCAM(BaseCAM):
-    def __init__(self, model, target_layers, use_cuda=False,
+    def __init__(self, model, target_layers, 
                  reshape_transform=None):
         super(EigenCAM, self).__init__(model,
                                        target_layers,
-                                       use_cuda,
                                        reshape_transform,
                                        uses_gradients=False)
 
