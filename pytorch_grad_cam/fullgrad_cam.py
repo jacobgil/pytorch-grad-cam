@@ -9,7 +9,7 @@ from pytorch_grad_cam.utils.image import scale_accross_batch_and_channels, scale
 
 
 class FullGrad(BaseCAM):
-    def __init__(self, model, target_layers, device=None,
+    def __init__(self, model, target_layers,
                  reshape_transform=None):
         if len(target_layers) > 0:
             print(
@@ -27,7 +27,6 @@ class FullGrad(BaseCAM):
             self).__init__(
             model,
             target_layers,
-            device,
             reshape_transform,
             compute_input_gradient=True)
         self.bias_data = [self.get_bias_data(
