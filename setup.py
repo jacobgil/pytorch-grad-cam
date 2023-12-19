@@ -8,7 +8,7 @@ with open("requirements.txt", "r") as f:
 
 setuptools.setup(
     name='grad-cam',
-    version='1.4.8',
+    version='1.5.0',
     author='Jacob Gildenblat',
     author_email='jacob.gildenblat@gmail.com',
     description='Many Class Activation Map methods implemented in Pytorch for classification, segmentation, object detection and more',
@@ -25,5 +25,5 @@ setuptools.setup(
     ],
     packages=setuptools.find_packages(
         exclude=["*tutorials*"]),
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     install_requires=requirements)

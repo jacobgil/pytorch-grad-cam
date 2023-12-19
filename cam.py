@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 import torch
 from torchvision import models
-from torchvision.models import ResNet50_Weights
 from pytorch_grad_cam import (
     GradCAM, HiResCAM, ScoreCAM, GradCAMPlusPlus,
     AblationCAM, XGradCAM, EigenCAM, EigenGradCAM,
@@ -19,7 +18,7 @@ from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--device', type=str, default=None,
+    parser.add_argument('--device', type=str, default='cpu',
                         help='Torch device to use')
     parser.add_argument(
         '--image-path',
@@ -77,7 +76,7 @@ if __name__ == '__main__':
         "gradcamelementwise": GradCAMElementWise
     }
 
-    model = models.resnet50(weights=ResNet50_Weights.DEFAULT).to(args.device).eval()
+    model = models.resnet50(pretrained=True).to(torch.device(args.device)).eval()
 
     # Choose the target layer you want to compute the visualization for.
     # Usually this will be the last convolutional layer in the model.
@@ -104,16 +103,15 @@ if __name__ == '__main__':
     # the Class Activation Maps for.
     # If targets is None, the highest scoring category (for every member in the batch) will be used.
     # You can target specific categories by
-    # targets = [e.g ClassifierOutputTarget(281)]
+    # targets = [ClassifierOutputTarget(281)]
+    # targets = [ClassifierOutputTarget(281)]
     targets = None
 
     # Using the with statement ensures the context is freed, and you can
     # recreate different CAM objects in a loop.
     cam_algorithm = methods[args.method]
     with cam_algorithm(model=model,
-                       target_layers=target_layers,
-                       device=args.device) as cam:
-
+                       target_layers=target_layers) as cam:
 
         # AblationCAM and ScoreCAM have batched implementations.
         # You can override the internal batch size for faster computation.

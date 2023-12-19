@@ -18,8 +18,9 @@ class BaseCAM:
                  tta_transforms: Optional[tta.Compose] = None) -> None:
         self.model = model.eval()
         self.target_layers = target_layers
-        self.device = next(self.model.parameters()).device
 
+        # Use the same device as the model.
+        self.device = next(self.model.parameters()).device
         self.reshape_transform = reshape_transform
         self.compute_input_gradient = compute_input_gradient
         self.uses_gradients = uses_gradients

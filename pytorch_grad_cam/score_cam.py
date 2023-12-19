@@ -24,7 +24,7 @@ class ScoreCAM(BaseCAM):
             upsample = torch.nn.UpsamplingBilinear2d(
                 size=input_tensor.shape[-2:])
             activation_tensor = torch.from_numpy(activations)
-            activation_tensor = activation_tensor.to(next(self.model.parameters()).device)
+            activation_tensor = activation_tensor.to(self.device)
 
             upsampled = upsample(activation_tensor)
 
