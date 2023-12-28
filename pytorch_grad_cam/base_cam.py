@@ -55,8 +55,15 @@ class BaseCAM:
                                        targets,
                                        activations,
                                        grads)
-        w_shape = (slice(None), slice(None)) + (None,) * (len(activations.shape)-2)
-        weighted_activations = weights[w_shape] * activations
+        # 2D conv
+        if len(activations.shape) == 4:
+            weighted_activations = weights[:, :, None, None] * activations
+        # 3D conv
+        elif len(activations.shape) == 5:   
+            weighted_activations = weights[:, :, None, None, None] * activations
+        else:
+             raise ValueError(f"Invalid activation shape. Get {len(activations.shape)}.")
+        
         if eigen_smooth:
             cam = get_2d_projection(weighted_activations)
         else:
