@@ -125,11 +125,11 @@ input_tensor = # Create an input tensor image for your model..
 # Note: input_tensor can be a batch tensor with several images!
 
 # Construct the CAM object once, and then re-use it on many images:
-cam = GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda)
+cam = GradCAM(model=model, target_layers=target_layers)
 
 # You can also use it within a with statement, to make sure it is freed,
 # In case you need to re-create it inside an outer loop:
-# with GradCAM(model=model, target_layers=target_layers, use_cuda=args.use_cuda) as cam:
+# with GradCAM(model=model, target_layers=target_layers) as cam:
 #   ...
 
 # We have to specify the target we want to generate
@@ -147,6 +147,9 @@ grayscale_cam = cam(input_tensor=input_tensor, targets=targets)
 # In this example grayscale_cam has only one image in the batch:
 grayscale_cam = grayscale_cam[0, :]
 visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+
+# You can also get the model outputs without having to re-inference
+model_outputs = cam.outputs
 ```
 
 ----------
@@ -245,8 +248,8 @@ two smoothing methods are supported:
 Usage: `python cam.py --image-path <path_to_image> --method <method> --output-dir <output_dir_path> `
 
 
-To use with CUDA:
-`python cam.py --image-path <path_to_image> --use-cuda  --output-dir <output_dir_path> `
+To use with a specific device, like cpu, cuda, cuda:0 or mps:
+`python cam.py --image-path <path_to_image> --device cuda  --output-dir <output_dir_path> `
 
 ----------
 

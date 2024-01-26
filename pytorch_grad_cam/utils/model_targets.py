@@ -61,6 +61,8 @@ class SemanticSegmentationTarget:
         self.mask = torch.from_numpy(mask)
         if torch.cuda.is_available():
             self.mask = self.mask.cuda()
+        if torch.backends.mps.is_available():
+            self.mask = self.mask.to("mps")
 
     def __call__(self, model_output):
         return (model_output[self.category, :, :] * self.mask).sum()
@@ -86,6 +88,8 @@ class FasterRCNNBoxScoreTarget:
         output = torch.Tensor([0])
         if torch.cuda.is_available():
             output = output.cuda()
+        elif torch.backends.mps.is_available():
+            output = output.to("mps")
 
         if len(model_outputs["boxes"]) == 0:
             return output
@@ -94,6 +98,8 @@ class FasterRCNNBoxScoreTarget:
             box = torch.Tensor(box[None, :])
             if torch.cuda.is_available():
                 box = box.cuda()
+            elif torch.backends.mps.is_available():
+                box = box.to("mps")
 
             ious = torchvision.ops.box_iou(box, model_outputs["boxes"])
             index = ious.argmax()

@@ -18,8 +18,8 @@ from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--use-cuda', action='store_true', default=False,
-                        help='Use NVIDIA GPU acceleration')
+    parser.add_argument('--device', type=str, default='cpu',
+                        help='Torch device to use')
     parser.add_argument(
         '--image-path',
         type=str,
@@ -44,9 +44,9 @@ def get_args():
     parser.add_argument('--output-dir', type=str, default='output',
                         help='Output directory to save the images')
     args = parser.parse_args()
-    args.use_cuda = args.use_cuda and torch.cuda.is_available()
-    if args.use_cuda:
-        print('Using GPU for acceleration')
+    
+    if args.device:
+        print(f'Using device "{args.device}" for acceleration')
     else:
         print('Using CPU for computation')
 
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         "gradcamelementwise": GradCAMElementWise
     }
 
-    model = models.resnet50(pretrained=True)
+    model = models.resnet50(pretrained=True).to(torch.device(args.device)).eval()
 
     # Choose the target layer you want to compute the visualization for.
     # Usually this will be the last convolutional layer in the model.
@@ -97,22 +97,21 @@ if __name__ == '__main__':
     rgb_img = np.float32(rgb_img) / 255
     input_tensor = preprocess_image(rgb_img,
                                     mean=[0.485, 0.456, 0.406],
-                                    std=[0.229, 0.224, 0.225])
+                                    std=[0.229, 0.224, 0.225]).to(args.device)
 
     # We have to specify the target we want to generate
     # the Class Activation Maps for.
     # If targets is None, the highest scoring category (for every member in the batch) will be used.
     # You can target specific categories by
-    # targets = [e.g ClassifierOutputTarget(281)]
+    # targets = [ClassifierOutputTarget(281)]
+    # targets = [ClassifierOutputTarget(281)]
     targets = None
 
     # Using the with statement ensures the context is freed, and you can
     # recreate different CAM objects in a loop.
     cam_algorithm = methods[args.method]
     with cam_algorithm(model=model,
-                       target_layers=target_layers,
-                       use_cuda=args.use_cuda) as cam:
-
+                       target_layers=target_layers) as cam:
 
         # AblationCAM and ScoreCAM have batched implementations.
         # You can override the internal batch size for faster computation.
@@ -127,7 +126,7 @@ if __name__ == '__main__':
         cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
         cam_image = cv2.cvtColor(cam_image, cv2.COLOR_RGB2BGR)
 
-    gb_model = GuidedBackpropReLUModel(model=model, use_cuda=args.use_cuda)
+    gb_model = GuidedBackpropReLUModel(model=model, device=args.device)
     gb = gb_model(input_tensor, target_category=None)
 
     cam_mask = cv2.merge([grayscale_cam, grayscale_cam, grayscale_cam])
