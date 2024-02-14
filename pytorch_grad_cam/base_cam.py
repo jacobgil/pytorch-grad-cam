@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.typing as npt
 import torch
 import ttach as tta
 from typing import Callable, List, Tuple, Optional
@@ -12,7 +13,7 @@ class BaseCAM:
     def __init__(self,
                  model: torch.nn.Module,
                  target_layers: List[torch.nn.Module],
-                 reshape_transform: Callable = None,
+                 reshape_transform: Optional[Callable] = None,
                  compute_input_gradient: bool = False,
                  uses_gradients: bool = True,
                  tta_transforms: Optional[tta.Compose] = None) -> None:
@@ -71,8 +72,8 @@ class BaseCAM:
 
     def forward(self,
                 input_tensor: torch.Tensor,
-                targets: List[torch.nn.Module],
-                eigen_smooth: bool = False) -> np.ndarray:
+                targets: Optional[List[torch.nn.Module]],
+                eigen_smooth: bool = False) -> npt.NDArray[np.float32]:
 
         input_tensor = input_tensor.to(self.device)
 
@@ -156,7 +157,7 @@ class BaseCAM:
 
     def forward_augmentation_smoothing(self,
                                        input_tensor: torch.Tensor,
-                                       targets: List[torch.nn.Module],
+                                       targets: Optional[List[torch.nn.Module]],
                                        eigen_smooth: bool = False) -> np.ndarray:
         cams = []
         for transform in self.tta_transforms:
@@ -180,9 +181,9 @@ class BaseCAM:
 
     def __call__(self,
                  input_tensor: torch.Tensor,
-                 targets: List[torch.nn.Module] = None,
+                 targets: Optional[List[torch.nn.Module]]= None,
                  aug_smooth: bool = False,
-                 eigen_smooth: bool = False) -> np.ndarray:
+                 eigen_smooth: bool = False) -> npt.NDArray[np.float32]:
 
         # Smooth the CAM result with test time augmentation
         if aug_smooth is True:
