@@ -167,7 +167,7 @@ cam_metric = ROADMostRelevantFirst(percentile=75)
 scores, perturbation_visualizations = cam_metric(input_tensor, 
   grayscale_cams, targets, model, return_visualization=True)
 
-# You can also average accross different percentiles, and combine
+# You can also average across different percentiles, and combine
 # (LeastRelevantFirst - MostRelevantFirst) / 2
 from pytorch_grad_cam.metrics.road import ROADMostRelevantFirstAverage,
                                           ROADLeastRelevantFirstAverage,
