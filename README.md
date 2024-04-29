@@ -34,7 +34,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | Method              | What it does                                                                                                                |
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | GradCAM             | Weight the 2D activations by the average gradient                                                                           |
-| HiResCAM            | Like GradCAM but element-wise multiply the activations with the gradients; provably guaranteed faithfulness for certain models |
+| HiResCAM            | Like GradCAM but element-wise multiply the activations with the gradients; probably guaranteed faithfulness for certain models |
 | GradCAMElementWise  | Like GradCAM but element-wise multiply the activations with the gradients then apply a ReLU operation before summing        |
 | GradCAM++           | Like GradCAM but uses second order gradients                                                                                |
 | XGradCAM            | Like GradCAM but scale the gradients by the normalized activations                                                          |
