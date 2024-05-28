@@ -44,7 +44,7 @@ class BaseCAM:
     def get_cam_weights(self,
                         input_tensor: torch.Tensor,
                         target_layers: List[torch.nn.Module],
-                        targets: List[torch.nn.Module],
+                        targets: List[int],
                         activations: torch.Tensor,
                         grads: torch.Tensor) -> np.ndarray:
         raise Exception("Not Implemented")
@@ -52,7 +52,7 @@ class BaseCAM:
     def get_cam_image(self,
                       input_tensor: torch.Tensor,
                       target_layer: torch.nn.Module,
-                      targets: List[torch.nn.Module],
+                      targets: List[int], 
                       activations: torch.Tensor,
                       grads: torch.Tensor,
                       eigen_smooth: bool = False) -> np.ndarray:
@@ -71,7 +71,7 @@ class BaseCAM:
 
     def forward(self,
                 input_tensor: torch.Tensor,
-                targets: List[torch.nn.Module],
+                targets: List[int],
                 eigen_smooth: bool = False) -> np.ndarray:
 
         input_tensor = input_tensor.to(self.device)
@@ -115,7 +115,7 @@ class BaseCAM:
     def compute_cam_per_layer(
             self,
             input_tensor: torch.Tensor,
-            targets: List[torch.nn.Module],
+            targets: List[int],
             eigen_smooth: bool) -> np.ndarray:
         activations_list = [a.cpu().data.numpy()
                             for a in self.activations_and_grads.activations]
@@ -156,7 +156,7 @@ class BaseCAM:
 
     def forward_augmentation_smoothing(self,
                                        input_tensor: torch.Tensor,
-                                       targets: List[torch.nn.Module],
+                                       targets: List[int],
                                        eigen_smooth: bool = False) -> np.ndarray:
         cams = []
         for transform in self.tta_transforms:
@@ -180,7 +180,7 @@ class BaseCAM:
 
     def __call__(self,
                  input_tensor: torch.Tensor,
-                 targets: List[torch.nn.Module] = None,
+                 targets: List[int] = None,
                  aug_smooth: bool = False,
                  eigen_smooth: bool = False) -> np.ndarray:
 
