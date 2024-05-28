@@ -1,4 +1,5 @@
 import numpy as np
+
 from pytorch_grad_cam.base_cam import BaseCAM
 
 
@@ -18,4 +19,14 @@ class GradCAM(BaseCAM):
                         target_category,
                         activations,
                         grads):
-        return np.mean(grads, axis=(2, 3))
+        # 2D image
+        if len(grads.shape) == 4:
+            return np.mean(grads, axis=(2, 3))
+        
+        # 3D image
+        elif len(grads.shape) == 5:
+            return np.mean(grads, axis=(2, 3, 4))
+        
+        else:
+            raise ValueError("Invalid grads shape." 
+                             "Shape of grads should be 4 (2D image) or 5 (3D image).")
