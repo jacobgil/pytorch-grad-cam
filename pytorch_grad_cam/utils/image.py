@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 import cv2
 import numpy as np
+import numpy.typing as npt
 import torch
 from torchvision.transforms import Compose, Normalize, ToTensor
 from typing import List, Dict
@@ -30,11 +31,11 @@ def deprocess_image(img):
     return np.uint8(img * 255)
 
 
-def show_cam_on_image(img: np.ndarray,
-                      mask: np.ndarray,
+def show_cam_on_image(img: npt.NDArray[np.float16] | npt.NDArray[np.float32] | npt.NDArray[np.float64],
+                      mask: npt.NDArray[np.float16] | npt.NDArray[np.float32] | npt.NDArray[np.float64],
                       use_rgb: bool = False,
                       colormap: int = cv2.COLORMAP_JET,
-                      image_weight: float = 0.5) -> np.ndarray:
+                      image_weight: float = 0.5) -> npt.NDArray[np.uint8]:
     """ This function overlays the cam mask on the image as an heatmap.
     By default the heatmap is in BGR format.
 
