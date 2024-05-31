@@ -97,13 +97,11 @@ if __name__ == '__main__':
     if args.method == "ablationcam":
         cam = methods[args.method](model=model,
                                    target_layers=target_layers,
-                                   use_cuda=args.use_cuda,
                                    reshape_transform=reshape_transform,
                                    ablation_layer=AblationLayerVit())
     else:
         cam = methods[args.method](model=model,
                                    target_layers=target_layers,
-                                   use_cuda=args.use_cuda,
                                    reshape_transform=reshape_transform)
 
     rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
