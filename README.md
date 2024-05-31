@@ -9,6 +9,10 @@
 
 Documentation with advanced tutorials: [https://jacobgil.github.io/pytorch-gradcam-book](https://jacobgil.github.io/pytorch-gradcam-book)
 
+[Video tutorial(Chinese)](https://www.bilibili.com/video/BV1JG4y1s74x)
+
+[Jupyter notebook tutorial(Chinese)](https://github.com/TommyZihao/Train_Custom_Dataset/tree/main/%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/6-%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7%E5%88%86%E6%9E%90%E3%80%81%E6%98%BE%E8%91%97%E6%80%A7%E5%88%86%E6%9E%90/2.pytorch-grad-cam%E5%B7%A5%E5%85%B7%E5%8C%85%EF%BC%9ACAM%E7%83%AD%E5%8A%9B%E5%9B%BE%E3%80%81Guided%20Grad-CAM%E7%83%AD%E5%8A%9B%E5%9B%BE%E3%80%81DFF)
+
 
 This is a package with state of the art methods for Explainable AI for computer vision.
 This can be used for diagnosing model predictions, either in production or while
