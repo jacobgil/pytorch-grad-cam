@@ -94,21 +94,6 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 <img src="./examples/metrics.png">
 <img src="./examples/road.png">
 
-
-----------
-# Choosing the Target Layer
-You need to choose the target layer to compute the CAM for.
-Some common choices are:
-- FasterRCNN: model.backbone
-- Resnet18 and 50: model.layer4[-1]
-- VGG, densenet161 and mobilenet: model.features[-1]
-- mnasnet1_0: model.layers[-1]
-- ViT: model.blocks[-1].norm1
-- SwinT: model.layers[-1].blocks[-1].norm1
-
-If you pass a list with several layers, the CAM will be averaged accross them.
-This can be useful if you're not sure what layer will perform best.
-
 ----------
 
 # Usage examples
@@ -141,35 +126,19 @@ with GradCAM(model=model, target_layers=target_layers) as cam:
 [cam.py](https://github.com/jacobgil/pytorch-grad-cam/blob/master/cam.py) has a more detailed usage example.
 
 ----------
+# Choosing the Target Layer
+You need to choose the target layer to compute the CAM for.
+Some common choices are:
+- FasterRCNN: model.backbone
+- Resnet18 and 50: model.layer4[-1]
+- VGG, densenet161 and mobilenet: model.features[-1]
+- mnasnet1_0: model.layers[-1]
+- ViT: model.blocks[-1].norm1
+- SwinT: model.layers[-1].blocks[-1].norm1
 
-# Metrics and evaluating the explanations
-
-```python
-from pytorch_grad_cam.utils.model_targets import ClassifierOutputSoftmaxTarget
-from pytorch_grad_cam.metrics.cam_mult_image import CamMultImageConfidenceChange
-# Create the metric target, often the confidence drop in a score of some category
-metric_target = ClassifierOutputSoftmaxTarget(281)
-scores, batch_visualizations = CamMultImageConfidenceChange()(input_tensor, 
-  inverse_cams, targets, model, return_visualization=True)
-visualization = deprocess_image(batch_visualizations[0, :])
-
-# State of the art metric: Remove and Debias
-from pytorch_grad_cam.metrics.road import ROADMostRelevantFirst, ROADLeastRelevantFirst
-cam_metric = ROADMostRelevantFirst(percentile=75)
-scores, perturbation_visualizations = cam_metric(input_tensor, 
-  grayscale_cams, targets, model, return_visualization=True)
-
-# You can also average across different percentiles, and combine
-# (LeastRelevantFirst - MostRelevantFirst) / 2
-from pytorch_grad_cam.metrics.road import ROADMostRelevantFirstAverage,
-                                          ROADLeastRelevantFirstAverage,
-                                          ROADCombined
-cam_metric = ROADCombined(percentiles=[20, 40, 60, 80])
-scores = cam_metric(input_tensor, grayscale_cams, targets, model)
-```
-
+If you pass a list with several layers, the CAM will be averaged accross them.
+This can be useful if you're not sure what layer will perform best.
 ----------
-
 
 # Adapting for new architectures and tasks
 
@@ -201,6 +170,35 @@ targets = [ClassifierOutputTarget(281)]
 However more advanced cases, you might want another behaviour.
 Check [here](https://github.com/jacobgil/pytorch-grad-cam/blob/master/pytorch_grad_cam/utils/model_targets.py) for more examples.
 
+----------
+
+# Metrics and evaluating the explanations
+
+```python
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputSoftmaxTarget
+from pytorch_grad_cam.metrics.cam_mult_image import CamMultImageConfidenceChange
+# Create the metric target, often the confidence drop in a score of some category
+metric_target = ClassifierOutputSoftmaxTarget(281)
+scores, batch_visualizations = CamMultImageConfidenceChange()(input_tensor, 
+  inverse_cams, targets, model, return_visualization=True)
+visualization = deprocess_image(batch_visualizations[0, :])
+
+# State of the art metric: Remove and Debias
+from pytorch_grad_cam.metrics.road import ROADMostRelevantFirst, ROADLeastRelevantFirst
+cam_metric = ROADMostRelevantFirst(percentile=75)
+scores, perturbation_visualizations = cam_metric(input_tensor, 
+  grayscale_cams, targets, model, return_visualization=True)
+
+# You can also average across different percentiles, and combine
+# (LeastRelevantFirst - MostRelevantFirst) / 2
+from pytorch_grad_cam.metrics.road import ROADMostRelevantFirstAverage,
+                                          ROADLeastRelevantFirstAverage,
+                                          ROADCombined
+cam_metric = ROADCombined(percentiles=[20, 40, 60, 80])
+scores = cam_metric(input_tensor, grayscale_cams, targets, model)
+```
+
+----------
 
 # Tutorials
 Here you can find detailed examples of how to use this for various custom use cases like object detection:
