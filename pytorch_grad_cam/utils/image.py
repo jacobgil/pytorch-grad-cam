@@ -165,7 +165,7 @@ def scale_cam_image(cam, target_size=None):
         img = img - np.min(img)
         img = img / (1e-7 + np.max(img))
         if target_size is not None:
-            if len(img.shape) > 3:
+            if len(img.shape) > 2:
                 img = zoom(np.float32(img), [
                            (t_s / i_s) for i_s, t_s in zip(img.shape, target_size[::-1])])
             else:
