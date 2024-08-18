@@ -126,7 +126,7 @@ with GradCAM(model=model, target_layers=target_layers) as cam:
 [cam.py](https://github.com/jacobgil/pytorch-grad-cam/blob/master/cam.py) has a more detailed usage example.
 
 ----------
-# Choosing the Target Layer
+# Choosing the layer(s) to extract activations from
 You need to choose the target layer to compute the CAM for.
 Some common choices are:
 - FasterRCNN: model.backbone
@@ -136,8 +136,10 @@ Some common choices are:
 - ViT: model.blocks[-1].norm1
 - SwinT: model.layers[-1].blocks[-1].norm1
 
+
 If you pass a list with several layers, the CAM will be averaged accross them.
 This can be useful if you're not sure what layer will perform best.
+
 ----------
 
 # Adapting for new architectures and tasks
