@@ -169,8 +169,50 @@ The `targets` parameter passed to the CAM method can then use `ClassifierOutputT
 targets = [ClassifierOutputTarget(281)]
 ```
 
-However more advanced cases, you might want another behaviour.
+However for more advanced cases, you might want a different behaviour.
 Check [here](https://github.com/jacobgil/pytorch-grad-cam/blob/master/pytorch_grad_cam/utils/model_targets.py) for more examples.
+
+----------
+
+# Tutorials
+Here you can find detailed examples of how to use this for various custom use cases like object detection:
+
+These point to the new documentation jupter-book for fast rendering.
+The jupyter notebooks themselves can be found under the tutorials folder in the git repository.
+
+- [Notebook tutorial: XAI Recipes for the HuggingFace 🤗 Image Classification Models](<https://jacobgil.github.io/pytorch-gradcam-book/HuggingFace.html>)
+
+- [Notebook tutorial: Deep Feature Factorizations for better model explainability](<https://jacobgil.github.io/pytorch-gradcam-book/Deep%20Feature%20Factorizations.html>)
+
+- [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<https://jacobgil.github.io/pytorch-gradcam-book/Class%20Activation%20Maps%20for%20Object%20Detection%20With%20Faster%20RCNN.html>)
+
+- [Notebook tutorial: Class Activation Maps for YOLO5](<https://jacobgil.github.io/pytorch-gradcam-book/EigenCAM%20for%20YOLO5.html>)
+
+- [Notebook tutorial: Class Activation Maps for Semantic Segmentation](<https://jacobgil.github.io/pytorch-gradcam-book/Class%20Activation%20Maps%20for%20Semantic%20Segmentation.html>)
+
+- [Notebook tutorial: Adapting pixel attribution methods for embedding outputs from models](<https://jacobgil.github.io/pytorch-gradcam-book/Pixel%20Attribution%20for%20embeddings.html>)
+
+- [Notebook tutorial: May the best explanation win. CAM Metrics and Tuning](<https://jacobgil.github.io/pytorch-gradcam-book/CAM%20Metrics%20And%20Tuning%20Tutorial.html>)
+
+- [How it works with Vision/SwinT transformers](tutorials/vision_transformers.md)
+
+
+----------
+
+# Guided backpropagation
+
+```python
+from pytorch_grad_cam import GuidedBackpropReLUModel
+from pytorch_grad_cam.utils.image import (
+    show_cam_on_image, deprocess_image, preprocess_image
+)
+gb_model = GuidedBackpropReLUModel(model=model, device=model.device())
+gb = gb_model(input_tensor, target_category=None)
+
+cam_mask = cv2.merge([grayscale_cam, grayscale_cam, grayscale_cam])
+cam_gb = deprocess_image(cam_mask * gb)
+result = deprocess_image(gb)
+```
 
 ----------
 
@@ -200,32 +242,6 @@ cam_metric = ROADCombined(percentiles=[20, 40, 60, 80])
 scores = cam_metric(input_tensor, grayscale_cams, targets, model)
 ```
 
-----------
-
-# Tutorials
-Here you can find detailed examples of how to use this for various custom use cases like object detection:
-
-These point to the new documentation jupter-book for fast rendering.
-The jupyter notebooks themselves can be found under the tutorials folder in the git repository.
-
-- [Notebook tutorial: XAI Recipes for the HuggingFace 🤗 Image Classification Models](<https://jacobgil.github.io/pytorch-gradcam-book/HuggingFace.html>)
-
-- [Notebook tutorial: Deep Feature Factorizations for better model explainability](<https://jacobgil.github.io/pytorch-gradcam-book/Deep%20Feature%20Factorizations.html>)
-
-- [Notebook tutorial: Class Activation Maps for Object Detection with Faster-RCNN](<https://jacobgil.github.io/pytorch-gradcam-book/Class%20Activation%20Maps%20for%20Object%20Detection%20With%20Faster%20RCNN.html>)
-
-- [Notebook tutorial: Class Activation Maps for YOLO5](<https://jacobgil.github.io/pytorch-gradcam-book/EigenCAM%20for%20YOLO5.html>)
-
-- [Notebook tutorial: Class Activation Maps for Semantic Segmentation](<https://jacobgil.github.io/pytorch-gradcam-book/Class%20Activation%20Maps%20for%20Semantic%20Segmentation.html>)
-
-- [Notebook tutorial: Adapting pixel attribution methods for embedding outputs from models](<https://jacobgil.github.io/pytorch-gradcam-book/Pixel%20Attribution%20for%20embeddings.html>)
-
-- [Notebook tutorial: May the best explanation win. CAM Metrics and Tuning](<https://jacobgil.github.io/pytorch-gradcam-book/CAM%20Metrics%20And%20Tuning%20Tutorial.html>)
-
-- [How it works with Vision/SwinT transformers](tutorials/vision_transformers.md)
-
-
-----------
 
 # Smoothing to get nice looking CAMs
 
