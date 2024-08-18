@@ -97,7 +97,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 
 ----------
 # Choosing the Target Layer
-You need to choose the target layer to compute CAM for.
+You need to choose the target layer to compute the CAM for.
 Some common choices are:
 - FasterRCNN: model.backbone
 - Resnet18 and 50: model.layer4[-1]
@@ -143,7 +143,7 @@ with GradCAM(model=model, target_layers=target_layers) as cam:
   model_outputs = cam.outputs
 ```
 
-Cam.py has a more detailed usage example.
+cam.py has a more detailed usage example.
 
 ----------
 
@@ -176,7 +176,7 @@ scores = cam_metric(input_tensor, grayscale_cams, targets, model)
 ----------
 
 
-# Advanced use cases and tutorials:
+# Adapting for new architectures and tasks
 
 Methods like GradCAM were designed for and were originally mostly applied on classification models, 
 and specifically CNN classification models.
@@ -186,7 +186,7 @@ The be able to adapt to non standard cases, we have two concepts.
 - The reshape transform - how do we convert activations to represent spatial images ?
 - The model targets - What exactly should the explainability method try to explain ?
 
-## The reshape transform
+## The reshape_transform argument
 In a CNN the intermediate activations in the model are a mult-channel image that have the dimensions channel x rows x cols,
 and the various explainabiltiy methods work with these to produce a new image.
 
@@ -194,7 +194,7 @@ In case of another architecture, like the Vision Transformer, the shape might be
 The reshape transform converts the activations back into a multi-channel image, for example by removing the class token in a vision transformer. 
 For examples, check [here](https://github.com/jacobgil/pytorch-grad-cam/blob/master/pytorch_grad_cam/utils/reshape_transforms.py)
 
-## Model Targets
+## The model_target argument
 The model target is just a callable that is able to get the model output, and filter it out for the specific scalar output we want to explain.
 
 For classification tasks, the model target will typically be the output from a specific category.
