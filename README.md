@@ -57,7 +57,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | -----------------|-----------------------|
 | <img src="./examples/both_detection.png" width="256" height="256"> | <img src="./examples/cars_segmentation.png" width="256" height="200"> |
 
-| 3D Medical Semantic Segmentation (3D) |
+| 3D Medical Semantic Segmentation |
 | -------------------------- |
 | <img src="./examples/multiorgan_segmentation.gif" width="539">|
 
