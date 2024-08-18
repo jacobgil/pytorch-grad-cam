@@ -101,7 +101,7 @@ You need to choose the target layer to compute CAM for.
 Some common choices are:
 - FasterRCNN: model.backbone
 - Resnet18 and 50: model.layer4[-1]
-- VGG and densenet161: model.features[-1]
+- VGG, densenet161 and mobilenet: model.features[-1]
 - mnasnet1_0: model.layers[-1]
 - ViT: model.blocks[-1].norm1
 - SwinT: model.layers[-1].blocks[-1].norm1
@@ -171,7 +171,7 @@ cam_metric = ROADMostRelevantFirst(percentile=75)
 scores, perturbation_visualizations = cam_metric(input_tensor, 
   grayscale_cams, targets, model, return_visualization=True)
 
-# You can also average accross different percentiles, and combine
+# You can also average across different percentiles, and combine
 # (LeastRelevantFirst - MostRelevantFirst) / 2
 from pytorch_grad_cam.metrics.road import ROADMostRelevantFirstAverage,
                                           ROADLeastRelevantFirstAverage,
