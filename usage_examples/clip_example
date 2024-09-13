@@ -1,9 +1,11 @@
 import argparse
+
 import cv2
 import numpy as np
 import torch
 from torch import nn
-import open_clip
+from transformers import CLIPProcessor, CLIPModel
+
 
 from pytorch_grad_cam import GradCAM, \
     ScoreCAM, \
@@ -29,6 +31,14 @@ def get_args():
         type=str,
         default='./examples/both.png',
         help='Input image path')
+    parser.add_argument(
+        '--labels',
+        type=str,
+        nargs='+',
+        default=["a cat", "a dog", "a car", "a person", "a shoe"],
+        help='need recognition labels'
+    )
+
     parser.add_argument('--aug_smooth', action='store_true',
                         help='Apply test time augmentation to smooth the CAM')
     parser.add_argument(
@@ -64,27 +74,23 @@ def reshape_transform(tensor, height=16, width=16):
 
 
 class ImageClassifier(nn.Module):
-    def __init__(self, num_classes, device="cpu"):
+    def __init__(self, labels):
         super(ImageClassifier, self).__init__()
-
-        model, _, _ = open_clip.create_model_and_transforms('ViT-L-14', device=device)
-
-        self.encoder = model.visual
-
-        num_features = 1024
-        self.encoder.proj = None
-
-        self.classifier = nn.Sequential(
-            nn.Linear(num_features, 2 * num_features),
-            nn.ReLU(),
-            nn.Dropout(0.5),
-            nn.Linear(2 * num_features, num_classes)
-        )
+        self.clip = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
+        self.processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
+        self.labels = labels
 
     def forward(self, x):
-        x = self.encoder(x)
-        x = self.classifier(x)
-        return x
+        text_inputs = self.processor(text=labels, return_tensors="pt", padding=True)
+
+        outputs = self.clip(pixel_values=x, input_ids=text_inputs['input_ids'], attention_mask=text_inputs['attention_mask'])
+
+        logits_per_image = outputs.logits_per_image
+        probs = logits_per_image.softmax(dim=1)
+
+        for label, prob in zip(self.labels, probs[0]):
+            print(f"{label}: {prob:.4f}")
+        return probs
 
 
 if __name__ == '__main__':
@@ -108,17 +114,26 @@ if __name__ == '__main__':
     if args.method not in list(methods.keys()):
         raise Exception(f"method should be one of {list(methods.keys())}")
 
-    model = ImageClassifier(1000)
+    labels = args.labels
+    model = ImageClassifier(labels)
+    if args.use_cuda:
+        model.cuda()
     model.eval()
     print(model)
 
-    target_layers = [model.encoder.transformer.resblocks[-1].ln_1]
+    target_layers = [model.clip.vision_model.encoder.layers[-1].layer_norm1]
 
     if args.method not in methods:
         raise Exception(f"Method {args.method} not implemented")
 
     if args.use_cuda:
         model = model.cuda()
+
+    rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
+    rgb_img = cv2.resize(rgb_img, (224, 224))
+    rgb_img = np.float32(rgb_img) / 255
+    input_tensor = preprocess_image(rgb_img, mean=[0.5, 0.5, 0.5],
+                                    std=[0.5, 0.5, 0.5])
 
     if args.method == "ablationcam":
         cam = methods[args.method](model=model,
@@ -130,11 +145,7 @@ if __name__ == '__main__':
                                    target_layers=target_layers,
                                    reshape_transform=reshape_transform)
 
-    rgb_img = cv2.imread(args.image_path, 1)[:, :, ::-1]
-    rgb_img = cv2.resize(rgb_img, (224, 224))
-    rgb_img = np.float32(rgb_img) / 255
-    input_tensor = preprocess_image(rgb_img, mean=[0.5, 0.5, 0.5],
-                                    std=[0.5, 0.5, 0.5])
+
 
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
