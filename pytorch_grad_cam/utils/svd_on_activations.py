@@ -21,7 +21,7 @@ def get_2d_projection(activation_batch):
 
 
 
-def get_2d_projection_kernel(activation_batch, kernel='rbf', gamma=None):
+def get_2d_projection_kernel(activation_batch, kernel='sigmoid', gamma=None):
     activation_batch[np.isnan(activation_batch)] = 0
     projections = []
     for activations in activation_batch:
