@@ -7,4 +7,3 @@ tqdm
 opencv-python
 matplotlib
 scikit-learn
-transformers

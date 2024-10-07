@@ -44,8 +44,8 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | EigenGradCAM        | Like EigenCAM but with class discrimination: First principle component of Activations*Grad. Looks like GradCAM, but cleaner |
 | LayerCAM            | Spatially weight the activations by positive gradients. Works better especially in lower layers                             |
 | FullGrad            | Computes the gradients of the biases from all over the network, and then sums them                                          |
-| Deep Feature Factorizations           | Non Negative Matrix Factorization on the 2D activations                                                 |
-
+| Deep Feature Factorizations           | Non Negative Matrix Factorization on the 2D activations                                                   |
+|  KPCA-CAM           | Like EigenCAM but with Kernel PCA instead of PCA
 ## Visual Examples
 
 | What makes the network think the image label is 'pug, pug-dog' | What makes the network think the image label is 'tabby, tabby cat' | Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class |
@@ -67,6 +67,11 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 ## Deep Feature Factorization
 <img src="./examples/dff1.png">
 <img src="./examples/dff2.png">
+
+## CLIP
+| Explaining the text prompt "a dog" | "a cat" |
+| ---------------------------------------------------------------|--------------------|-----------------------------------------------------------------------------|
+ <img src="https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/clip_dog.jpg?raw=true" width="256" height="256"> | <img src="https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/clip_cat.jpg?raw=true" width="256" height="256"> |
 
 ## Classification
 
@@ -348,3 +353,8 @@ Suraj Srinivas, Francois Fleuret`
 https://arxiv.org/abs/1806.10206 <br>
 `Deep Feature Factorization For Concept Discovery
 Edo Collins, Radhakrishna Achanta, Sabine Süsstrunk`
+
+https://arxiv.org/abs/2410.00267 <br>
+`KPCA-CAM: Visual Explainability of Deep Computer Vision Models using Kernel PCA
+
+Sachin Karmani, Thanushon Sivakaran, Gaurav Prasad, Mehmet Ali, Wenbo Yang, Sheyang Tang`

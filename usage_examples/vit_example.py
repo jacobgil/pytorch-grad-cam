@@ -21,8 +21,9 @@ from pytorch_grad_cam.ablation_layer import AblationLayerVit
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--use-cuda', action='store_true', default=False,
-                        help='Use NVIDIA GPU acceleration')
+    parser.add_argument('--device', type=str, default='cpu',
+                        help='Torch device to use')
+
     parser.add_argument(
         '--image-path',
         type=str,
@@ -43,9 +44,8 @@ def get_args():
         help='Can be gradcam/gradcam++/scorecam/xgradcam/ablationcam')
 
     args = parser.parse_args()
-    args.use_cuda = args.use_cuda and torch.cuda.is_available()
-    if args.use_cuda:
-        print('Using GPU for acceleration')
+    if args.device:
+        print(f'Using device "{args.device}" for acceleration')
     else:
         print('Using CPU for computation')
 
@@ -84,11 +84,8 @@ if __name__ == '__main__':
         raise Exception(f"method should be one of {list(methods.keys())}")
 
     model = torch.hub.load('facebookresearch/deit:main',
-                           'deit_tiny_patch16_224', pretrained=True)
-    model.eval()
+                           'deit_tiny_patch16_224', pretrained=True).to(torch.device(args.device)).eval()
 
-    if args.use_cuda:
-        model = model.cuda()
 
     target_layers = [model.blocks[-1].norm1]
 
@@ -109,7 +106,7 @@ if __name__ == '__main__':
     rgb_img = cv2.resize(rgb_img, (224, 224))
     rgb_img = np.float32(rgb_img) / 255
     input_tensor = preprocess_image(rgb_img, mean=[0.5, 0.5, 0.5],
-                                    std=[0.5, 0.5, 0.5])
+                                    std=[0.5, 0.5, 0.5]).to(args.device)
 
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested category.
