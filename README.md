@@ -356,5 +356,4 @@ Edo Collins, Radhakrishna Achanta, Sabine Süsstrunk`
 
 https://arxiv.org/abs/2410.00267 <br>
 `KPCA-CAM: Visual Explainability of Deep Computer Vision Models using Kernel PCA
-
 Sachin Karmani, Thanushon Sivakaran, Gaurav Prasad, Mehmet Ali, Wenbo Yang, Sheyang Tang`
