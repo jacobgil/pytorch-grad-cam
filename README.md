@@ -70,7 +70,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 
 ## CLIP
 | Explaining the text prompt "a dog" | "a cat" |
-| ---------------------------------------------------------------|--------------------|-----------------------------------------------------------------------------|
+| -----------------------------------|---------|
  <img src="https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/clip_dog.jpg?raw=true" width="256" height="256"> | <img src="https://github.com/jacobgil/pytorch-grad-cam/blob/master/examples/clip_cat.jpg?raw=true" width="256" height="256"> |
 
 ## Classification
