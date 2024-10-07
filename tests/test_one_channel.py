@@ -39,7 +39,6 @@ def test_memory_usage_in_loop(numpy_image, cam_method):
     input_tensor = torch.from_numpy(
         np.float32(gray_img)).unsqueeze(0).unsqueeze(0)
     input_tensor = input_tensor.repeat(16, 1, 1, 1)
-    print("input_tensor", input_tensor.shape)
     targets = None
     with cam_method(model=model,
                     target_layers=target_layers) as cam:

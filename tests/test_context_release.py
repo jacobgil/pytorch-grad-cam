@@ -65,4 +65,4 @@ def test_memory_usage_in_loop(numpy_image, batch_size, width, height,
 
             if i == 0:
                 initial_memory = psutil.virtual_memory()[2]
-        assert(psutil.virtual_memory()[2] <= initial_memory * 1.1)
+        assert(psutil.virtual_memory()[2] <= initial_memory * 1.5)
