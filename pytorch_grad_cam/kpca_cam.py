@@ -7,8 +7,9 @@ class KPCA_CAM(BaseCAM):
         super(KPCA_CAM, self).__init__(model,
                                        target_layers,
                                        reshape_transform,
-                                       uses_gradients=False,
-                                       kernel=kernel, gamma=gamma)
+                                       uses_gradients=False)
+        self.kernel=kernel
+        self.gamma=gamma
 
     def get_cam_image(self,
                       input_tensor,

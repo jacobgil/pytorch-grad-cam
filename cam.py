@@ -7,7 +7,7 @@ from torchvision import models
 from pytorch_grad_cam import (
     GradCAM, HiResCAM, ScoreCAM, GradCAMPlusPlus,
     AblationCAM, XGradCAM, EigenCAM, EigenGradCAM,
-    LayerCAM, FullGrad, GradCAMElementWise
+    LayerCAM, FullGrad, GradCAMElementWise, KPCA_CAM
 )
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import (
@@ -37,7 +37,7 @@ def get_args():
                             'gradcam', 'hirescam', 'gradcam++',
                             'scorecam', 'xgradcam', 'ablationcam',
                             'eigencam', 'eigengradcam', 'layercam',
-                            'fullgrad', 'gradcamelementwise'
+                            'fullgrad', 'gradcamelementwise', 'kpcacam'
                         ],
                         help='CAM method')
 
@@ -73,7 +73,8 @@ if __name__ == '__main__':
         "eigengradcam": EigenGradCAM,
         "layercam": LayerCAM,
         "fullgrad": FullGrad,
-        "gradcamelementwise": GradCAMElementWise
+        "gradcamelementwise": GradCAMElementWise,
+        'kpcacam': KPCA_CAM
     }
 
     model = models.resnet50(pretrained=True).to(torch.device(args.device)).eval()

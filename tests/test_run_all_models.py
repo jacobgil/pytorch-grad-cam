@@ -10,7 +10,8 @@ from pytorch_grad_cam import GradCAM, \
     EigenCAM, \
     EigenGradCAM, \
     LayerCAM, \
-    FullGrad
+    FullGrad, \
+    KPCA_CAM
 from pytorch_grad_cam.utils.image import show_cam_on_image, \
     preprocess_image
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
@@ -50,7 +51,9 @@ def numpy_image():
                           EigenCAM,
                           EigenGradCAM,
                           LayerCAM,
-                          FullGrad])
+                          FullGrad,
+                          KPCA_CAM])
+
 def test_all_cam_models_can_run(numpy_image, batch_size, width, height,
                                 cnn_model, target_layer_names, cam_method,
                                 target_category, aug_smooth, eigen_smooth):
