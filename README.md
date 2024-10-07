@@ -137,7 +137,7 @@ Some common choices are:
 - SwinT: model.layers[-1].blocks[-1].norm1
 
 
-If you pass a list with several layers, the CAM will be averaged accross them.
+If you pass a list with several layers, the CAM will be averaged across them.
 This can be useful if you're not sure what layer will perform best.
 
 ----------
@@ -148,13 +148,13 @@ Methods like GradCAM were designed for and were originally mostly applied on cla
 and specifically CNN classification models.
 However you can also use this package on new architectures like Vision Transformers, and on non classification tasks like Object Detection or Semantic Segmentation.
 
-The be able to adapt to non standard cases, we have two concepts.
+To be able to adapt to non-standard cases, we have two concepts.
 - The reshape transform - how do we convert activations to represent spatial images ?
 - The model targets - What exactly should the explainability method try to explain ?
 
 ## The reshape_transform argument
-In a CNN the intermediate activations in the model are a mult-channel image that have the dimensions channel x rows x cols,
-and the various explainabiltiy methods work with these to produce a new image.
+In a CNN the intermediate activations in the model are a multi-channel image that have the dimensions channel x rows x cols,
+and the various explainability methods work with these to produce a new image.
 
 In case of another architecture, like the Vision Transformer, the shape might be different, like (rows x cols + 1) x channels, or something else.
 The reshape transform converts the activations back into a multi-channel image, for example by removing the class token in a vision transformer. 
@@ -177,7 +177,7 @@ Check [here](https://github.com/jacobgil/pytorch-grad-cam/blob/master/pytorch_gr
 # Tutorials
 Here you can find detailed examples of how to use this for various custom use cases like object detection:
 
-These point to the new documentation jupter-book for fast rendering.
+These point to the new documentation jupyter-notebook for fast rendering.
 The jupyter notebooks themselves can be found under the tutorials folder in the git repository.
 
 - [Notebook tutorial: XAI Recipes for the HuggingFace 🤗 Image Classification Models](<https://jacobgil.github.io/pytorch-gradcam-book/HuggingFace.html>)
