@@ -59,13 +59,9 @@ class SemanticSegmentationTarget:
     def __init__(self, category, mask):
         self.category = category
         self.mask = torch.from_numpy(mask)
-        if torch.cuda.is_available():
-            self.mask = self.mask.cuda()
-        if torch.backends.mps.is_available():
-            self.mask = self.mask.to("mps")
 
     def __call__(self, model_output):
-        return (model_output[self.category, :, :] * self.mask).sum()
+        return (model_output[self.category, :, :] * self.mask.to(model_output.device)).sum()
 
 
 class FasterRCNNBoxScoreTarget:
