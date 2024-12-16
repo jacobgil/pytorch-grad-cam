@@ -77,6 +77,9 @@ if __name__ == '__main__':
         'kpcacam': KPCA_CAM
     }
 
+    if args.device=='hpu':
+        import habana_frameworks.torch.core as htcore
+
     model = models.resnet50(pretrained=True).to(torch.device(args.device)).eval()
 
     # Choose the target layer you want to compute the visualization for.
