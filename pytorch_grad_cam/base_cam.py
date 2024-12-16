@@ -26,7 +26,11 @@ class BaseCAM:
         # Use the same device as the model.
         self.device = next(self.model.parameters()).device
         if 'hpu' in str(self.device):
-            import habana_frameworks.torch.core as htcore
+            try:
+                import habana_frameworks.torch.core as htcore
+            except ImportError as error:
+                error.msg = f"Could not import habana_frameworks.torch.core. {error.msg}."
+                raise error
             self.__htcore = htcore
         self.reshape_transform = reshape_transform
         self.compute_input_gradient = compute_input_gradient
