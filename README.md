@@ -282,7 +282,7 @@ two smoothing methods are supported:
 Usage: `python cam.py --image-path <path_to_image> --method <method> --output-dir <output_dir_path> `
 
 
-To use with a specific device, like cpu, cuda, cuda:0 or mps:
+To use with a specific device, like cpu, cuda, cuda:0, mps or hpu:
 `python cam.py --image-path <path_to_image> --device cuda  --output-dir <output_dir_path> `
 
 ----------
