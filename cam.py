@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from torchvision import models
 from pytorch_grad_cam import (
-    GradCAM, HiResCAM, ScoreCAM, GradCAMPlusPlus,
+    GradCAM, FEM, HiResCAM, ScoreCAM, GradCAMPlusPlus,
     AblationCAM, XGradCAM, EigenCAM, EigenGradCAM,
     LayerCAM, FullGrad, GradCAMElementWise, KPCA_CAM
 )
@@ -34,7 +34,7 @@ def get_args():
         'of cam_weights*activations')
     parser.add_argument('--method', type=str, default='gradcam',
                         choices=[
-                            'gradcam', 'hirescam', 'gradcam++',
+                            'gradcam', 'fem', 'hirescam', 'gradcam++',
                             'scorecam', 'xgradcam', 'ablationcam',
                             'eigencam', 'eigengradcam', 'layercam',
                             'fullgrad', 'gradcamelementwise', 'kpcacam'
@@ -73,6 +73,7 @@ if __name__ == '__main__':
         "eigengradcam": EigenGradCAM,
         "layercam": LayerCAM,
         "fullgrad": FullGrad,
+        "fem": FEM,
         "gradcamelementwise": GradCAMElementWise,
         'kpcacam': KPCA_CAM
     }

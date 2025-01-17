@@ -45,7 +45,8 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | LayerCAM            | Spatially weight the activations by positive gradients. Works better especially in lower layers                             |
 | FullGrad            | Computes the gradients of the biases from all over the network, and then sums them                                          |
 | Deep Feature Factorizations           | Non Negative Matrix Factorization on the 2D activations                                                   |
-|  KPCA-CAM           | Like EigenCAM but with Kernel PCA instead of PCA
+| KPCA-CAM            | Like EigenCAM but with Kernel PCA instead of PCA                                                                            |            
+| FEM                 | A gradient free method that binarizes activations by an activation > mean + k * std rule.                                   |
 ## Visual Examples
 
 | What makes the network think the image label is 'pug, pug-dog' | What makes the network think the image label is 'tabby, tabby cat' | Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class |
@@ -357,3 +358,8 @@ Edo Collins, Radhakrishna Achanta, Sabine Süsstrunk`
 https://arxiv.org/abs/2410.00267 <br>
 `KPCA-CAM: Visual Explainability of Deep Computer Vision Models using Kernel PCA
 Sachin Karmani, Thanushon Sivakaran, Gaurav Prasad, Mehmet Ali, Wenbo Yang, Sheyang Tang`
+
+https://hal.science/hal-02963298/document <br>
+`Features Understanding in 3D CNNs for Actions Recognition in Video
+Kazi Ahmed Asif Fuad, Pierre-Etienne Martin, Romain Giot, Romain
+Bourqui, Jenny Benois-Pineau, Akka Zemmar`
