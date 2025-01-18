@@ -47,7 +47,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | Deep Feature Factorizations           | Non Negative Matrix Factorization on the 2D activations                                                   |
 | KPCA-CAM            | Like EigenCAM but with Kernel PCA instead of PCA                                                                            |            
 | FEM                 | A gradient free method that binarizes activations by an activation > mean + k * std rule.                                   |
-| ShapleyCAM          | Weights the activations using Gradient and Hessian-Vector Product.|
+| ShapleyCAM          | Weights the activations using the gradient and Hessian-vector product.|
 ## Visual Examples
 
 | What makes the network think the image label is 'pug, pug-dog' | What makes the network think the image label is 'tabby, tabby cat' | Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class |
