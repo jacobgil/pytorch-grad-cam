@@ -23,6 +23,22 @@ class ClassifierOutputSoftmaxTarget:
         return torch.softmax(model_output, dim=-1)[:, self.category]
 
 
+class ClassifierOutputReST:
+    """
+    Using both pre-softmax and post-softmax, propoesed in https://arxiv.org/abs/2501.06261
+    """
+    def __init__(self, category):
+        self.category = category
+    def __call__(self, model_output): 
+        if len(model_output.shape) == 1:
+            target = torch.tensor([self.category], device=model_output.device)
+            model_output = model_output.unsqueeze(0)
+            return model_output[0][self.category] - torch.nn.functional.cross_entropy(model_output, target)
+        else:
+            target = torch.tensor([self.category] * model_output.shape[0], device=model_output.device)
+            return model_output[:,self.category]- torch.nn.functional.cross_entropy(model_output, target)
+
+
 class BinaryClassifierOutputTarget:
     def __init__(self, category):
         self.category = category

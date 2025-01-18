@@ -7,7 +7,7 @@ from torchvision import models
 from pytorch_grad_cam import (
     GradCAM, FEM, HiResCAM, ScoreCAM, GradCAMPlusPlus,
     AblationCAM, XGradCAM, EigenCAM, EigenGradCAM,
-    LayerCAM, FullGrad, GradCAMElementWise, KPCA_CAM
+    LayerCAM, FullGrad, GradCAMElementWise, KPCA_CAM, ShapleyCAM
 )
 from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import (
@@ -37,7 +37,7 @@ def get_args():
                             'gradcam', 'fem', 'hirescam', 'gradcam++',
                             'scorecam', 'xgradcam', 'ablationcam',
                             'eigencam', 'eigengradcam', 'layercam',
-                            'fullgrad', 'gradcamelementwise', 'kpcacam'
+                            'fullgrad', 'gradcamelementwise', 'kpcacam', 'shapleycam'
                         ],
                         help='CAM method')
 
@@ -75,7 +75,8 @@ if __name__ == '__main__':
         "fullgrad": FullGrad,
         "fem": FEM,
         "gradcamelementwise": GradCAMElementWise,
-        'kpcacam': KPCA_CAM
+        'kpcacam': KPCA_CAM,
+        'shapleycam': ShapleyCAM
     }
 
     if args.device=='hpu':
