@@ -364,3 +364,7 @@ https://hal.science/hal-02963298/document <br>
 `Features Understanding in 3D CNNs for Actions Recognition in Video
 Kazi Ahmed Asif Fuad, Pierre-Etienne Martin, Romain Giot, Romain
 Bourqui, Jenny Benois-Pineau, Akka Zemmar`
+
+https://arxiv.org/abs/2501.06261 <br>
+`CAMs as Shapley Value-based Explainers
+Huaiguang Cai`
