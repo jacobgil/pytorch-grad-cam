@@ -13,7 +13,7 @@ from pytorch_grad_cam import GuidedBackpropReLUModel
 from pytorch_grad_cam.utils.image import (
     show_cam_on_image, deprocess_image, preprocess_image
 )
-from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget, ClassifierOutputReST
 
 
 def get_args():
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     # If targets is None, the highest scoring category (for every member in the batch) will be used.
     # You can target specific categories by
     # targets = [ClassifierOutputTarget(281)]
-    # targets = [ClassifierOutputTarget(281)]
+    # targets = [ClassifierOutputReST(281)]
     targets = None
 
     # Using the with statement ensures the context is freed, and you can
