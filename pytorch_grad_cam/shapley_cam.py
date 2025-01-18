@@ -75,6 +75,7 @@ class ShapleyCAM(BaseCAM):
             retain_graph=False,
             allow_unused=True
         )[0]
+        # print(torch.max(hvp[0]).item())  # verify that hvp is not all zeros
         if hvp is None:
             hvp = torch.tensor(0).to(self.device)
         elif self.activations_and_grads.reshape_transform is not None:
@@ -83,7 +84,7 @@ class ShapleyCAM(BaseCAM):
         if self.activations_and_grads.reshape_transform is not None:
             activations = self.activations_and_grads.reshape_transform(activations)
             grads = self.activations_and_grads.reshape_transform(grads)
-        weight = (grads  - 0.5*hvp).cpu().detach().numpy()
+        weight = (grads  - 0.5 * hvp).cpu().detach().numpy()
         activations = activations.cpu().detach().numpy()
         grads = grads.cpu().detach().numpy()
 
