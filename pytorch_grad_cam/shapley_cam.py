@@ -64,7 +64,7 @@ class ShapleyCAM(BaseCAM):
             retain_graph=False,
             allow_unused=True
         )[0]
-        # print(torch.max(hvp[0]).item())  # Use .item() to get the scalar value
+        # print(torch.max(hvp[0]).item())  # check if hvp is not all zeros
         if hvp is None:
             hvp = torch.tensor(0).to(self.device)
         else:
