@@ -107,7 +107,13 @@ class BaseCAM:
         if self.uses_gradients:
             self.model.zero_grad()
             loss = sum([target(output) for target, output in zip(targets, outputs)])
-            loss.backward(retain_graph=True)
+            if self.detach:
+                loss.backward(retain_graph=True)
+            else:
+                # keep the computational graph, create_graph = True is needed for hvp
+                torch.autograd.grad(loss, input_tensor,  retain_graph = True, create_graph = True)
+                # When using the following loss.backward() method, a warning is raised: "UserWarning: Using backward() with create_graph=True will create a reference cycle"
+                # loss.backward(retain_graph=True, create_graph=True)
             if 'hpu' in str(self.device):
                 self.__htcore.mark_step()
 
