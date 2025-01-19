@@ -5,7 +5,7 @@ import torch
 import numpy as np
 
 """
-Weighting the activation maps using Gradient and Hessian-Vector Product.
+Weights the activation maps using the gradient and Hessian-Vector product.
 This method (https://arxiv.org/abs/2501.06261) reinterpret CAM methods (include GradCAM, HiResCAM and the original CAM) from a Shapley value perspective.
 """
 class ShapleyCAM(BaseCAM):
@@ -51,12 +51,10 @@ class ShapleyCAM(BaseCAM):
         if len(activations.shape) == 4:
             weight = np.mean(weight, axis=(2, 3))
             return weight
-        
         # 3D image
         elif len(activations.shape) == 5:
             weight = np.mean(weight, axis=(2, 3, 4))
             return weight
-        
         else:
             raise ValueError("Invalid grads shape."
                              "Shape of grads should be 4 (2D image) or 5 (3D image).")
