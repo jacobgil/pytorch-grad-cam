@@ -19,6 +19,7 @@ class BaseCAM:
         compute_input_gradient: bool = False,
         uses_gradients: bool = True,
         tta_transforms: Optional[tta.Compose] = None,
+        detach: bool = True,
     ) -> None:
         self.model = model.eval()
         self.target_layers = target_layers
@@ -45,7 +46,8 @@ class BaseCAM:
         else:
             self.tta_transforms = tta_transforms
 
-        self.activations_and_grads = ActivationsAndGradients(self.model, target_layers, reshape_transform)
+        self.detach = detach
+        self.activations_and_grads = ActivationsAndGradients(self.model, target_layers, reshape_transform, self.detach)
 
     """ Get a vector of weights for every channel in the target layer.
         Methods that return weights channels,
@@ -71,6 +73,8 @@ class BaseCAM:
         eigen_smooth: bool = False,
     ) -> np.ndarray:
         weights = self.get_cam_weights(input_tensor, target_layer, targets, activations, grads)
+        if isinstance(activations, torch.Tensor):
+            activations = activations.cpu().detach().numpy()
         # 2D conv
         if len(activations.shape) == 4:
             weighted_activations = weights[:, :, None, None] * activations
@@ -132,8 +136,12 @@ class BaseCAM:
     def compute_cam_per_layer(
         self, input_tensor: torch.Tensor, targets: List[torch.nn.Module], eigen_smooth: bool
     ) -> np.ndarray:
-        activations_list = [a.cpu().data.numpy() for a in self.activations_and_grads.activations]
-        grads_list = [g.cpu().data.numpy() for g in self.activations_and_grads.gradients]
+        if self.detach:
+            activations_list = [a.cpu().data.numpy() for a in self.activations_and_grads.activations]
+            grads_list = [g.cpu().data.numpy() for g in self.activations_and_grads.gradients]
+        else:
+            activations_list = [a for a in self.activations_and_grads.activations]
+            grads_list = [g for g in self.activations_and_grads.gradients]
         target_size = self.get_target_width_height(input_tensor)
 
         cam_per_target_layer = []

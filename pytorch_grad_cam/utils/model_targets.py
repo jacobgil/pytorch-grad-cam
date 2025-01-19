@@ -25,7 +25,7 @@ class ClassifierOutputSoftmaxTarget:
 
 class ClassifierOutputReST:
     """
-    Using both pre-softmax and post-softmax, propoesed in https://arxiv.org/abs/2501.06261
+    Using both pre-softmax and post-softmax, proposed in https://arxiv.org/abs/2501.06261
     """
     def __init__(self, category):
         self.category = category
@@ -36,7 +36,7 @@ class ClassifierOutputReST:
             return model_output[0][self.category] - torch.nn.functional.cross_entropy(model_output, target)
         else:
             target = torch.tensor([self.category] * model_output.shape[0], device=model_output.device)
-            return model_output[:,self.category]- torch.nn.functional.cross_entropy(model_output, target)
+            return model_output[:,self.category] - torch.nn.functional.cross_entropy(model_output, target)
 
 
 class BinaryClassifierOutputTarget:
