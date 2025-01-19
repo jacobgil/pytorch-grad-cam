@@ -1,5 +1,6 @@
 from typing import Callable, List, Optional, Tuple
 from pytorch_grad_cam.base_cam import BaseCAM
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 import torch
 import numpy as np
 
@@ -34,7 +35,7 @@ class ShapleyCAM(BaseCAM):
         if self.uses_gradients:
             self.model.zero_grad()
             loss = sum([target(output) for target, output in zip(targets, outputs)])
-            # keep the graph
+            # keep the graph, create_graph = True is needed for hvp
             torch.autograd.grad(loss, input_tensor,  retain_graph = True, create_graph = True)
 
         # In most of the saliency attribution papers, the saliency is
