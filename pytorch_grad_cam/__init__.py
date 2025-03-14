@@ -1,4 +1,5 @@
 from pytorch_grad_cam.grad_cam import GradCAM
+from pytorch_grad_cam.finer_cam import FinerCAM
 from pytorch_grad_cam.shapley_cam import ShapleyCAM
 from pytorch_grad_cam.fem import FEM
 from pytorch_grad_cam.hirescam import HiResCAM
