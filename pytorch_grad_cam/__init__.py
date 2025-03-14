@@ -1,4 +1,5 @@
 from pytorch_grad_cam.grad_cam import GradCAM
+from pytorch_grad_cam.finer_cam import FinerCAM
 from pytorch_grad_cam.shapley_cam import ShapleyCAM
 from pytorch_grad_cam.fem import FEM
 from pytorch_grad_cam.hirescam import HiResCAM
@@ -9,8 +10,6 @@ from pytorch_grad_cam.xgrad_cam import XGradCAM
 from pytorch_grad_cam.grad_cam_plusplus import GradCAMPlusPlus
 from pytorch_grad_cam.score_cam import ScoreCAM
 from pytorch_grad_cam.layer_cam import LayerCAM
-from pytorch_grad_cam.finer_cam import FinerCAM
-from pytorch_grad_cam.finer_score_cam import FinerScoreCAM
 from pytorch_grad_cam.eigen_cam import EigenCAM
 from pytorch_grad_cam.eigen_grad_cam import EigenGradCAM
 from pytorch_grad_cam.kpca_cam import KPCA_CAM

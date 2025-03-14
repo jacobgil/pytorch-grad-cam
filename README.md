@@ -48,6 +48,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | KPCA-CAM            | Like EigenCAM but with Kernel PCA instead of PCA                                                                            |            
 | FEM                 | A gradient free method that binarizes activations by an activation > mean + k * std rule.                                   |
 | ShapleyCAM          | Weight the activations using the gradient and Hessian-vector product.|
+| FinerCAM                |  Improves fine-grained classification by comparing similar classes, suppressing shared features and highlighting discriminative details.    |
 ## Visual Examples
 
 | What makes the network think the image label is 'pug, pug-dog' | What makes the network think the image label is 'tabby, tabby cat' | Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class |
@@ -368,3 +369,8 @@ Bourqui, Jenny Benois-Pineau, Akka Zemmar`
 https://arxiv.org/abs/2501.06261 <br>
 `CAMs as Shapley Value-based Explainers
 Huaiguang Cai`
+
+
+https://arxiv.org/pdf/2501.11309 <br>
+`Finer-CAM : Spotting the Difference Reveals Finer Details for Visual Explanation`    
+`Ziheng Zhang*, Jianyang Gu*, Arpita Chowdhury, Zheda Mai, David Carlyn,Tanya Berger-Wolf, Yu Su, Wei-Lun Chao`
