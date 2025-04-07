@@ -119,3 +119,29 @@ class FasterRCNNBoxScoreTarget:
                 score = ious[0, index] + model_outputs["scores"][index]
                 output = output + score
         return output
+
+class FinerWeightedTarget:
+    """
+    Computes a weighted difference between a primary category and a set of comparison categories.
+    
+    This target calculates the difference between the score for the main category and each of the comparison categories.
+    It obtains a weight for each comparison category from the softmax probabilities of the model output and computes a 
+    weighted difference scaled by a comparison strength factor alpha.
+    """
+    def __init__(self, main_category, comparison_categories, alpha):
+        self.main_category = main_category
+        self.comparison_categories = comparison_categories
+        self.alpha = alpha
+    
+    def __call__(self, model_output):
+        select = lambda idx: model_output[idx] if model_output.ndim == 1 else model_output[..., idx]
+        
+        wn = select(self.main_category)
+
+        prob = torch.softmax(model_output, dim=-1)
+
+        weights = [prob[idx] if model_output.ndim == 1 else prob[..., idx] for idx in self.comparison_categories]
+        numerator = sum(w * (wn - self.alpha * select(idx)) for w, idx in zip(weights, self.comparison_categories))
+        denominator = sum(weights)
+
+        return numerator / (denominator + 1e-9) 
