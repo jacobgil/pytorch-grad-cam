@@ -31,7 +31,7 @@ Since the final classification is done on the class token computed in the last a
 the output will not be affected by the 14x14 channels in the last layer.
 The gradient of the output with respect to them, will be 0!
 
-We should chose any layer before the final attention block, for example:
+We should choose any layer before the final attention block, for example:
 ```python
 target_layers = [model.blocks[-1].norm1]
 ```
@@ -69,7 +69,7 @@ def reshape_transform(tensor, height=7, width=7):
 Since the swin transformer is different from ViT, it does not contains `cls_token` as present in ViT,
 therefore we will use all the 7x7 images we get from the last block of the last layer.
 
-We should chose any layer before the final attention block, for example:
+We should choose any layer before the final attention block, for example:
 ```python
 target_layers = [model.layers[-1].blocks[-1].norm1]
 ```
