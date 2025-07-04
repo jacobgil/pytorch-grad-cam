@@ -93,7 +93,7 @@ class BaseCAM:
     def forward(
         self,
         input_tensor: torch.Tensor,
-        targets: List[torch.nn.Module] | None,
+        targets: Optional[List[torch.nn.Module]],
         eigen_smooth: bool = False,
     ) -> np.ndarray:
         input_tensor = input_tensor.to(self.device)
@@ -182,7 +182,7 @@ class BaseCAM:
     def forward_augmentation_smoothing(
         self,
         input_tensor: torch.Tensor,
-        targets: List[torch.nn.Module] | None,
+        targets: Optional[List[torch.nn.Module]],
         eigen_smooth: bool = False,
     ) -> np.ndarray:
         cams = []
@@ -206,7 +206,7 @@ class BaseCAM:
     def __call__(
         self,
         input_tensor: torch.Tensor,
-        targets: List[torch.nn.Module] | None = None,
+        targets: Optional[List[torch.nn.Module]],
         aug_smooth: bool = False,
         eigen_smooth: bool = False,
     ) -> np.ndarray:
