@@ -1,11 +1,12 @@
+from typing import Callable, List, Optional
+
 import numpy as np
 import torch
 import tqdm
-from typing import Callable, List
+
+from pytorch_grad_cam.ablation_layer import AblationLayer
 from pytorch_grad_cam.base_cam import BaseCAM
 from pytorch_grad_cam.utils.find_layers import replace_layer_recursive
-from pytorch_grad_cam.ablation_layer import AblationLayer
-
 
 """ Implementation of AblationCAM
 https://openaccess.thecvf.com/content_WACV_2020/papers/Desai_Ablation-CAM_Visual_Explanations_for_Deep_Convolutional_Network_via_Gradient-free_Localization_WACV_2020_paper.pdf
@@ -25,13 +26,15 @@ The parameter ratio_channels_to_ablate controls how many channels should be abla
 
 
 class AblationCAM(BaseCAM):
-    def __init__(self,
-                 model: torch.nn.Module,
-                 target_layers: List[torch.nn.Module],
-                 reshape_transform: Callable = None,
-                 ablation_layer: torch.nn.Module = AblationLayer(),
-                 batch_size: int = 32,
-                 ratio_channels_to_ablate: float = 1.0) -> None:
+    def __init__(
+        self,
+        model: torch.nn.Module,
+        target_layers: List[torch.nn.Module],
+        reshape_transform: Optional[Callable] = None,
+        ablation_layer: torch.nn.Module = AblationLayer(),
+        batch_size: int = 32,
+        ratio_channels_to_ablate: float = 1.0,
+    ) -> None:
 
         super(AblationCAM, self).__init__(model,
                                           target_layers,

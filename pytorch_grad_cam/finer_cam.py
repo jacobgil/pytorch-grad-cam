@@ -1,9 +1,11 @@
+from typing import Callable, List, Optional
+
 import numpy as np
 import torch
-from typing import List, Callable
-from pytorch_grad_cam.base_cam import BaseCAM
+
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.model_targets import FinerWeightedTarget
+
 
 class FinerCAM:
     def __init__(self, model: torch.nn.Module, target_layers: List[torch.nn.Module], reshape_transform: Callable = None, base_method=GradCAM):
@@ -14,9 +16,15 @@ class FinerCAM:
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
 
-    def forward(self, input_tensor: torch.Tensor, targets: List[torch.nn.Module] = None, eigen_smooth: bool = False,
-                alpha: float = 1, comparison_categories: List[int] = [1, 2, 3], target_idx: int = None
-                ) -> np.ndarray:
+    def forward(
+        self,
+        input_tensor: torch.Tensor,
+        targets: Optional[List[torch.nn.Module]] = None,
+        eigen_smooth: bool = False,
+        alpha: float = 1,
+        comparison_categories: List[int] = [1, 2, 3],
+        target_idx: Optional[int] = None,
+    ) -> np.ndarray:
         input_tensor = input_tensor.to(self.base_cam.device)
 
         if self.compute_input_gradient:

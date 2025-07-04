@@ -45,12 +45,13 @@ class DeepFeatureFactorization:
         and to the input tensor width and height.
      """
 
-    def __init__(self,
-                 model: torch.nn.Module,
-                 target_layer: torch.nn.Module,
-                 reshape_transform: Callable = None,
-                 computation_on_concepts=None
-                 ):
+    def __init__(
+        self,
+        model: torch.nn.Module,
+        target_layer: torch.nn.Module,
+        reshape_transform: Optional[Callable] = None,
+        computation_on_concepts=None,
+    ):
         self.model = model
         self.computation_on_concepts = computation_on_concepts
         self.activations_and_grads = ActivationsAndGradients(
@@ -95,14 +96,16 @@ class DeepFeatureFactorization:
             return True
 
 
-def run_dff_on_image(model: torch.nn.Module,
-                     target_layer: torch.nn.Module,
-                     classifier: torch.nn.Module,
-                     img_pil: Image,
-                     img_tensor: torch.Tensor,
-                     reshape_transform=Optional[Callable],
-                     n_components: int = 5,
-                     top_k: int = 2) -> np.ndarray:
+def run_dff_on_image(
+    model: torch.nn.Module,
+    target_layer: torch.nn.Module,
+    classifier: torch.nn.Module,
+    img_pil: Image.Image,
+    img_tensor: torch.Tensor,
+    reshape_transform=Optional[Callable],
+    n_components: int = 5,
+    top_k: int = 2,
+) -> np.ndarray:
     """ Helper function to create a Deep Feature Factorization visualization for a single image.
         TBD: Run this on a batch with several images.
     """
