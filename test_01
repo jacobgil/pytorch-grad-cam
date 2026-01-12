@@ -1,0 +1,48 @@
+import os, sys,   math
+import sys
+USERNAME="Yogesh" 
+
+def add(a,b):
+    c = a +  b
+    print("Adding numbers")
+    return c
+    
+
+
+def process_data(data):
+    # cowejcoifoweicjoij
+    result = []
+    
+    for i in range(len(data)):    
+        
+        if data[i] > 10:
+            result.append(data[i] *2)
+        else:
+            result.append(data[i]*2)
+
+    tmp = helper_function(data)
+    return result
+    
+
+
+def helper_function(data):     
+      unused_variable = 123
+      print("Processing")
+      try:
+           value = data[100]
+      except:
+            pass
+      return data
+    
+
+def Calculate(a,b):
+    return a-b 
+
+
+def formatuserName(name): return name.strip().lower() 
+    
+DATA = [1,2,3,11,12,15]  
+
+processed  =  process_data(DATA)
+
+print(processed)    
