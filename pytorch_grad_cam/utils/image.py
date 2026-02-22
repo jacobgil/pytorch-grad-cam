@@ -151,9 +151,8 @@ def show_factorization_on_image(img: np.ndarray,
         plt.tight_layout(pad=0, w_pad=0, h_pad=0)
         plt.axis('off')
         fig.canvas.draw()
-        data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+        data = np.asarray(fig.canvas.buffer_rgba())[..., :3].copy()
         plt.close(fig=fig)
-        data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
         data = cv2.resize(data, (result.shape[1], result.shape[0]))
         result = np.hstack((result, data))
     return result
