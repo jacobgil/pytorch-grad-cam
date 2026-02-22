@@ -21,7 +21,8 @@ class BaseCAM:
         tta_transforms: Optional[tta.Compose] = None,
         detach: bool = True,
     ) -> None:
-        self.model = model.eval()
+        self.model = model
+        self.model.eval()
         self.target_layers = target_layers
 
         # Use the same device as the model.
