@@ -49,6 +49,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | FEM                 | A gradient free method that binarizes activations by an activation > mean + k * std rule.                                   |
 | ShapleyCAM          | Weight the activations using the gradient and Hessian-vector product.|
 | FinerCAM                |  Improves fine-grained classification by comparing similar classes, suppressing shared features and highlighting discriminative details.    |
+| SegEigenCAM         | Like EigenCAM but with gradient weighting (absolute gradients ⊙ activations) before SVD and sign correction to fix SVD sign ambiguity; designed for semantic segmentation |
 ## Visual Examples
 
 | What makes the network think the image label is 'pug, pug-dog' | What makes the network think the image label is 'tabby, tabby cat' | Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class |
@@ -291,7 +292,7 @@ To use with a specific device, like cpu, cuda, cuda:0, mps or hpu:
 
 You can choose between:
 
-`GradCAM` , `HiResCAM`, `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, `FullGrad`, `EigenCAM`, `ShapleyCAM`, and `FinerCAM`.
+`GradCAM` , `HiResCAM`, `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, `FullGrad`, `EigenCAM`, `ShapleyCAM`, `FinerCAM` and `SegEigenCAM`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
@@ -374,3 +375,8 @@ Huaiguang Cai`
 https://arxiv.org/pdf/2501.11309 <br>
 `Finer-CAM : Spotting the Difference Reveals Finer Details for Visual Explanation`    
 `Ziheng Zhang*, Jianyang Gu*, Arpita Chowdhury, Zheda Mai, David Carlyn,Tanya Berger-Wolf, Yu Su, Wei-Lun Chao`
+
+
+https://doi.org/10.3390/app15137562 <br>
+`Seg-Eigen-CAM: Eigen-Value-Based Visual Explanations for Semantic Segmentation Models
+Ching-Ting Chung, Josh Jia-Ching Ying`
