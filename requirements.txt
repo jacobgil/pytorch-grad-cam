@@ -1,7 +1,7 @@
 numpy
 Pillow
 torch>=1.7.1
-torchvision>=0.8.2
+torchvision>=0.13
 ttach
 tqdm
 opencv-python
