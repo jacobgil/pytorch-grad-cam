@@ -34,3 +34,19 @@ def test_target_returns_zero_on_empty_boxes():
     score = target(outputs)
     assert score.device.type == "cpu"
     assert score.item() == 0.0
+
+
+def test_target_preserves_boxes_dtype():
+    """box_iou requires both inputs to share dtype; the target must not
+    silently upcast/downcast relative to model_outputs['boxes']."""
+    target = FasterRCNNBoxScoreTarget(
+        labels=[1],
+        bounding_boxes=[np.array([0.0, 0.0, 10.0, 10.0], dtype=np.float64)],
+    )
+    outputs = {
+        "boxes": torch.tensor([[0.0, 0.0, 10.0, 10.0]], dtype=torch.float64),
+        "labels": torch.tensor([1]),
+        "scores": torch.tensor([0.9], dtype=torch.float64),
+    }
+    score = target(outputs)
+    assert score.dtype == torch.float64
