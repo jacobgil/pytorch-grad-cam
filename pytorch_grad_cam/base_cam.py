@@ -32,7 +32,7 @@ class BaseCAM:
             except ImportError as error:
                 error.msg = f"Could not import habana_frameworks.torch.core. {error.msg}."
                 raise error
-            self.__htcore = htcore
+            self._htcore = htcore
         self.reshape_transform = reshape_transform
         self.compute_input_gradient = compute_input_gradient
         self.uses_gradients = uses_gradients
@@ -115,7 +115,7 @@ class BaseCAM:
                 # When using the following loss.backward() method, a warning is raised: "UserWarning: Using backward() with create_graph=True will create a reference cycle"
                 # loss.backward(retain_graph=True, create_graph=True)
             if 'hpu' in str(self.device):
-                self.__htcore.mark_step()
+                self._htcore.mark_step()
 
         # In most of the saliency attribution papers, the saliency is
         # computed with a single target layer.
