@@ -44,21 +44,23 @@ class GuidedBackpropReLUasModule(torch.nn.Module):
 
 
 class GuidedBackpropReLUModel:
-    def __init__(self, model, device):
+    def __init__(self, model, device=None):
         self.model = model
         self.model.eval()
-        self.device = next(self.model.parameters()).device
+        if device is None:
+            self.device = next(self.model.parameters()).device
+        else:
+            self.device = torch.device(device)
+            self.model = self.model.to(self.device)
 
     def forward(self, input_img):
         return self.model(input_img)
 
     def recursive_replace_relu_with_guidedrelu(self, module_top):
-
         for idx, module in module_top._modules.items():
             self.recursive_replace_relu_with_guidedrelu(module)
             if module.__class__.__name__ == 'ReLU':
                 module_top._modules[idx] = GuidedBackpropReLU.apply
-        print("b")
 
     def recursive_replace_guidedrelu_with_relu(self, module_top):
         try:
@@ -66,7 +68,7 @@ class GuidedBackpropReLUModel:
                 self.recursive_replace_guidedrelu_with_relu(module)
                 if module == GuidedBackpropReLU.apply:
                     module_top._modules[idx] = torch.nn.ReLU()
-        except BaseException:
+        except Exception:
             pass
 
     def __call__(self, input_img, target_category=None):
