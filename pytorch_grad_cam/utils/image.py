@@ -1,8 +1,6 @@
-import math
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import cv2
-import matplotlib
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
@@ -82,11 +80,13 @@ def create_labels_legend(concept_scores: np.ndarray,
     return concept_labels_topk
 
 
-def show_factorization_on_image(img: np.ndarray,
-                                explanations: np.ndarray,
-                                colors: List[np.ndarray] = None,
-                                image_weight: float = 0.5,
-                                concept_labels: List = None) -> np.ndarray:
+def show_factorization_on_image(
+    img: np.ndarray,
+    explanations: np.ndarray,
+    colors: Optional[List[np.ndarray]] = None,
+    image_weight: float = 0.5,
+    concept_labels: Optional[list] = None,
+) -> np.ndarray:
     """ Color code the different component heatmaps on top of the image.
         Every component color code will be magnified according to the heatmap itensity
         (by modifying the V channel in the HSV color space),

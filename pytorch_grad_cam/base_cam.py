@@ -15,7 +15,7 @@ class BaseCAM:
         self,
         model: torch.nn.Module,
         target_layers: List[torch.nn.Module],
-        reshape_transform: Callable = None,
+        reshape_transform: Optional[Callable] = None,
         compute_input_gradient: bool = False,
         uses_gradients: bool = True,
         tta_transforms: Optional[tta.Compose] = None,
@@ -92,7 +92,10 @@ class BaseCAM:
         return cam
 
     def forward(
-        self, input_tensor: torch.Tensor, targets: List[torch.nn.Module], eigen_smooth: bool = False
+        self,
+        input_tensor: torch.Tensor,
+        targets: Optional[List[torch.nn.Module]],
+        eigen_smooth: bool = False,
     ) -> np.ndarray:
         input_tensor = input_tensor.to(self.device)
 
@@ -130,7 +133,9 @@ class BaseCAM:
         cam_per_layer = self.compute_cam_per_layer(input_tensor, targets, eigen_smooth)
         return self.aggregate_multi_layers(cam_per_layer)
 
-    def get_target_width_height(self, input_tensor: torch.Tensor) -> Tuple[int, int]:
+    def get_target_width_height(
+        self, input_tensor: torch.Tensor
+    ) -> Tuple[int, int] | Tuple[int, int, int]:
         if len(input_tensor.shape) == 4:
             width, height = input_tensor.size(-1), input_tensor.size(-2)
             return width, height
@@ -176,7 +181,10 @@ class BaseCAM:
         return scale_cam_image(result)
 
     def forward_augmentation_smoothing(
-        self, input_tensor: torch.Tensor, targets: List[torch.nn.Module], eigen_smooth: bool = False
+        self,
+        input_tensor: torch.Tensor,
+        targets: Optional[List[torch.nn.Module]],
+        eigen_smooth: bool = False,
     ) -> np.ndarray:
         cams = []
         for transform in self.tta_transforms:
@@ -199,7 +207,7 @@ class BaseCAM:
     def __call__(
         self,
         input_tensor: torch.Tensor,
-        targets: List[torch.nn.Module] = None,
+        targets: Optional[List[torch.nn.Module]],
         aug_smooth: bool = False,
         eigen_smooth: bool = False,
     ) -> np.ndarray:
