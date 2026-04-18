@@ -3,6 +3,8 @@ import torchvision
 import torch
 import cv2
 import psutil
+import pytorch_grad_cam
+print("pytorch_grad_cam loaded from:", pytorch_grad_cam.__file__)
 from pytorch_grad_cam import GradCAM, \
     ScoreCAM, \
     GradCAMPlusPlus, \
@@ -46,10 +48,15 @@ def numpy_image():
 def test_memory_usage_in_loop(numpy_image, batch_size, width, height,
                               cnn_model, target_layer_names, cam_method,
                               target_category, aug_smooth, eigen_smooth):
+    if torch.cuda.is_available():
+        device = "cuda"
+    else:
+        print("CUDA not available")
+        return
     img = cv2.resize(numpy_image, (width, height))
     input_tensor = preprocess_image(img)
-    input_tensor = input_tensor.repeat(batch_size, 1, 1, 1)
-    model = cnn_model(pretrained=True)
+    input_tensor = input_tensor.repeat(batch_size, 1, 1, 1).to(device)
+    model = cnn_model(pretrained=True).to(device)
     target_layers = []
     for layer in target_layer_names:
         target_layers.append(eval(f"model.{layer}"))
@@ -65,5 +72,5 @@ def test_memory_usage_in_loop(numpy_image, batch_size, width, height,
                                 eigen_smooth=eigen_smooth)
 
             if i == 0:
-                initial_memory = psutil.virtual_memory()[2]
-        assert(psutil.virtual_memory()[2] <= initial_memory * 1.5)
+                initial_memory = torch.cuda.memory_allocated()
+        assert(torch.cuda.memory_allocated() <= initial_memory * 1.5)

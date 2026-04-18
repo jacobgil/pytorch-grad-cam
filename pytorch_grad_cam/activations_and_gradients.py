@@ -1,3 +1,4 @@
+import torch
 class ActivationsAndGradients:
     """ Class for extracting activations and
     registering gradients from targetted intermediate layers """
@@ -47,6 +48,20 @@ class ActivationsAndGradients:
         self.activations = []
         return self.model(x)
 
+    def clear(self):
+        # Explicitly detach tensors from the autograd graph
+        for a in self.activations:
+            if isinstance(a, torch.Tensor):
+                a.detach_()
+        for g in self.gradients:
+            if isinstance(g, torch.Tensor):
+                g.detach_()
+    
+        self.activations.clear()
+        self.gradients.clear()
+
     def release(self):
+        self.clear()
         for handle in self.handles:
             handle.remove()
+        self.handles.clear()
