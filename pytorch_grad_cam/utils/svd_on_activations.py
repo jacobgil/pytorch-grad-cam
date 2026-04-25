@@ -4,6 +4,7 @@ from sklearn.decomposition import KernelPCA
 
 def get_2d_projection(activation_batch):
     # TBD: use pytorch batch svd implementation
+    activation_batch = activation_batch.copy()
     activation_batch[np.isnan(activation_batch)] = 0
     projections = []
     for activations in activation_batch:
@@ -21,6 +22,7 @@ def get_2d_projection(activation_batch):
 
 
 def get_2d_projection_kernel(activation_batch, kernel='sigmoid', gamma=None):
+    activation_batch = activation_batch.copy()
     activation_batch[np.isnan(activation_batch)] = 0
     projections = []
     for activations in activation_batch:
@@ -57,6 +59,7 @@ def get_2d_projection_with_sign_correction(activation_batch: np.ndarray) -> np.n
     Returns:
         np.ndarray of shape (B, H, W) with dtype float32.
     """
+    activation_batch = activation_batch.copy()
     activation_batch[np.isnan(activation_batch)] = 0
     projections = []
 
