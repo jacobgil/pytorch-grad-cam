@@ -63,7 +63,7 @@ def test_all_cam_models_can_run(numpy_image, batch_size, width, height,
     input_tensor = preprocess_image(img)
     input_tensor = input_tensor.repeat(batch_size, 1, 1, 1)
 
-    model = cnn_model(pretrained=True)
+    model = cnn_model(weights="DEFAULT")
     target_layers = []
     for layer in target_layer_names:
         target_layers.append(eval(f"model.{layer}"))

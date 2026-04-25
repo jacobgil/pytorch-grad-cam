@@ -86,7 +86,7 @@ if __name__ == '__main__':
     if args.device=='hpu':
         import habana_frameworks.torch.core as htcore
 
-    model = models.resnet50(pretrained=True).to(torch.device(args.device)).eval()
+    model = models.resnet50(weights=models.ResNet50_Weights.DEFAULT).to(torch.device(args.device)).eval()
 
     # Choose the target layer you want to compute the visualization for.
     # Usually this will be the last convolutional layer in the model.

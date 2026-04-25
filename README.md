@@ -111,9 +111,9 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 from pytorch_grad_cam import GradCAM, HiResCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM, FullGrad
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
-from torchvision.models import resnet50
+from torchvision.models import resnet50, ResNet50_Weights
 
-model = resnet50(pretrained=True)
+model = resnet50(weights=ResNet50_Weights.DEFAULT)
 target_layers = [model.layer4[-1]]
 input_tensor = # Create an input tensor image for your model..
 # Note: input_tensor can be a batch tensor with several images!

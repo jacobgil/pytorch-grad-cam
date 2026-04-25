@@ -49,7 +49,7 @@ def test_memory_usage_in_loop(numpy_image, batch_size, width, height,
     img = cv2.resize(numpy_image, (width, height))
     input_tensor = preprocess_image(img)
     input_tensor = input_tensor.repeat(batch_size, 1, 1, 1)
-    model = cnn_model(pretrained=True)
+    model = cnn_model(weights="DEFAULT")
     target_layers = []
     for layer in target_layer_names:
         target_layers.append(eval(f"model.{layer}"))
