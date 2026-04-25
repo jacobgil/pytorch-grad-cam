@@ -97,23 +97,17 @@ class FasterRCNNBoxScoreTarget:
         self.iou_threshold = iou_threshold
 
     def __call__(self, model_outputs):
-        output = torch.Tensor([0])
-        if torch.cuda.is_available():
-            output = output.cuda()
-        elif torch.backends.mps.is_available():
-            output = output.to("mps")
+        boxes = model_outputs["boxes"]
+        device, dtype = boxes.device, boxes.dtype
+        output = torch.tensor([0.0], device=device, dtype=dtype)
 
-        if len(model_outputs["boxes"]) == 0:
+        if len(boxes) == 0:
             return output
 
         for box, label in zip(self.bounding_boxes, self.labels):
-            box = torch.Tensor(box[None, :])
-            if torch.cuda.is_available():
-                box = box.cuda()
-            elif torch.backends.mps.is_available():
-                box = box.to("mps")
+            box = torch.as_tensor(box[None, :], device=device, dtype=dtype)
 
-            ious = torchvision.ops.box_iou(box, model_outputs["boxes"])
+            ious = torchvision.ops.box_iou(box, boxes)
             index = ious.argmax()
             if ious[0, index] > self.iou_threshold and model_outputs["labels"][index] == label:
                 score = ious[0, index] + model_outputs["scores"][index]
