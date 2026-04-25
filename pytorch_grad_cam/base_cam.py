@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, List, Optional, Tuple, Union
 
 import numpy as np
 import torch
@@ -135,7 +135,7 @@ class BaseCAM:
 
     def get_target_width_height(
         self, input_tensor: torch.Tensor
-    ) -> Tuple[int, int] | Tuple[int, int, int]:
+    ) -> Union[Tuple[int, int], Tuple[int, int, int]]:
         if len(input_tensor.shape) == 4:
             width, height = input_tensor.size(-1), input_tensor.size(-2)
             return width, height
