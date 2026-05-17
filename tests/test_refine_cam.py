@@ -11,6 +11,7 @@ from pytorch_grad_cam import GradCAM, \
     EigenGradCAM, \
     LayerCAM
 from pytorch_grad_cam.refine_cam import RefineCAM
+from pytorch_grad_cam.metrics.arcc import ARCC
 from pytorch_grad_cam.utils.image import preprocess_image
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 
@@ -62,3 +63,13 @@ def test_refine_cam(numpy_image, batch_size, width, height,
     assert grayscale_cam is not None
     assert grayscale_cam.shape[0] == input_tensor.shape[0]
     assert grayscale_cam.shape[1:] == input_tensor.shape[2:]
+
+    metric = ARCC(base_method=cam)
+    arcc_scores = metric(input_tensor=input_tensor,
+                         grayscale_cams=grayscale_cam,
+                         targets=targets,
+                         model=model)
+    
+    assert len(arcc_scores) == batch_size
+    assert np.all(arcc_scores >= 0)
+    assert np.all(arcc_scores <= 1)
