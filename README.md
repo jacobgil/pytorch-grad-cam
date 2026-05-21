@@ -50,6 +50,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | ShapleyCAM          | Weight the activations using the gradient and Hessian-vector product.|
 | FinerCAM                |  Improves fine-grained classification by comparing similar classes, suppressing shared features and highlighting discriminative details.    |
 | SegEigenCAM         | Like EigenCAM but with gradient weighting (absolute gradients ⊙ activations) before SVD and sign correction to fix SVD sign ambiguity; designed for semantic segmentation |
+| RefineCAM         | A meta-method that computes a CAM at multiple layers, and then it combines them to ubtain a higher resolution and better focused CAM. It can be used with any of the other CAM methods. |
 ## Visual Examples
 
 | What makes the network think the image label is 'pug, pug-dog' | What makes the network think the image label is 'tabby, tabby cat' | Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class |
@@ -249,6 +250,12 @@ from pytorch_grad_cam.metrics.road import ROADMostRelevantFirstAverage,
                                           ROADCombined
 cam_metric = ROADCombined(percentiles=[20, 40, 60, 80])
 scores = cam_metric(input_tensor, grayscale_cams, targets, model)
+
+# You can also use aggregate metrics such as ARCC
+from pytorch_grad_cam.metrics.ARCC import ARCC
+
+cam_metric = ARCC(base_method=cam)
+arcc_score = cam_metric(input_tensor, grayscale_cams, targets, model)
 ```
 
 
@@ -292,7 +299,7 @@ To use with a specific device, like cpu, cuda, cuda:0, mps or hpu:
 
 You can choose between:
 
-`GradCAM` , `HiResCAM`, `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, `FullGrad`, `EigenCAM`, `ShapleyCAM`, `FinerCAM` and `SegEigenCAM`.
+`GradCAM` , `HiResCAM`, `ScoreCAM`, `GradCAMPlusPlus`, `AblationCAM`, `XGradCAM` , `LayerCAM`, `FullGrad`, `EigenCAM`, `ShapleyCAM`, `FinerCAM`, `SegEigenCAM` and `RefineCAM`.
 
 Some methods like ScoreCAM and AblationCAM require a large number of forward passes,
 and have a batched implementation.
@@ -380,3 +387,8 @@ https://arxiv.org/pdf/2501.11309 <br>
 https://doi.org/10.3390/app15137562 <br>
 `Seg-Eigen-CAM: Eigen-Value-Based Visual Explanations for Semantic Segmentation Models
 Ching-Ting Chung, Josh Jia-Ching Ying`
+
+
+https://arxiv.org/abs/2605.14641 <br>
+`How to Evaluate and Refine your CAM`
+`Luca Domeniconi, Alessandra Stramiglio, Michele Lombardi, Samuele Salti`
