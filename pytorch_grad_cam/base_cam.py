@@ -62,7 +62,7 @@ class BaseCAM:
         activations: torch.Tensor,
         grads: torch.Tensor,
     ) -> np.ndarray:
-        raise Exception("Not Implemented")
+        raise NotImplementedError("get_cam_weights must be implemented by subclass")
 
     def get_cam_image(
         self,
