@@ -36,7 +36,8 @@ class ClassifierOutputReST:
             return model_output[0][self.category] - torch.nn.functional.cross_entropy(model_output, target)
         else:
             target = torch.tensor([self.category] * model_output.shape[0], device=model_output.device)
-            return model_output[:,self.category] - torch.nn.functional.cross_entropy(model_output, target)
+            ce = torch.nn.functional.cross_entropy(model_output, target, reduction='none')
+            return model_output[:, self.category] - ce
 
 
 class BinaryClassifierOutputTarget:
