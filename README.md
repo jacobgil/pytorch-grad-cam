@@ -45,7 +45,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | LayerCAM            | Spatially weight the activations by positive gradients. Works better especially in lower layers                             |
 | FullGrad            | Computes the gradients of the biases from all over the network, and then sums them                                          |
 | Deep Feature Factorizations           | Non Negative Matrix Factorization on the 2D activations                                                   |
-| KPCA-CAM            | Like EigenCAM but with Kernel PCA instead of PCA                                                                            |            
+| KPCA-CAM            | Like EigenCAM but with Kernel PCA instead of PCA                                                                            |
 | FEM                 | A gradient free method that binarizes activations by an activation > mean + k * std rule.                                   |
 | ShapleyCAM          | Weight the activations using the gradient and Hessian-vector product.|
 | FinerCAM                |  Improves fine-grained classification by comparing similar classes, suppressing shared features and highlighting discriminative details.    |
@@ -154,7 +154,7 @@ This can be useful if you're not sure what layer will perform best.
 
 # Adapting for new architectures and tasks
 
-Methods like GradCAM were designed for and were originally mostly applied on classification models, 
+Methods like GradCAM were designed for and were originally mostly applied on classification models,
 and specifically CNN classification models.
 However you can also use this package on new architectures like Vision Transformers, and on non classification tasks like Object Detection or Semantic Segmentation.
 
@@ -167,7 +167,7 @@ In a CNN the intermediate activations in the model are a mult-channel image that
 and the various explainabiltiy methods work with these to produce a new image.
 
 In case of another architecture, like the Vision Transformer, the shape might be different, like (rows x cols + 1) x channels, or something else.
-The reshape transform converts the activations back into a multi-channel image, for example by removing the class token in a vision transformer. 
+The reshape transform converts the activations back into a multi-channel image, for example by removing the class token in a vision transformer.
 For examples, check [here](https://github.com/jacobgil/pytorch-grad-cam/blob/master/pytorch_grad_cam/utils/reshape_transforms.py)
 
 ## The model_target argument
@@ -233,14 +233,14 @@ from pytorch_grad_cam.utils.model_targets import ClassifierOutputSoftmaxTarget
 from pytorch_grad_cam.metrics.cam_mult_image import CamMultImageConfidenceChange
 # Create the metric target, often the confidence drop in a score of some category
 metric_target = ClassifierOutputSoftmaxTarget(281)
-scores, batch_visualizations = CamMultImageConfidenceChange()(input_tensor, 
+scores, batch_visualizations = CamMultImageConfidenceChange()(input_tensor,
   inverse_cams, targets, model, return_visualization=True)
 visualization = deprocess_image(batch_visualizations[0, :])
 
 # State of the art metric: Remove and Debias
 from pytorch_grad_cam.metrics.road import ROADMostRelevantFirst, ROADLeastRelevantFirst
 cam_metric = ROADMostRelevantFirst(percentile=75)
-scores, perturbation_visualizations = cam_metric(input_tensor, 
+scores, perturbation_visualizations = cam_metric(input_tensor,
   grayscale_cams, targets, model, return_visualization=True)
 
 # You can also average across different percentiles, and combine
@@ -283,7 +283,7 @@ two smoothing methods are supported:
 
 |AblationCAM | aug smooth | eigen smooth | aug+eigen smooth|
 |------------|------------|--------------|--------------------|
-![](./examples/nosmooth.jpg) | ![](./examples/augsmooth.jpg) | ![](./examples/eigensmooth.jpg) | ![](./examples/eigenaug.jpg) | 
+![](./examples/nosmooth.jpg) | ![](./examples/augsmooth.jpg) | ![](./examples/eigensmooth.jpg) | ![](./examples/eigenaug.jpg) |
 
 ----------
 
@@ -380,7 +380,7 @@ Huaiguang Cai`
 
 
 https://arxiv.org/pdf/2501.11309 <br>
-`Finer-CAM : Spotting the Difference Reveals Finer Details for Visual Explanation`    
+`Finer-CAM : Spotting the Difference Reveals Finer Details for Visual Explanation`
 `Ziheng Zhang*, Jianyang Gu*, Arpita Chowdhury, Zheda Mai, David Carlyn,Tanya Berger-Wolf, Yu Su, Wei-Lun Chao`
 
 
