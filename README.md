@@ -51,6 +51,7 @@ The aim is also to serve as a benchmark of algorithms and metrics for research o
 | FinerCAM                |  Improves fine-grained classification by comparing similar classes, suppressing shared features and highlighting discriminative details.    |
 | SegEigenCAM         | Like EigenCAM but with gradient weighting (absolute gradients ⊙ activations) before SVD and sign correction to fix SVD sign ambiguity; designed for semantic segmentation |
 | RefineCAM         | A meta-method that computes a CAM at multiple layers, and then it combines them to ubtain a higher resolution and better focused CAM. It can be used with any of the other CAM methods. |
+| SESS              | A meta-method that computes CAMs for sliding window patches taken at multiple scales, and fuses them with score based channel weights and a spatial weighted average. Makes the CAM robust to scale variance, multiple occurrences of the object and distractors. It can be used with any of the other CAM methods. |
 ## Visual Examples
 
 | What makes the network think the image label is 'pug, pug-dog' | What makes the network think the image label is 'tabby, tabby cat' | Combining Grad-CAM with Guided Backpropagation for the 'pug, pug-dog' class |
@@ -287,6 +288,38 @@ two smoothing methods are supported:
 
 ----------
 
+# Enhancing the CAM with scaling and sliding (SESS)
+
+`SESS` is a method agnostic wrapper around any of the other CAM methods.
+It resizes the image to several scales, slides a window over every scale, and fuses
+the CAM of every patch back into the original image coordinates, weighted by the
+score the model gives that patch.
+This makes the CAM robust to scale variance, to multiple occurrences of the object
+and to distractors, at the cost of running the base method once per patch.
+
+```python
+from pytorch_grad_cam import SESS, GradCAM
+
+with SESS(model=model,
+          target_layers=target_layers,
+          base_method=GradCAM) as cam:
+    grayscale_cam = cam(input_tensor=input_tensor, targets=targets)
+```
+
+The run time is controlled by the number of scales and by the sliding window stride:
+
+```python
+cam = SESS(model=model,
+           target_layers=target_layers,
+           base_method=GradCAM,
+           num_scales=4,      # The image is resized to 4 scales instead of 12
+           step_size=224,     # Non overlapping windows
+           pre_filter_ratio=0.5,  # Skip the 50% lowest scoring patches
+           batch_size=32)
+```
+
+----------
+
 # Running the example script:
 
 Usage: `python cam.py --image-path <path_to_image> --method <method> --output-dir <output_dir_path> `
@@ -392,3 +425,8 @@ Ching-Ting Chung, Josh Jia-Ching Ying`
 https://arxiv.org/abs/2605.14641 <br>
 `How to Evaluate and Refine your CAM`
 `Luca Domeniconi, Alessandra Stramiglio, Michele Lombardi, Samuele Salti`
+
+
+https://arxiv.org/abs/2207.01769 <br>
+`SESS: Saliency Enhancing with Scaling and Sliding
+Osman Tursun, Simon Denman, Sridha Sridharan, Clinton Fookes`
