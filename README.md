@@ -297,6 +297,8 @@ score the model gives that patch.
 This makes the CAM robust to scale variance, to multiple occurrences of the object
 and to distractors, at the cost of running the base method once per patch.
 
+<img src="./examples/sess_comparison.png">
+
 ```python
 from pytorch_grad_cam import SESS, GradCAM
 
