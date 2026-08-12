@@ -21,9 +21,12 @@ class XGradCAM(BaseCAM):
                         target_category,
                         activations,
                         grads):
-        sum_activations = np.sum(activations, axis=(2, 3))
+        spatial_axes = tuple(range(2, activations.ndim))
+        sum_activations = np.sum(activations, axis=spatial_axes)
+        sum_activations = sum_activations.reshape(
+            sum_activations.shape + (1,) * len(spatial_axes))
         eps = 1e-7
         weights = grads * activations / \
-            (sum_activations[:, :, None, None] + eps)
-        weights = weights.sum(axis=(2, 3))
+            (sum_activations + eps)
+        weights = weights.sum(axis=spatial_axes)
         return weights
