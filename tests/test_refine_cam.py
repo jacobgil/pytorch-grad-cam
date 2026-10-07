@@ -1,4 +1,5 @@
 import pytest
+import torch
 import torchvision
 import cv2
 import numpy as np
@@ -73,3 +74,18 @@ def test_refine_cam(numpy_image, batch_size, width, height,
     assert len(arcc_scores) == batch_size
     assert np.all(arcc_scores >= 0)
     assert np.all(arcc_scores <= 1)
+
+
+def test_refine_cam_context_manager_releases_hooks():
+    model = torchvision.models.resnet18(weights=None)
+    model.eval()
+    target_layers = [model.layer4[-1], model.layer3[-1]]
+    input_tensor = torch.randn(1, 3, 64, 64)
+
+    with RefineCAM(model=model, target_layers=target_layers) as cam:
+        grayscale_cam = cam(input_tensor=input_tensor,
+                            targets=[ClassifierOutputTarget(1)])
+        assert all(len(layer._forward_hooks) > 0 for layer in target_layers)
+
+    assert grayscale_cam.shape == (1, 64, 64)
+    assert all(len(layer._forward_hooks) == 0 for layer in target_layers)
