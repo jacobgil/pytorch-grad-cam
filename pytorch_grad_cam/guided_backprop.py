@@ -1,4 +1,3 @@
-import numpy as np
 import torch
 from torch.autograd import Function
 from pytorch_grad_cam.utils.find_layers import replace_all_layer_type_recursive
@@ -77,21 +76,24 @@ class GuidedBackpropReLUModel:
                                          GuidedBackpropReLUasModule())
 
 
-        input_img = input_img.to(self.device)
-
-        input_img = input_img.requires_grad_(True)
+        input_img = input_img.to(self.device).detach().requires_grad_(True)
 
         output = self.forward(input_img)
 
+        batch_size = output.size(0)
         if target_category is None:
-            target_category = np.argmax(output.cpu().data.numpy())
+            target_category = output.argmax(dim=-1)
+        else:
+            target_category = torch.as_tensor(
+                target_category, device=output.device).expand(batch_size)
 
-        loss = output[0, target_category]
-        loss.backward(retain_graph=True)
+        loss = output[torch.arange(batch_size, device=output.device),
+                      target_category].sum()
+        grads = torch.autograd.grad(loss, input_img)[0]
 
-        output = input_img.grad.cpu().data.numpy()
-        output = output[0, :, :, :]
-        output = output.transpose((1, 2, 0))
+        output = grads.cpu().numpy().transpose((0, 2, 3, 1))
+        if batch_size == 1:
+            output = output[0]
 
         replace_all_layer_type_recursive(self.model,
                                          GuidedBackpropReLUasModule,
