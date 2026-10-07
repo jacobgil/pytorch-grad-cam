@@ -26,6 +26,17 @@ class RefineCAM:
     def __call__(self, *args, **kwargs) -> np.ndarray:
         return self.forward(*args, **kwargs)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        # Release the hooks of every per-layer CAM, mirroring BaseCAM.
+        for base_cam in self.base_cam_per_layer:
+            base_cam.activations_and_grads.release()
+        if isinstance(exc_value, IndexError):
+            print(f"An exception occurred in CAM with block: {exc_type}. Message: {exc_value}")
+            return True
+
     def forward(
         self,
         input_tensor: torch.Tensor,
