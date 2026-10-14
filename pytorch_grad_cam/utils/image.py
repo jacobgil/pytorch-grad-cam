@@ -108,7 +108,7 @@ def show_factorization_on_image(
     n_components = explanations.shape[0]
     if colors is None:
         # taken from https://github.com/edocollins/DFF/blob/master/utils.py
-        _cmap = plt.cm.get_cmap('gist_rainbow')
+        _cmap = plt.get_cmap('gist_rainbow')
         colors = [
             np.array(
                 _cmap(i)) for i in np.arange(
@@ -121,7 +121,7 @@ def show_factorization_on_image(
     for i in range(n_components):
         mask = np.zeros(shape=(img.shape[0], img.shape[1], 3))
         mask[:, :, :] = colors[i][:3]
-        explanation = explanations[i]
+        explanation = explanations[i].copy()
         explanation[concept_per_pixel != i] = 0
         mask = np.uint8(mask * 255)
         mask = cv2.cvtColor(mask, cv2.COLOR_RGB2HSV)
