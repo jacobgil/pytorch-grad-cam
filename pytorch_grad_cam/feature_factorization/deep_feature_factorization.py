@@ -17,7 +17,7 @@ def dff(activations: np.ndarray, n_components: int = 5):
     """
 
     batch_size, channels, h, w = activations.shape
-    reshaped_activations = activations.transpose((1, 0, 2, 3))
+    reshaped_activations = activations.transpose((1, 0, 2, 3)).copy()
     reshaped_activations[np.isnan(reshaped_activations)] = 0
     reshaped_activations = reshaped_activations.reshape(
         reshaped_activations.shape[0], -1)

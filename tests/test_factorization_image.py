@@ -78,3 +78,26 @@ def test_factorization_preserves_explanations(readonly):
     np.testing.assert_array_equal(explanations, snapshot)
     expected = np.array([[[114, 0, 0], [0, 89, 0]], [[0, 76, 0], [102, 0, 0]]], dtype=np.uint8)
     np.testing.assert_array_equal(actual, expected)
+
+
+@pytest.mark.parametrize("readonly", [False, True])
+@pytest.mark.parametrize("with_nan", [False, True])
+@pytest.mark.parametrize("transposed", [False, True])
+def test_dff_preserves_activations(readonly, with_nan, transposed):
+    from pytorch_grad_cam.feature_factorization.deep_feature_factorization import dff
+
+    activations = np.array(
+        [[[[1.0, 2.0], [0.0, 0.0]], [[0.0, 0.0], [3.0, 4.0]], [[1.0, 2.0], [3.0, 4.0]]]],
+        dtype=np.float32,
+    )
+    if with_nan:
+        activations[0, 0, 1, 0] = np.nan
+    if transposed:
+        activations = activations.transpose(0, 1, 3, 2)
+    snapshot = activations.copy()
+    expected = dff(np.where(np.isnan(activations), 0, activations), n_components=2)
+    activations.setflags(write=not readonly)
+    actual = dff(activations, n_components=2)
+    np.testing.assert_array_equal(activations, snapshot)
+    for actual_array, expected_array in zip(actual, expected):
+        np.testing.assert_allclose(actual_array, expected_array)
