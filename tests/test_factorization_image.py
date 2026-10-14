@@ -61,3 +61,20 @@ def test_factorization_model_output_visualization():
         assert actual.dtype == np.uint8
     finally:
         factorizer.activations_and_grads.release()
+
+
+@pytest.mark.parametrize("readonly", [False, True])
+def test_factorization_preserves_explanations(readonly):
+    explanations = np.array(
+        [[[0.9, 0.3], [0.4, 0.8]], [[0.1, 0.7], [0.6, 0.2]]], dtype=np.float32
+    )
+    snapshot = explanations.copy()
+    explanations.setflags(write=not readonly)
+    actual = show_factorization_on_image(
+        np.zeros((2, 2, 3), dtype=np.float32),
+        explanations,
+        colors=[np.array([1.0, 0.0, 0.0, 1.0]), np.array([0.0, 1.0, 0.0, 1.0])],
+    )
+    np.testing.assert_array_equal(explanations, snapshot)
+    expected = np.array([[[114, 0, 0], [0, 89, 0]], [[0, 76, 0], [102, 0, 0]]], dtype=np.uint8)
+    np.testing.assert_array_equal(actual, expected)

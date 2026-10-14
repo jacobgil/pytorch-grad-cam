@@ -121,7 +121,7 @@ def show_factorization_on_image(
     for i in range(n_components):
         mask = np.zeros(shape=(img.shape[0], img.shape[1], 3))
         mask[:, :, :] = colors[i][:3]
-        explanation = explanations[i]
+        explanation = explanations[i].copy()
         explanation[concept_per_pixel != i] = 0
         mask = np.uint8(mask * 255)
         mask = cv2.cvtColor(mask, cv2.COLOR_RGB2HSV)
