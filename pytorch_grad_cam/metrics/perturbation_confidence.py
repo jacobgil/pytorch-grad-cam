@@ -64,7 +64,8 @@ class RemoveMostRelevantFirst:
             binary_mask = np.float32(mask < threshold)
         else:
             _, binary_mask = cv2.threshold(
-                np.uint8(mask * 255), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+                np.uint8(mask * 255), 0, 1, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            binary_mask = np.float32(binary_mask)
 
         binary_mask = torch.from_numpy(binary_mask)
         binary_mask = binary_mask.to(mask.device)
