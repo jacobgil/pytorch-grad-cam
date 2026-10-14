@@ -57,7 +57,7 @@ class NoisyLinearImputer:
                 List of tuples of (offset, weight)
         """
         self.noise = noise
-        self.weighting = neighbors_weights
+        self.weighting = weighting
 
     @staticmethod
     def add_offset_to_indices(indices, offset, mask_shape):
@@ -129,7 +129,7 @@ class NoisyLinearImputer:
         indices_linear = np.argwhere(maskflt == 0).flatten()
         # Set up sparse equation system, solve system.
         A, b = NoisyLinearImputer.setup_sparse_system(
-            mask.numpy(), img.numpy(), neighbors_weights)
+            mask.numpy(), img.numpy(), self.weighting)
         res = torch.tensor(spsolve(csc_matrix(A), b), dtype=torch.float)
 
         # Fill the values with the solution of the system.
