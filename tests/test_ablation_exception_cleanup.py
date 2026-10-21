@@ -40,6 +40,7 @@ class FailingTarget:
 
 @pytest.mark.parametrize("forward_failure,target_failure", [
     pytest.param(2, 0, id="cache-forward-failure"),
+    pytest.param(0, 1, id="cached-target-failure"),
     pytest.param(3, 0, id="ablated-forward-failure"),
     pytest.param(0, 2, id="ablated-target-failure"),
     pytest.param(0, 0, id="success"),
