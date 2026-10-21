@@ -69,18 +69,17 @@ class AblationLayer(torch.nn.Module):
 
     def __call__(self, x):
         output = self.activations
+        # Commonly the minimum activation will be 0,
+        # And then it makes sense to zero it out.
+        # However depending on the architecture,
+        # If the values can be negative, we use very negative values
+        # to perform the ablation, deviating from the paper.
+        ablation_value = torch.min(output)
+        if ablation_value != 0:
+            ABLATION_VALUE = 1e7
+            ablation_value = ablation_value - ABLATION_VALUE
         for i in range(output.size(0)):
-            # Commonly the minimum activation will be 0,
-            # And then it makes sense to zero it out.
-            # However depending on the architecture,
-            # If the values can be negative, we use very negative values
-            # to perform the ablation, deviating from the paper.
-            if torch.min(output) == 0:
-                output[i, self.indices[i], :] = 0
-            else:
-                ABLATION_VALUE = 1e7
-                output[i, self.indices[i], :] = torch.min(
-                    output) - ABLATION_VALUE
+            output[i, self.indices[i], :] = ablation_value
 
         return output
 
@@ -92,19 +91,17 @@ class AblationLayerVit(AblationLayer):
     def __call__(self, x):
         output = self.activations
         output = output.transpose(1, len(output.shape) - 1)
+        # Commonly the minimum activation will be 0,
+        # And then it makes sense to zero it out.
+        # However depending on the architecture,
+        # If the values can be negative, we use very negative values
+        # to perform the ablation, deviating from the paper.
+        ablation_value = torch.min(output)
+        if ablation_value != 0:
+            ABLATION_VALUE = 1e7
+            ablation_value = ablation_value - ABLATION_VALUE
         for i in range(output.size(0)):
-
-            # Commonly the minimum activation will be 0,
-            # And then it makes sense to zero it out.
-            # However depending on the architecture,
-            # If the values can be negative, we use very negative values
-            # to perform the ablation, deviating from the paper.
-            if torch.min(output) == 0:
-                output[i, self.indices[i], :] = 0
-            else:
-                ABLATION_VALUE = 1e7
-                output[i, self.indices[i], :] = torch.min(
-                    output) - ABLATION_VALUE
+            output[i, self.indices[i], :] = ablation_value
 
         output = output.transpose(len(output.shape) - 1, 1)
 
