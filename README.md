@@ -183,6 +183,16 @@ targets = [ClassifierOutputTarget(281)]
 However for more advanced cases, you might want a different behaviour.
 Check [here](https://github.com/jacobgil/pytorch-grad-cam/blob/master/pytorch_grad_cam/utils/model_targets.py) for more examples.
 
+## 1D signals
+For a 1D CNN on signals like ECG or EEG, the input is batch x channels x length and the target layer is a `Conv1d` layer.
+The CAM then has the shape batch x length, with one value per sample of the signal.
+```python
+target_layers = [model.conv3]  # the last Conv1d layer
+with GradCAM(model=model, target_layers=target_layers) as cam:
+    grayscale_cam = cam(input_tensor=signal_tensor, targets=targets)
+```
+ScoreCAM, AblationCAM and FullGrad don't support 1D signals yet.
+
 ----------
 
 # Tutorials

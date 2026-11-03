@@ -47,8 +47,12 @@ class ShapleyCAM(BaseCAM):
             grads = self.activations_and_grads.reshape_transform(grads)
 
         weight = (grads  - 0.5 * hvp).detach().cpu().numpy()
+        # 1D signal
+        if len(activations.shape) == 3:
+            weight = np.mean(weight, axis=2)
+            return weight
         # 2D image
-        if len(activations.shape) == 4:
+        elif len(activations.shape) == 4:
             weight = np.mean(weight, axis=(2, 3))
             return weight
         # 3D image
@@ -57,4 +61,4 @@ class ShapleyCAM(BaseCAM):
             return weight
         else:
             raise ValueError("Invalid grads shape."
-                             "Shape of grads should be 4 (2D image) or 5 (3D image).")
+                             "Shape of grads should be 3 (1D signal), 4 (2D image) or 5 (3D image).")

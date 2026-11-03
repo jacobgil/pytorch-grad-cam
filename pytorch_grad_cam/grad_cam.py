@@ -19,8 +19,12 @@ class GradCAM(BaseCAM):
                         target_category,
                         activations,
                         grads):
+        # 1D signal
+        if len(grads.shape) == 3:
+            return np.mean(grads, axis=2)
+
         # 2D image
-        if len(grads.shape) == 4:
+        elif len(grads.shape) == 4:
             return np.mean(grads, axis=(2, 3))
         
         # 3D image
@@ -29,4 +33,4 @@ class GradCAM(BaseCAM):
         
         else:
             raise ValueError("Invalid grads shape." 
-                             "Shape of grads should be 4 (2D image) or 5 (3D image).")
+                             "Shape of grads should be 3 (1D signal), 4 (2D image) or 5 (3D image).")
