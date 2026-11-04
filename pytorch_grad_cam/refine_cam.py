@@ -34,7 +34,7 @@ class RefineCAM:
     ) -> np.ndarray:
         # Compute the CAM for each layer
         cam_per_layer = np.array(
-            [base_cam(input_tensor, targets, eigen_smooth) for base_cam in self.base_cam_per_layer]
+            [base_cam(input_tensor, targets, eigen_smooth=eigen_smooth) for base_cam in self.base_cam_per_layer]
         )
         
         # Make sure that cams are in the range [0, 1]
