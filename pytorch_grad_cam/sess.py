@@ -198,7 +198,7 @@ class SESS:
                 outputs = self.model(batch)
                 if self.use_softmax_scores:
                     outputs = torch.softmax(outputs, dim=-1)
-                scores.append(target(outputs).cpu().data.numpy())
+                scores.append(torch.stack([target(output) for output in outputs]).cpu().data.numpy())
         # Negative scores can't be used as weights.
         return np.maximum(np.concatenate(scores), 0)
 
