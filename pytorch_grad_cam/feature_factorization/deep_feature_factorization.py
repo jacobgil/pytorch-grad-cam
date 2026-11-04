@@ -102,7 +102,7 @@ def run_dff_on_image(
     classifier: torch.nn.Module,
     img_pil: Image.Image,
     img_tensor: torch.Tensor,
-    reshape_transform=Optional[Callable],
+    reshape_transform: Optional[Callable] = None,
     n_components: int = 5,
     top_k: int = 2,
 ) -> np.ndarray:
