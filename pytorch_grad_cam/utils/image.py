@@ -45,6 +45,12 @@ def show_cam_on_image(img: np.ndarray,
     :param image_weight: The final result is image_weight * img + (1-image_weight) * mask.
     :returns: The default image with the cam overlay.
     """
+    # Lists (and other array-likes) must be converted first. Otherwise
+    # ``255 * mask`` repeats a Python list instead of scaling values, and the
+    # heatmap cannot broadcast onto ``img``.
+    img = np.asarray(img)
+    mask = np.asarray(mask)
+
     heatmap = cv2.applyColorMap(np.uint8(255 * mask), colormap)
     if use_rgb:
         heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
