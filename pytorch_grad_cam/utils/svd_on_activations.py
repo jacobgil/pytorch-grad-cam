@@ -3,6 +3,19 @@ from sklearn.decomposition import KernelPCA
 
 
 def get_2d_projection(activation_batch):
+    """ Project every item of the batch onto its first principal component.
+
+    The sign of a singular vector is arbitrary: negating the first left and
+    right singular vectors gives an equally valid SVD, and which one comes back
+    depends on the LAPACK build and on the input. An unoriented projection can
+    therefore be the negative of the map, which is then clipped to the
+    non-attention region. To make the result reproducible, every projection is
+    oriented to agree with the sum over the channels, the same map that the
+    methods compute without eigen smoothing.
+
+    :param activation_batch: An array of shape batch x channels x ... x height x width.
+    :returns: An array of shape batch x ... x height x width.
+    """
     # TBD: use pytorch batch svd implementation
     activation_batch = activation_batch.copy()
     activation_batch[np.isnan(activation_batch)] = 0
@@ -16,6 +29,11 @@ def get_2d_projection(activation_batch):
             reshaped_activations.mean(axis=0)
         U, S, VT = np.linalg.svd(reshaped_activations, full_matrices=True)
         projection = reshaped_activations @ VT[0, :]
+        # The projection has zero mean, so this is its covariance with the channel sum.
+        agreement = projection @ activations.sum(axis=0).reshape(-1)
+        if agreement < 0 or (
+                agreement == 0 and abs(projection.min()) > abs(projection.max())):
+            projection = -projection
         projection = projection.reshape(activations.shape[1:])
         projections.append(projection)
     return np.float32(projections)
